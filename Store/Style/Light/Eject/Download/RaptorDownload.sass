@@ -1,0 +1,82 @@
+/**
+ *
+ * Copyright (C) 2024 凉州刺史. All rights reserved.
+ *
+ * This file is part of Raptor.
+ *
+ * $RAPTOR_BEGIN_LICENSE$
+ *
+ * GNU General Public License Usage
+ * Alternatively, this file may be used under the terms of the GNU
+ * General Public License version 3.0 as published by the Free Software
+ * Foundation and appearing in the file LICENSE.GPL included in the
+ * packaging of this file.  Please review the following information to
+ * ensure the GNU General Public License version 3.0 requirements will be
+ * met: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * $RAPTOR_END_LICENSE$
+ *
+ * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+ * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ */
+
+@import "../../RaptorDefine"
+
+#_Stage
+  background-color: $Raptor-Eject-Background-Color
+  border-radius: 2px
+
+#_Close
+  @include Raptor-Close
+
+#_Title,
+#_NameTip,
+#_DirTip,
+#_SpeedTip
+  color: $Raptor-Font-Color
+  font-size: 12px
+
+#_Name,
+#_Speed,
+#_Dir
+  @include Raptor-Item-Area
+
+#_SpeedNoLimit
+  @include Raptor-Checkbox
+
+#_UnitPanel
+  background-color: rgba(255, 255, 255, 0.09)
+  border: none
+  border-radius: 2px
+
+#_MB,
+#_KB
+  color: $Raptor-Font-Color
+  background-color: transparent
+  border: none
+  border-radius: 2px
+  font-size: 12px
+  padding-left: 8px
+  padding-right: 8px
+
+  &:hover
+    background-color: rgba(255, 255, 255, 0.09)
+
+  &:checked
+    background-color: rgba(255, 255, 255, 0.09)
+
+#_DirSelect
+  @include Raptor-Information-Button
+
+#_IconPanel
+  border-left: 1px solid $Raptor-Eject-Line-Color
+
+#_3rdPartyEvoke
+  @include Raptor-Creative-Button
+
+#_Download
+  @include Raptor-Success-Button
+
+#_Cancel
+  @include Raptor-Default-Button

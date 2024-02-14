@@ -1,0 +1,289 @@
+/**
+ *
+ * Copyright (C) 2024 凉州刺史. All rights reserved.
+ *
+ * This file is part of Raptor.
+ *
+ * $RAPTOR_BEGIN_LICENSE$
+ *
+ * GNU General Public License Usage
+ * Alternatively, this file may be used under the terms of the GNU
+ * General Public License version 3.0 as published by the Free Software
+ * Foundation and appearing in the file LICENSE.GPL included in the
+ * packaging of this file.  Please review the following information to
+ * ensure the GNU General Public License version 3.0 requirements will be
+ * met: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * $RAPTOR_END_LICENSE$
+ *
+ * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+ * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ */
+
+$Raptor-Primary-Background-Color: rgba(24, 24, 28, 1)
+$Raptor-Eject-Background-Color: rgba(44, 44, 50, 1)
+$Raptor-Font-Color: rgba(136, 136, 136, 1)
+$Raptor-Primary-Line-Color: rgba(45, 45, 48, 1)
+$Raptor-Eject-Line-Color: rgba(255, 255, 255, 0.09)
+
+@mixin Raptor-Vertical-Scrollbar
+  QScrollBar
+    background-color: transparent
+    border: none
+
+  QScrollBar:vertical
+    border: none
+    background-color: transparent
+    width: 6px
+    margin: 0
+
+  QScrollBar::horizontal
+    border: none
+    background-color: transparent
+    height: 6px
+    margin: 0
+
+  QScrollBar::handle:vertical
+    background: rgba(48, 48, 51, 0.7)
+    min-height: 28px
+    border-radius: 3px
+    border: none
+
+  QScrollBar::handle:horizontal
+    background: rgba(48, 48, 51, 0.7)
+    min-width: 28px
+    border-radius: 3px
+    border: none
+
+  QScrollBar::add-line:vertical,
+  QScrollBar::sub-line:vertical
+    height: 0
+
+  QScrollBar::add-line:horizontal,
+  QScrollBar::sub-line:horizontal
+    width: 0
+
+  QScrollBar::add-page:vertical,
+  QScrollBar::sub-page:vertical,
+  QScrollBar::add-page:horizontal,
+  QScrollBar::sub-page:horizontal
+    background-color: transparent
+    width: 0
+    height: 0
+
+@mixin Raptor-List-View
+  @include Raptor-Vertical-Scrollbar
+
+  font-size: 12px
+  background-color: transparent
+  border: none
+  outline: none
+
+  &::item
+    color: $Raptor-Font-Color
+    border: none
+    height: 26px
+
+  &::item::selected
+    color: $Raptor-Font-Color
+    background-color: rgba(48, 48, 51, 0.7)
+    outline: none
+
+@mixin Raptor-Table-View($header-line-color: transparent, $background-color: transparent, $item-selected-color: $Raptor-Font-Color, $item-selected-background-color: rgba(48, 48, 51, 0.7))
+  @include Raptor-Vertical-Scrollbar
+
+  font-size: 12px
+  background-color: $background-color
+  border: none
+  outline: none
+
+  #QIndicator
+    @include Raptor-Default-Button
+
+  &::item
+    color: $Raptor-Font-Color
+    border: none
+
+  &::item::selected
+    color: $item-selected-color
+    background-color: $item-selected-background-color
+    outline: none
+
+  QHeaderView
+    font-size: 12px
+    background-color: transparent
+    border-bottom: 1px solid $header-line-color
+
+  QHeaderView::section
+    color: $Raptor-Font-Color
+    background-color: transparent
+
+@mixin Raptor-Item-Area
+  background-color: rgba(255, 255, 255, 0.09)
+  border: none
+  border-radius: 2px
+  color: $Raptor-Font-Color
+  font-size: 12px
+
+  QScrollBar
+    background-color: transparent
+    border: none
+
+  QScrollBar:vertical
+    border: none
+    background-color: transparent
+    width: 6px
+    margin: 0
+
+  QScrollBar::handle:vertical
+    background: rgba(136, 136, 136, .15)
+    min-height: 20px
+    border-radius: 3px
+    border: none
+
+  QScrollBar::add-line:vertical
+    height: 0
+
+  QScrollBar::sub-line:vertical
+    height: 0
+
+  QScrollBar::add-page:vertical,
+  QScrollBar::sub-page:vertical
+    background-color: transparent
+    width: 0
+    height: 0
+
+@mixin Raptor-Tab
+  color: $Raptor-Font-Color
+  background-color: transparent
+  font-size: 12px
+  border: none
+  border-bottom-width: 1px
+  border-bottom-style: solid
+  border-bottom-color: transparent
+  padding-left: 16px
+  padding-right: 16px
+
+  &:checked
+    color: rgba(0, 164, 255, 1)
+    border-bottom-width: 1px
+    border-bottom-style: solid
+    border-bottom-color: rgba(0, 164, 255, 1)
+
+@mixin Raptor-Slider
+  &::groove
+    &:horizontal
+      border: none
+
+  &::sub-page
+    &:horizontal
+      background-color: rgba(0, 164, 255, 1)
+      border-radius: 2px
+      margin-top: 11px
+      margin-bottom: 11px
+
+  &::add-page
+    &:horizontal
+      background-color: rgba(255, 255, 255, 0.2)
+      border-radius: 2px
+      margin-top: 11px
+      margin-bottom: 11px
+
+  &::handle
+    &:horizontal
+      background-color: rgba(0, 164, 255, 1)
+      width: 14px
+      border: none
+      border-radius: 7px
+      margin-top: 6px
+      margin-bottom: 6px
+
+@mixin Raptor-Close
+  background-color: transparent
+  border-radius: 2px
+
+  &:hover
+    background-color: rgba(255, 255, 255, 0.09)
+
+@mixin Raptor-Checkbox
+  color: $Raptor-Font-Color
+  font-size: 12px
+
+  &::indicator:checked
+    border-image: url(./Store/icon/Ui/Raptor[CHECKED].png)
+
+  &::indicator:unchecked
+    border-image: url(./Store/icon/Ui/Raptor[UNCHECK].png)
+
+@mixin Raptor-Default-Button
+  color: $Raptor-Font-Color
+  background-color: rgba(255, 255, 255, 0.09)
+  border: none
+  border-radius: 2px
+  font-size: 12px
+  padding-left: 8px
+  padding-right: 8px
+
+  &:hover
+    background-color: rgba(255, 255, 255, .12)
+
+@mixin Raptor-Success-Button
+  color: rgba(99, 226, 183, 1)
+  background-color: rgba(99, 226, 183, 0.16)
+  border: none
+  border-radius: 2px
+  font-size: 12px
+  padding-left: 8px
+  padding-right: 8px
+
+  &:hover
+    background-color: rgba(99, 226, 183, 0.2)
+
+@mixin Raptor-Warning-Button
+  color: rgba(242, 201, 125, 1)
+  background-color: rgba(242, 201, 125, 0.16)
+  border: none
+  border-radius: 2px
+  font-size: 12px
+  padding-left: 8px
+  padding-right: 8px
+
+  &:hover
+    background-color: rgba(242, 201, 125, 0.2)
+
+@mixin Raptor-Information-Button
+  color: rgba(112, 192, 232, 1)
+  background-color: rgba(112, 192, 232, 0.16)
+  border: none
+  border-radius: 2px
+  font-size: 12px
+  padding-left: 8px
+  padding-right: 8px
+
+  &:hover
+    background-color: rgba(112, 192, 232, 0.2)
+
+@mixin Raptor-Critical-Button
+  color: rgba(232, 128, 128, 1)
+  background-color: rgba(232, 128, 128, 0.16)
+  border: none
+  border-radius: 2px
+  font-size: 12px
+  padding-left: 8px
+  padding-right: 8px
+
+  &:hover
+    background-color: rgba(232, 128, 128, 0.2)
+
+@mixin Raptor-Creative-Button
+  color: rgba(184, 112, 232, 1)
+  background-color: rgba(184, 112, 232, 0.16)
+  border: none
+  border-radius: 2px
+  font-size: 12px
+  padding-left: 8px
+  padding-right: 8px
+
+  &:hover
+    background-color: rgba(184, 112, 232, .2)
