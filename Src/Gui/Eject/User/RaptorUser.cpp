@@ -262,7 +262,6 @@ void RaptorUser::onItemSignInConfirmed(const QVariant& qVariant) const
 
     if (_Data.value<bool>())
     {
-        RaptorToast::invokeInformationEject(QStringLiteral("今日已签到啦~明天再来吧!"));
         return;
     }
 
