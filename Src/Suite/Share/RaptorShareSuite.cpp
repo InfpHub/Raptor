@@ -309,6 +309,7 @@ void RaptorShareSuite::onItemCreating(const QVariant& qVariant) const
     {
         qArray << qIndex.data(Qt::UserRole).value<RaptorFileItem>()._Id;
     }
+    
     qRow["file_id_list"] = qArray;
     qHttpPayload._Body = QJsonDocument(qRow);
     auto output = RaptorOutput();
