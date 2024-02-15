@@ -177,9 +177,4 @@ namespace RaptorHttpStatus
     Q_DECL_CONSTEXPR auto TooManyRequests = 429;
 }
 
-namespace Loading
-{
-    Q_DECL_CONSTEXPR auto Color = QColor{0, 164, 255};
-}
-
 #endif // RAPTORDEFINE_H
