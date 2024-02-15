@@ -113,7 +113,7 @@ void RaptorPlayPage::invokeUiInit() const
     _Ui->_QualityUHD->setChecked(qQuality == Setting::Play::UHD);
     _Ui->_QualityUHD->setText(QStringLiteral("UHD"));
     _Ui->_QualityOrigin->setChecked(qQuality == Setting::Play::Origin);
-    _Ui->_QualityOrigin->setText(QStringLiteral("Origin"));
+    _Ui->_QualityOrigin->setText(QStringLiteral("原画"));
 
     _Ui->_StreamTip->setText(QStringLiteral("流"));
     const auto qStream = RaptorSettingSuite::invokeItemFind(Setting::Section::Play,
