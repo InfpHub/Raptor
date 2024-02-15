@@ -120,7 +120,7 @@ void RaptorUploadingPage::invokeItemsCancel() const
         const auto item = qIndex.data(Qt::UserRole).value<RaptorTransferItem>();
         input._Variant = QVariant::fromValue<RaptorTransferItem>(item);
         Q_EMIT itemCancelling(QVariant::fromValue<RaptorInput>(input));
-        _ItemViewModel->removeRow(qIndex.row(), qIndex.parent());
+        _ItemViewModel->removeRow(qIndex.row());
     }
 
     _Ui->_ItemView->viewport()->update();

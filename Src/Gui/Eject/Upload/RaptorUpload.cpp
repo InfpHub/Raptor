@@ -263,7 +263,7 @@ void RaptorUpload::onDeleteClicked() const
         std::reverse(qIndexList.begin(), qIndexList.end());
         for (auto &qIndex: qIndexList)
         {
-            _ItemViewModel->removeRow(qIndex.row(), qIndex.parent());
+            _ItemViewModel->removeRow(qIndex.row());
         }
     }
 

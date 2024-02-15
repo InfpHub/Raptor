@@ -286,7 +286,7 @@ void RaptorTrashPage::onItemsRestored(const QVariant& qVariant) const
     std::reverse(qIndexList.begin(), qIndexList.end());
     for (auto &qIndex: qIndexList)
     {
-        _ItemViewModel->removeRow(qIndex.row(), qIndex.parent());
+        _ItemViewModel->removeRow(qIndex.row());
     }
 
     _Ui->_ItemView->viewport()->update();
@@ -318,7 +318,7 @@ void RaptorTrashPage::onItemsDeleted(const QVariant& qVariant) const
     std::reverse(qIndexList.begin(), qIndexList.end());
     for (auto &qIndex: qIndexList)
     {
-        _ItemViewModel->removeRow(qIndex.row(), qIndex.parent());
+        _ItemViewModel->removeRow(qIndex.row());
     }
 
     _Ui->_ItemView->viewport()->update();
