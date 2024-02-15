@@ -113,14 +113,15 @@ void RaptorDownloadingPage::invokeItemsCancel() const
         return;
     }
 
-    for (auto i = qIndexList.length() - 1; i >= 0; --i)
+
+    std::reverse(qIndexList.begin(), qIndexList.end());
+    for (auto &qIndex: qIndexList)
     {
-        const auto qIndex = qIndexList[i];
         auto input = RaptorInput();
         const auto item = qIndex.data(Qt::UserRole).value<RaptorTransferItem>();
         input._Variant = QVariant::fromValue<RaptorTransferItem>(item);
         Q_EMIT itemCancelling(QVariant::fromValue<RaptorInput>(input));
-        _ItemViewModel->removeRow(qIndex.row());
+        _ItemViewModel->removeRow(qIndex.row(), qIndex.parent());
     }
 
     _Ui->_ItemView->viewport()->update();

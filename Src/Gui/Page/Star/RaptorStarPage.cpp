@@ -388,11 +388,13 @@ void RaptorStarPage::onItemsUnStarred(const QVariant& qVariant) const
         return;
     }
 
-    if (const auto [qIndexlist, qState] = _Data.value<QPair<QModelIndexList, bool>>(); !qState)
+    if (auto [qIndexList, qState] = _Data.value<QPair<QModelIndexList, bool>>();
+        !qState)
     {
-        for (auto i = qIndexlist.length() - 1; i >= 0; --i)
+        std::reverse(qIndexList.begin(), qIndexList.end());
+        for (auto &qIndex: qIndexList)
         {
-            _ItemViewModel->removeRow(qIndexlist[i].row());
+            _ItemViewModel->removeRow(qIndex.row(), qIndex.parent());
         }
 
         _Ui->_ItemView->selectionModel()->clearSelection();

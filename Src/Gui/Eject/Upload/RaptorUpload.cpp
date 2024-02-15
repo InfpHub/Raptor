@@ -24,7 +24,7 @@
 #include "RaptorUpload.h"
 #include "ui_RaptorUpload.h"
 
-RaptorUpload::RaptorUpload(QWidget* qParent) : RaptorEject(qParent),
+RaptorUpload::RaptorUpload(QWidget *qParent) : RaptorEject(qParent),
                                                _Ui(new Ui::RaptorUpload)
 {
     _Ui->setupUi(this);
@@ -38,13 +38,13 @@ RaptorUpload::~RaptorUpload()
     FREE(_Ui)
 }
 
-bool RaptorUpload::eventFilter(QObject* qObject, QEvent* qEvent)
+bool RaptorUpload::eventFilter(QObject *qObject, QEvent *qEvent)
 {
     if (qObject == this)
     {
         if (qEvent->type() == QEvent::KeyPress)
         {
-            if (const auto qKeyEvent = static_cast<QKeyEvent*>(qEvent);
+            if (const auto qKeyEvent = static_cast<QKeyEvent *>(qEvent);
                 qKeyEvent->key() == Qt::Key_Escape)
             {
                 onCloseClicked();
@@ -56,10 +56,12 @@ bool RaptorUpload::eventFilter(QObject* qObject, QEvent* qEvent)
     return RaptorEject::eventFilter(qObject, qEvent);
 }
 
-void RaptorUpload::invokeEject(const QVariant& qVariant)
+void RaptorUpload::invokeEject(const QVariant &qVariant)
 {
     _Variant = qVariant;
-    _Ui->_Title->setText(QStringLiteral("上传文件到 %1").arg(QStringLiteral(CREATIVE_TEMPLATE).arg(_Variant.value<QPair<QString, QString>>().second)));
+    _Ui->_Title->setText(
+        QStringLiteral("上传文件到 %1").arg(
+            QStringLiteral(CREATIVE_TEMPLATE).arg(_Variant.value<QPair<QString, QString> >().second)));
     RaptorEject::invokeEject();
 }
 
@@ -179,7 +181,7 @@ void RaptorUpload::onCloseClicked()
     close();
 }
 
-void RaptorUpload::onItemViewClicked(const QModelIndex& qIndex) const
+void RaptorUpload::onItemViewClicked(const QModelIndex &qIndex) const
 {
     const auto item = qIndex.data(Qt::UserRole).value<RaptorTransferItem>();
     _Ui->_ItemName->setText(item._Name);
@@ -187,8 +189,8 @@ void RaptorUpload::onItemViewClicked(const QModelIndex& qIndex) const
     _Ui->_ItemSize->setText(item._Size);
 }
 
-void RaptorUpload::onItemViewSelectionChanged(const QItemSelection& qSelected,
-                                              const QItemSelection& qDeselected) const
+void RaptorUpload::onItemViewSelectionChanged(const QItemSelection &qSelected,
+                                              const QItemSelection &qDeselected) const
 {
     Q_UNUSED(qDeselected)
     if (const auto qIndexList = qSelected.indexes();
@@ -198,8 +200,7 @@ void RaptorUpload::onItemViewSelectionChanged(const QItemSelection& qSelected,
             item._Type == "file")
         {
             _Ui->_ItemLocate->setEnabled(true);
-        }
-        else
+        } else
         {
             _Ui->_ItemLocate->setEnabled(false);
         }
@@ -222,7 +223,7 @@ void RaptorUpload::onAddClicked()
         return;
     }
 
-    for (auto& item : items)
+    for (auto &item: items)
     {
         auto iten = RaptorTransferItem();
         const auto qFileInfo = QFileInfo(item);
@@ -256,12 +257,13 @@ void RaptorUpload::onAddDirClicked()
 
 void RaptorUpload::onDeleteClicked() const
 {
-    if (const auto qIndexList = _Ui->_ItemView->selectionModel()->selectedRows();
+    if (auto qIndexList = _Ui->_ItemView->selectionModel()->selectedRows();
         !qIndexList.empty())
     {
-        for (auto i = qIndexList.length() - 1; i >= 0; --i)
+        std::reverse(qIndexList.begin(), qIndexList.end());
+        for (auto &qIndex: qIndexList)
         {
-            _ItemViewModel->removeRow(qIndexList[i].row());
+            _ItemViewModel->removeRow(qIndex.row(), qIndex.parent());
         }
     }
 
@@ -326,10 +328,10 @@ void RaptorUpload::onOKClicked()
     if (_ItemViewModel->rowCount() > 0)
     {
         auto input = RaptorInput();
-        input._Parent = _Variant.value<QPair<QString, QString>>().first;
+        input._Parent = _Variant.value<QPair<QString, QString> >().first;
         // 此处传递 Space 防止在递归创建过程中切换空间类型
         input._Space = RaptorStoreSuite::invokeUserGet()._Space;
-        input._Variant = QVariant::fromValue<QVector<RaptorTransferItem>>(_ItemViewModel->invokeItemsEject());
+        input._Variant = QVariant::fromValue<QVector<RaptorTransferItem> >(_ItemViewModel->invokeItemsEject());
         Q_EMIT itemsUploading(QVariant::fromValue<RaptorInput>(input));
     }
 

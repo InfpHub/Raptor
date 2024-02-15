@@ -938,10 +938,11 @@ void RaptorSpacePage::onItemsTrashed(const QVariant& qVariant) const
         return;
     }
 
-    const auto qIndexList = _Data.value<QModelIndexList>();
-    for (auto i = qIndexList.length() - 1; i >= 0; --i)
+    auto qIndexList = _Data.value<QModelIndexList>();
+    std::reverse(qIndexList.begin(), qIndexList.end());
+    for (auto &qIndex: qIndexList)
     {
-        _ItemViewModel->removeRow(qIndexList[i].row());
+        _ItemViewModel->removeRow(qIndex.row(), qIndex.parent());
     }
 
     _Ui->_ItemView->selectionModel()->clearSelection();
