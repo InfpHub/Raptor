@@ -1475,14 +1475,12 @@ void RaptorSpacePage::onItemViewDoubleClicked(const QModelIndex& qIndex)
                         !qError.isEmpty())
                     {
                         RaptorToast::invokeWarningEject(qError);
-                        return;
                     }
-                }
-                else
-                {
-                    input._Id = qQuality;
+
+                    return;
                 }
 
+                input._Id = qQuality;
                 input._Index = qIndex;
                 Q_EMIT itemPreviewPlayInfoFetching(QVariant::fromValue<RaptorInput>(input));
             }
