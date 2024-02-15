@@ -1475,6 +1475,7 @@ void RaptorSpacePage::onItemViewDoubleClicked(const QModelIndex& qIndex)
                         !qError.isEmpty())
                     {
                         RaptorToast::invokeWarningEject(qError);
+                        return;
                     }
                 }
                 else
