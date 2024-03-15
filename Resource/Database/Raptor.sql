@@ -23,12 +23,18 @@ CREATE TABLE IF NOT EXISTS Downloading
     Path        TEXT,
     Created     TEXT,
     Size        TEXT,
-    Transferred TEXT,
+    Partial     TEXT,
     Byte        TEXT,
     "Limit"     INTEGER,
     SHA1        TEXT,
     UserId      TEXT    NOT NULL,
-    State       integer NOT NULL
+    State       INTEGER NOT NULL,
+    Parallel    INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Notice (
+    LeafId  TEXT NOT NULL PRIMARY KEY,
+    State  INTEGER NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS Timeline
@@ -64,7 +70,7 @@ CREATE TABLE IF NOT EXISTS Uploading
     Rapid       INTEGER,
     UserId      TEXT    NOT NULL,
     Parent      TEXT    NOT NULL,
-    State       integer NOT NULL
+    State       INTEGER NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS User
@@ -118,6 +124,14 @@ INSERT INTO CopyWriter (LeafId, Content)
 VALUES (16, '安得广厦千万间，广厦一千万一间。');
 INSERT INTO CopyWriter (LeafId, Content)
 VALUES (17, '$3.53');
+INSERT INTO CopyWriter (LeafId, Content)
+VALUES (18, '放下个人素质，享受缺德人生。');
+INSERT INTO CopyWriter (LeafId, Content)
+VALUES (19, '拒绝精神内耗，有事直接发疯。');
+INSERT INTO CopyWriter (LeafId, Content)
+VALUES (20, '与其委屈自己，不如为难别人。');
+INSERT INTO CopyWriter (LeafId, Content)
+VALUES (21, '只要你肯吃苦，就有吃不完的苦。');
 
 INSERT INTO Timeline (LeafId, Date, Summary, Active, Initial)
 VALUES (1, '2024-02-14', '无人问津', 1, 1)

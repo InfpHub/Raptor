@@ -1,0 +1,73 @@
+Download:
+  ActiveEngine: IDM
+  AutoRename: true
+  Concurrent: 3
+  DefaultPath: true
+  Engine:
+    - Name: IDM
+      Path: ""
+      Icon: ./Store/Icon/Mime/Raptor[EXE].svg
+    - Name: FDM
+      Path: ""
+      Icon: ./Store/Icon/Mime/Raptor[EXE].svg
+  FullPath: true
+  Path: C:/
+  SkipViolation: true
+Network:
+  IPResolve: Auto
+  Proxy: false
+  ProxyEngine: None
+  ProxyHost: ""
+  ProxyPassword: ""
+  ProxyPort: ""
+  ProxyUserName: ""
+Other:
+  CustomPassword: 3344
+  Expire: Week
+  LinkTemplate: "链接: %1\n提取码: %2"
+  NewFolderTemplate: 「yyyy-MM-dd hh-mm-ss-zzz」
+  Password: None
+  ShareExpire: Week
+Video:
+  ActiveEngine: VLC
+  Engine:
+    - Name: MPV
+      Path: ./Store/MPV/mpv.exe
+      Icon: ./Store/Icon/Ui/Raptor[MPV].svg
+    - Name: VLC
+      Path: ./Store/VLC/vlc.exe
+      Icon: ./Store/Icon/Ui/Raptor[VLC].svg
+    - Name: PotPlayer
+      Path: ./Store/PotPlayer/PotPlayerMini64.exe
+      Icon: ./Store/Icon/Ui/Raptor[PotPlayer].svg
+  Quality: Origin
+  Stream: Live
+  UseOrigin: true
+  UseSub: true
+Office:
+  Engine:
+    - Name: Excel
+      Path: C:/Program Files (x86)/Microsoft Office/root/Office16/EXCEL.EXE
+      Icon: ./Store/Icon/Ui/Raptor[EXCEL].svg
+    - Name: PowerPoint
+      Path: C:/Program Files (x86)/Microsoft Office/root/Office16/POWERPNT.EXE
+      Icon: ./Store/Icon/Ui/Raptor[POWERPOINT].svg
+    - Name: Word
+      Path: C:/Program Files (x86)/Microsoft Office/root/Office16/WINWORD.EXE
+      Icon: ./Store/Icon/Ui/Raptor[WORD].svg
+    - Name: PDF
+      Path: C:/Program Files (x86)/Microsoft Office/root/Office16/WINWORD.EXE
+      Icon: ./Store/Icon/Ui/Raptor[PDF].svg
+Ui:
+  ContextMenu: true
+  Font: Microsoft YaHei UI
+  MinimizeToTray: true
+  Notice: true
+  Sign: true
+  Theme: Dark
+  TrayIcon: true
+Upload:
+  Concurrent: 3
+  Filter:
+    - desktop.ini
+  SkipNoRapid: false
