@@ -62,6 +62,16 @@ bool RaptorCleanPage::eventFilter(QObject *qObject, QEvent *qEvent)
 
 void RaptorCleanPage::invokeNavigate()
 {
+    if (!RaptorStoreSuite::invokeUserIsValidConfirm())
+    {
+        _Ui->_ItemView->invokeServerCodeSet(RaptorTableView::Forbidden);
+        _Ui->_ItemView->invokeTitleSet(QStringLiteral("403 尚未登录"));
+        _Ui->_ItemView->invokeSummarySet(QStringLiteral("总有些门对你是关闭的"));
+        _Ui->_ItemView->invokeIndicatorSet(QStringLiteral("去登录"));
+        _Ui->_ItemView->invokeBackgroundPaintableSet(true);
+        return;
+    }
+
     _Loading->invokeStateSet(RaptorLoading::State::Loading);
     _Payload._Marker.clear();
     _ItemViewModel->invokeItemsClear();
