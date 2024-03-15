@@ -1,11 +1,9 @@
-3rd-Party
 cmake-build-debug
 cmake-build-release
 Dist
 Resource/Player
-Raptor-Build-*
+Raptor-Legend-Never-Die
 Target
 TODO
 *.log
 *.idea
-*.natvis
