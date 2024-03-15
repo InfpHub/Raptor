@@ -77,7 +77,7 @@ void RaptorIndicatorButton::invokeInstanceInit()
     _Content->setObjectName("QText");
     _Indicator = new QLabel(this);
     _Indicator->setObjectName("QIndicator");
-    _SpacerItem = new QSpacerItem{20, 26, QSizePolicy::Expanding, QSizePolicy::Expanding};
+    _SpacerItem = new QSpacerItem(20, 26, QSizePolicy::Expanding, QSizePolicy::Expanding);
     _Layout = new QHBoxLayout(this);
 }
 

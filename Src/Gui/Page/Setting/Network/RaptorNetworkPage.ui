@@ -86,6 +86,238 @@
                                         <property name="spacing">
                                             <number>12</number>
                                         </property>
+                                        <item row="0" column="0">
+                                            <widget class="QLabel" name="_ProxyTip">
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>0</width>
+                                                        <height>26</height>
+                                                    </size>
+                                                </property>
+                                                <property name="maximumSize">
+                                                    <size>
+                                                        <width>16777215</width>
+                                                        <height>26</height>
+                                                    </size>
+                                                </property>
+                                                <property name="text">
+                                                    <string/>
+                                                </property>
+                                                <property name="alignment">
+                                                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item row="2" column="0">
+                                            <widget class="QLabel" name="_IPResolveTip">
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>0</width>
+                                                        <height>26</height>
+                                                    </size>
+                                                </property>
+                                                <property name="maximumSize">
+                                                    <size>
+                                                        <width>16777215</width>
+                                                        <height>26</height>
+                                                    </size>
+                                                </property>
+                                                <property name="text">
+                                                    <string/>
+                                                </property>
+                                                <property name="alignment">
+                                                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item row="0" column="1">
+                                            <widget class="QWidget" name="_ProxyTypePanel" native="true">
+                                                <layout class="QHBoxLayout" name="_ProxyTypePanelLayout">
+                                                    <property name="spacing">
+                                                        <number>2</number>
+                                                    </property>
+                                                    <property name="leftMargin">
+                                                        <number>2</number>
+                                                    </property>
+                                                    <property name="topMargin">
+                                                        <number>2</number>
+                                                    </property>
+                                                    <property name="rightMargin">
+                                                        <number>2</number>
+                                                    </property>
+                                                    <property name="bottomMargin">
+                                                        <number>2</number>
+                                                    </property>
+                                                    <item>
+                                                        <widget class="QPushButton" name="_ProxyNone">
+                                                            <property name="minimumSize">
+                                                                <size>
+                                                                    <width>0</width>
+                                                                    <height>22</height>
+                                                                </size>
+                                                            </property>
+                                                            <property name="maximumSize">
+                                                                <size>
+                                                                    <width>16777215</width>
+                                                                    <height>22</height>
+                                                                </size>
+                                                            </property>
+                                                            <property name="text">
+                                                                <string/>
+                                                            </property>
+                                                            <property name="checkable">
+                                                                <bool>true</bool>
+                                                            </property>
+                                                        </widget>
+                                                    </item>
+                                                    <item>
+                                                        <widget class="QPushButton" name="_ProxyHTTP">
+                                                            <property name="minimumSize">
+                                                                <size>
+                                                                    <width>0</width>
+                                                                    <height>22</height>
+                                                                </size>
+                                                            </property>
+                                                            <property name="maximumSize">
+                                                                <size>
+                                                                    <width>16777215</width>
+                                                                    <height>22</height>
+                                                                </size>
+                                                            </property>
+                                                            <property name="text">
+                                                                <string/>
+                                                            </property>
+                                                            <property name="checkable">
+                                                                <bool>true</bool>
+                                                            </property>
+                                                        </widget>
+                                                    </item>
+                                                    <item>
+                                                        <widget class="QPushButton" name="_ProxyHTTP1_0">
+                                                            <property name="minimumSize">
+                                                                <size>
+                                                                    <width>0</width>
+                                                                    <height>22</height>
+                                                                </size>
+                                                            </property>
+                                                            <property name="maximumSize">
+                                                                <size>
+                                                                    <width>16777215</width>
+                                                                    <height>22</height>
+                                                                </size>
+                                                            </property>
+                                                            <property name="text">
+                                                                <string/>
+                                                            </property>
+                                                            <property name="checkable">
+                                                                <bool>true</bool>
+                                                            </property>
+                                                        </widget>
+                                                    </item>
+                                                    <item>
+                                                        <widget class="QPushButton" name="_ProxyHTTPS">
+                                                            <property name="minimumSize">
+                                                                <size>
+                                                                    <width>0</width>
+                                                                    <height>22</height>
+                                                                </size>
+                                                            </property>
+                                                            <property name="maximumSize">
+                                                                <size>
+                                                                    <width>16777215</width>
+                                                                    <height>22</height>
+                                                                </size>
+                                                            </property>
+                                                            <property name="text">
+                                                                <string/>
+                                                            </property>
+                                                            <property name="checkable">
+                                                                <bool>true</bool>
+                                                            </property>
+                                                        </widget>
+                                                    </item>
+                                                    <item>
+                                                        <widget class="QPushButton" name="_ProxyHTTPS2">
+                                                            <property name="minimumSize">
+                                                                <size>
+                                                                    <width>0</width>
+                                                                    <height>22</height>
+                                                                </size>
+                                                            </property>
+                                                            <property name="maximumSize">
+                                                                <size>
+                                                                    <width>16777215</width>
+                                                                    <height>22</height>
+                                                                </size>
+                                                            </property>
+                                                            <property name="text">
+                                                                <string/>
+                                                            </property>
+                                                            <property name="checkable">
+                                                                <bool>true</bool>
+                                                            </property>
+                                                        </widget>
+                                                    </item>
+                                                    <item>
+                                                        <widget class="QPushButton" name="_ProxySOCKS4">
+                                                            <property name="minimumSize">
+                                                                <size>
+                                                                    <width>0</width>
+                                                                    <height>22</height>
+                                                                </size>
+                                                            </property>
+                                                            <property name="maximumSize">
+                                                                <size>
+                                                                    <width>16777215</width>
+                                                                    <height>22</height>
+                                                                </size>
+                                                            </property>
+                                                            <property name="text">
+                                                                <string/>
+                                                            </property>
+                                                            <property name="checkable">
+                                                                <bool>true</bool>
+                                                            </property>
+                                                        </widget>
+                                                    </item>
+                                                    <item>
+                                                        <widget class="QPushButton" name="_ProxySOCKS5">
+                                                            <property name="minimumSize">
+                                                                <size>
+                                                                    <width>0</width>
+                                                                    <height>22</height>
+                                                                </size>
+                                                            </property>
+                                                            <property name="maximumSize">
+                                                                <size>
+                                                                    <width>16777215</width>
+                                                                    <height>22</height>
+                                                                </size>
+                                                            </property>
+                                                            <property name="text">
+                                                                <string/>
+                                                            </property>
+                                                            <property name="checkable">
+                                                                <bool>true</bool>
+                                                            </property>
+                                                        </widget>
+                                                    </item>
+                                                </layout>
+                                            </widget>
+                                        </item>
+                                        <item row="3" column="1">
+                                            <spacer name="_ProxyPanelSpacer">
+                                                <property name="orientation">
+                                                    <enum>Qt::Vertical</enum>
+                                                </property>
+                                                <property name="sizeHint" stdset="0">
+                                                    <size>
+                                                        <width>20</width>
+                                                        <height>40</height>
+                                                    </size>
+                                                </property>
+                                            </spacer>
+                                        </item>
                                         <item row="1" column="1">
                                             <widget class="QWidget" name="_ProxyPanel" native="true">
                                                 <layout class="QGridLayout" name="_AddressPanelLayout">
@@ -297,212 +529,123 @@
                                                 </layout>
                                             </widget>
                                         </item>
-                                        <item row="3" column="1">
-                                            <spacer name="_ProxyPanelSpacer">
-                                                <property name="orientation">
-                                                    <enum>Qt::Vertical</enum>
-                                                </property>
-                                                <property name="sizeHint" stdset="0">
-                                                    <size>
-                                                        <width>20</width>
-                                                        <height>40</height>
-                                                    </size>
-                                                </property>
-                                            </spacer>
-                                        </item>
-                                        <item row="0" column="0">
-                                            <widget class="QLabel" name="_ProxyTip">
-                                                <property name="minimumSize">
-                                                    <size>
-                                                        <width>0</width>
-                                                        <height>26</height>
-                                                    </size>
-                                                </property>
-                                                <property name="maximumSize">
-                                                    <size>
-                                                        <width>16777215</width>
-                                                        <height>26</height>
-                                                    </size>
-                                                </property>
-                                                <property name="text">
-                                                    <string/>
-                                                </property>
-                                                <property name="alignment">
-                                                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                                                </property>
-                                            </widget>
-                                        </item>
-                                        <item row="0" column="1">
-                                            <widget class="QWidget" name="_ProxyTypePanel" native="true">
-                                                <layout class="QHBoxLayout" name="_ProxyTypePanelLayout">
+                                        <item row="2" column="1">
+                                            <widget class="QWidget" name="_IPResolveWrapper" native="true">
+                                                <layout class="QHBoxLayout" name="horizontalLayout">
                                                     <property name="spacing">
-                                                        <number>2</number>
+                                                        <number>12</number>
                                                     </property>
                                                     <property name="leftMargin">
-                                                        <number>2</number>
+                                                        <number>0</number>
                                                     </property>
                                                     <property name="topMargin">
-                                                        <number>2</number>
+                                                        <number>0</number>
                                                     </property>
                                                     <property name="rightMargin">
-                                                        <number>2</number>
+                                                        <number>0</number>
                                                     </property>
                                                     <property name="bottomMargin">
-                                                        <number>2</number>
+                                                        <number>0</number>
                                                     </property>
                                                     <item>
-                                                        <widget class="QPushButton" name="_ProxyNone">
-                                                            <property name="minimumSize">
-                                                                <size>
-                                                                    <width>0</width>
-                                                                    <height>22</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="maximumSize">
-                                                                <size>
-                                                                    <width>16777215</width>
-                                                                    <height>22</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="text">
-                                                                <string/>
-                                                            </property>
-                                                            <property name="checkable">
-                                                                <bool>true</bool>
-                                                            </property>
+                                                        <widget class="QWidget" name="_IPResolvePanel" native="true">
+                                                            <layout class="QHBoxLayout" name="_ProxyTypePanelLayout_3">
+                                                                <property name="spacing">
+                                                                    <number>2</number>
+                                                                </property>
+                                                                <property name="leftMargin">
+                                                                    <number>2</number>
+                                                                </property>
+                                                                <property name="topMargin">
+                                                                    <number>2</number>
+                                                                </property>
+                                                                <property name="rightMargin">
+                                                                    <number>2</number>
+                                                                </property>
+                                                                <property name="bottomMargin">
+                                                                    <number>2</number>
+                                                                </property>
+                                                                <item>
+                                                                    <widget class="QPushButton" name="_IPResolveAuto">
+                                                                        <property name="minimumSize">
+                                                                            <size>
+                                                                                <width>0</width>
+                                                                                <height>22</height>
+                                                                            </size>
+                                                                        </property>
+                                                                        <property name="maximumSize">
+                                                                            <size>
+                                                                                <width>16777215</width>
+                                                                                <height>22</height>
+                                                                            </size>
+                                                                        </property>
+                                                                        <property name="text">
+                                                                            <string/>
+                                                                        </property>
+                                                                        <property name="checkable">
+                                                                            <bool>true</bool>
+                                                                        </property>
+                                                                    </widget>
+                                                                </item>
+                                                                <item>
+                                                                    <widget class="QPushButton" name="_IPResolveV4">
+                                                                        <property name="minimumSize">
+                                                                            <size>
+                                                                                <width>0</width>
+                                                                                <height>22</height>
+                                                                            </size>
+                                                                        </property>
+                                                                        <property name="maximumSize">
+                                                                            <size>
+                                                                                <width>16777215</width>
+                                                                                <height>22</height>
+                                                                            </size>
+                                                                        </property>
+                                                                        <property name="text">
+                                                                            <string/>
+                                                                        </property>
+                                                                        <property name="checkable">
+                                                                            <bool>true</bool>
+                                                                        </property>
+                                                                    </widget>
+                                                                </item>
+                                                                <item>
+                                                                    <widget class="QPushButton" name="_IPResolveV6">
+                                                                        <property name="minimumSize">
+                                                                            <size>
+                                                                                <width>0</width>
+                                                                                <height>22</height>
+                                                                            </size>
+                                                                        </property>
+                                                                        <property name="maximumSize">
+                                                                            <size>
+                                                                                <width>16777215</width>
+                                                                                <height>22</height>
+                                                                            </size>
+                                                                        </property>
+                                                                        <property name="text">
+                                                                            <string/>
+                                                                        </property>
+                                                                        <property name="checkable">
+                                                                            <bool>true</bool>
+                                                                        </property>
+                                                                    </widget>
+                                                                </item>
+                                                            </layout>
                                                         </widget>
                                                     </item>
                                                     <item>
-                                                        <widget class="QPushButton" name="_ProxyHTTP">
-                                                            <property name="minimumSize">
+                                                        <spacer name="_IPResolveWrapperSpacer">
+                                                            <property name="orientation">
+                                                                <enum>Qt::Horizontal</enum>
+                                                            </property>
+                                                            <property name="sizeHint" stdset="0">
                                                                 <size>
-                                                                    <width>0</width>
-                                                                    <height>22</height>
+                                                                    <width>382</width>
+                                                                    <height>20</height>
                                                                 </size>
                                                             </property>
-                                                            <property name="maximumSize">
-                                                                <size>
-                                                                    <width>16777215</width>
-                                                                    <height>22</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="text">
-                                                                <string/>
-                                                            </property>
-                                                            <property name="checkable">
-                                                                <bool>true</bool>
-                                                            </property>
-                                                        </widget>
-                                                    </item>
-                                                    <item>
-                                                        <widget class="QPushButton" name="_ProxyHTTP1_0">
-                                                            <property name="minimumSize">
-                                                                <size>
-                                                                    <width>0</width>
-                                                                    <height>22</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="maximumSize">
-                                                                <size>
-                                                                    <width>16777215</width>
-                                                                    <height>22</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="text">
-                                                                <string/>
-                                                            </property>
-                                                            <property name="checkable">
-                                                                <bool>true</bool>
-                                                            </property>
-                                                        </widget>
-                                                    </item>
-                                                    <item>
-                                                        <widget class="QPushButton" name="_ProxyHTTPS">
-                                                            <property name="minimumSize">
-                                                                <size>
-                                                                    <width>0</width>
-                                                                    <height>22</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="maximumSize">
-                                                                <size>
-                                                                    <width>16777215</width>
-                                                                    <height>22</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="text">
-                                                                <string/>
-                                                            </property>
-                                                            <property name="checkable">
-                                                                <bool>true</bool>
-                                                            </property>
-                                                        </widget>
-                                                    </item>
-                                                    <item>
-                                                        <widget class="QPushButton" name="_ProxyHTTPS2">
-                                                            <property name="minimumSize">
-                                                                <size>
-                                                                    <width>0</width>
-                                                                    <height>22</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="maximumSize">
-                                                                <size>
-                                                                    <width>16777215</width>
-                                                                    <height>22</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="text">
-                                                                <string/>
-                                                            </property>
-                                                            <property name="checkable">
-                                                                <bool>true</bool>
-                                                            </property>
-                                                        </widget>
-                                                    </item>
-                                                    <item>
-                                                        <widget class="QPushButton" name="_ProxySOCKS4">
-                                                            <property name="minimumSize">
-                                                                <size>
-                                                                    <width>0</width>
-                                                                    <height>22</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="maximumSize">
-                                                                <size>
-                                                                    <width>16777215</width>
-                                                                    <height>22</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="text">
-                                                                <string/>
-                                                            </property>
-                                                            <property name="checkable">
-                                                                <bool>true</bool>
-                                                            </property>
-                                                        </widget>
-                                                    </item>
-                                                    <item>
-                                                        <widget class="QPushButton" name="_ProxySOCKS5">
-                                                            <property name="minimumSize">
-                                                                <size>
-                                                                    <width>0</width>
-                                                                    <height>22</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="maximumSize">
-                                                                <size>
-                                                                    <width>16777215</width>
-                                                                    <height>22</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="text">
-                                                                <string/>
-                                                            </property>
-                                                            <property name="checkable">
-                                                                <bool>true</bool>
-                                                            </property>
-                                                        </widget>
+                                                        </spacer>
                                                     </item>
                                                 </layout>
                                             </widget>

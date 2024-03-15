@@ -121,7 +121,7 @@ bool RaptorStarViewModel::setData(const QModelIndex& qIndex, const QVariant& qVa
     const auto item = qVariant.value<RaptorStarItem>();
     _Items.replace(qIndex.row(), item);
     Q_EMIT dataChanged(qIndex, qIndex);
-    return true;
+        return QAbstractTableModel::setData(qIndex, qVariant, qRole);
 }
 
 void RaptorStarViewModel::invokeHeaderSet(const QVector<QString>& qHeader)

@@ -23,9 +23,9 @@
 
 #include "RaptorTableViewDelegate.h"
 
-void RaptorTableViewDelegate::paint(QPainter* qPainter,
-                                    const QStyleOptionViewItem& qStyleOption,
-                                    const QModelIndex& qIndex) const
+void RaptorTableViewDelegate::paint(QPainter *qPainter,
+                                    const QStyleOptionViewItem &qStyleOption,
+                                    const QModelIndex &qIndex) const
 {
     QStyledItemDelegate::paint(qPainter, qStyleOption, qIndex);
     if (!qIndex.isValid())
@@ -40,50 +40,64 @@ void RaptorTableViewDelegate::paint(QPainter* qPainter,
             invokeIconPaint(qPainter,
                             qIndex.data(Qt::UserRole).value<RaptorFileItem>()._Icon,
                             qStyleOption.rect);
-        }
-        else if (qIndex.data(Qt::UserRole).canConvert<RaptorTransferItem>())
+        } else if (qIndex.data(Qt::UserRole).canConvert<RaptorTransferItem>())
         {
             invokeIconPaint(qPainter,
                             qIndex.data(Qt::UserRole).value<RaptorTransferItem>()._Icon,
                             qStyleOption.rect);
-        }
-        else if (qIndex.data(Qt::UserRole).canConvert<RaptorShareItem>())
+        } else if (qIndex.data(Qt::UserRole).canConvert<RaptorShareItem>())
         {
             invokeIconPaint(qPainter,
                             qIndex.data(Qt::UserRole).value<RaptorShareItem>()._Icon,
                             qStyleOption.rect);
-        }
-        else if (qIndex.data(Qt::UserRole).canConvert<RaptorStarItem>())
+        } else if (qIndex.data(Qt::UserRole).canConvert<RaptorStarItem>())
         {
             invokeIconPaint(qPainter,
                             qIndex.data(Qt::UserRole).value<RaptorStarItem>()._Icon,
                             qStyleOption.rect);
-        }
-        else if (qIndex.data(Qt::UserRole).canConvert<RaptorTrashItem>())
+        } else if (qIndex.data(Qt::UserRole).canConvert<RaptorTrashItem>())
         {
             invokeIconPaint(qPainter,
                             qIndex.data(Qt::UserRole).value<RaptorTrashItem>()._Icon,
                             qStyleOption.rect);
-        }
-        else if (qIndex.data(Qt::UserRole).canConvert<RaptorSettingItem>())
+        } else if (qIndex.data(Qt::UserRole).canConvert<RaptorSettingItem>())
         {
             invokeIconPaint(qPainter,
                             qIndex.data(Qt::UserRole).value<RaptorSettingItem>()._Icon,
+                            qStyleOption.rect);
+        } else if (qIndex.data(Qt::UserRole).canConvert<RaptorDeviceItem>())
+        {
+            invokeIconPaint(qPainter,
+                            RaptorUtil::invokeIconMatch("Device", false, true),
                             qStyleOption.rect);
         }
     }
 }
 
-QWidget* RaptorTableViewDelegate::createEditor(QWidget* qParent,
-                                               const QStyleOptionViewItem& qStyleOption,
-                                               const QModelIndex& qIndex) const
+QWidget *RaptorTableViewDelegate::createEditor(QWidget *qParent,
+                                               const QStyleOptionViewItem &qStyleOption,
+                                               const QModelIndex &qIndex) const
 {
+    // RaptorRename
+    if (qIndex.data(Qt::UserRole).canConvert<RaptorFileItem>())
+    {
+        if (qIndex.column() == 1)
+        {
+            const auto qLineEdit = new QLineEdit(qParent);
+            qLineEdit->setContextMenuPolicy(Qt::NoContextMenu);
+            qLineEdit->setObjectName("QCellEdit");
+            return qLineEdit;
+        }
+    }
+
+
     // RaptorSettingPage
     if (qIndex.data(Qt::UserRole).canConvert<RaptorSettingItem>())
     {
         if (qIndex.column() == 2)
         {
             const auto qLineEdit = new QLineEdit(qParent);
+            qLineEdit->setContextMenuPolicy(Qt::NoContextMenu);
             qLineEdit->setObjectName("QCellEdit");
             return qLineEdit;
         }
@@ -92,9 +106,9 @@ QWidget* RaptorTableViewDelegate::createEditor(QWidget* qParent,
     return QStyledItemDelegate::createEditor(qParent, qStyleOption, qIndex);
 }
 
-void RaptorTableViewDelegate::invokeIconPaint(QPainter* qPainter,
-                                              const QString& qIcon,
-                                              const QRect& qRect) const
+void RaptorTableViewDelegate::invokeIconPaint(QPainter *qPainter,
+                                              const QString &qIcon,
+                                              const QRect &qRect) const
 {
     if (qIcon.isNull())
     {

@@ -119,7 +119,7 @@ bool RaptorDownloadingViewModel::setData(const QModelIndex& qIndex, const QVaria
     const auto item = qVariant.value<RaptorTransferItem>();
     _Items.replace(qIndex.row(), item);
     Q_EMIT dataChanged(qIndex, qIndex);
-    return true;
+        return QAbstractTableModel::setData(qIndex, qVariant, qRole);
 }
 
 bool RaptorDownloadingViewModel::removeRow(int qRow, const QModelIndex& qIndex)

@@ -16,7 +16,7 @@
         <property name="styleSheet">
             <string notr="true"/>
         </property>
-        <layout class="QVBoxLayout" name="_PageVLayout">
+        <layout class="QVBoxLayout" name="_DownloadedPageLayout">
             <property name="spacing">
                 <number>0</number>
             </property>

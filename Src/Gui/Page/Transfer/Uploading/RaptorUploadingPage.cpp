@@ -107,8 +107,9 @@ void RaptorUploadingPage::invokeItemsCancel() const
         return;
     }
 
-    if (!RaptorMessageBox::invokeWarningEject(QStringLiteral("取消上传"),
-                                              QStringLiteral("即将取消上传所选文件。是否继续?")))
+    if (const auto qOperate = RaptorMessageBox::invokeWarningEject(QStringLiteral("取消上传"),
+                                              QStringLiteral("即将取消上传所选文件。是否继续?"));
+                                              qOperate == RaptorMessageBox::No)
     {
         return;
     }
@@ -153,7 +154,8 @@ void RaptorUploadingPage::invokeUiInit()
     _Ui->_ItemView->setItemDelegate(_ItemViewDelegate);
     _Ui->_ItemView->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_ItemView->horizontalHeader()->setFixedHeight(26);
-    _Ui->_ItemView->horizontalHeader()->setMinimumSectionSize(26);
+    _Ui->_ItemView->horizontalHeader()->setMinimumSectionSize(30);
+    _Ui->_ItemView->horizontalHeader()->setDefaultSectionSize(30);
     _Ui->_ItemView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
     _Ui->_ItemView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
     _Ui->_ItemView->verticalHeader()->setDefaultSectionSize(26);
@@ -359,6 +361,11 @@ void RaptorUploadingPage::onItemErrored(const QVariant& qVariant) const
 
 void RaptorUploadingPage::onItemViewClicked(const QModelIndex& qIndex) const
 {
+    if (!qIndex.isValid())
+    {
+        return;
+    }
+
     const auto item = qIndex.data(Qt::UserRole).value<RaptorTransferItem>();
     _Ui->_ItemCreated->setText(item._Created);
     _Ui->_ItemName->setText(item._Name);

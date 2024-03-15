@@ -83,7 +83,61 @@
                                         <property name="spacing">
                                             <number>12</number>
                                         </property>
-                                        <item row="2" column="0">
+                                        <item row="6" column="0">
+                                            <widget class="QLabel" name="_MinimizeToTrayTip">
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>0</width>
+                                                        <height>26</height>
+                                                    </size>
+                                                </property>
+                                                <property name="maximumSize">
+                                                    <size>
+                                                        <width>16777215</width>
+                                                        <height>26</height>
+                                                    </size>
+                                                </property>
+                                                <property name="text">
+                                                    <string/>
+                                                </property>
+                                                <property name="alignment">
+                                                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item row="7" column="1">
+                                            <spacer name="_UiPanelVSpacer">
+                                                <property name="orientation">
+                                                    <enum>Qt::Vertical</enum>
+                                                </property>
+                                                <property name="sizeHint" stdset="0">
+                                                    <size>
+                                                        <width>20</width>
+                                                        <height>40</height>
+                                                    </size>
+                                                </property>
+                                            </spacer>
+                                        </item>
+                                        <item row="1" column="1">
+                                            <widget class="QPushButton" name="_Font">
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>0</width>
+                                                        <height>26</height>
+                                                    </size>
+                                                </property>
+                                                <property name="maximumSize">
+                                                    <size>
+                                                        <width>16777215</width>
+                                                        <height>26</height>
+                                                    </size>
+                                                </property>
+                                                <property name="text">
+                                                    <string/>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item row="3" column="0">
                                             <widget class="QLabel" name="_AutoSignTip">
                                                 <property name="minimumSize">
                                                     <size>
@@ -127,21 +181,8 @@
                                                 </property>
                                             </widget>
                                         </item>
-                                        <item row="3" column="1">
-                                            <spacer name="_UiPanelVSpacer">
-                                                <property name="orientation">
-                                                    <enum>Qt::Vertical</enum>
-                                                </property>
-                                                <property name="sizeHint" stdset="0">
-                                                    <size>
-                                                        <width>20</width>
-                                                        <height>40</height>
-                                                    </size>
-                                                </property>
-                                            </spacer>
-                                        </item>
-                                        <item row="2" column="1">
-                                            <widget class="QCheckBox" name="_AutoSign">
+                                        <item row="5" column="1">
+                                            <widget class="QCheckBox" name="_TrayIcon">
                                                 <property name="minimumSize">
                                                     <size>
                                                         <width>0</width>
@@ -156,47 +197,6 @@
                                                 </property>
                                                 <property name="text">
                                                     <string/>
-                                                </property>
-                                            </widget>
-                                        </item>
-                                        <item row="1" column="1">
-                                            <widget class="QPushButton" name="_Font">
-                                                <property name="minimumSize">
-                                                    <size>
-                                                        <width>0</width>
-                                                        <height>26</height>
-                                                    </size>
-                                                </property>
-                                                <property name="maximumSize">
-                                                    <size>
-                                                        <width>16777215</width>
-                                                        <height>26</height>
-                                                    </size>
-                                                </property>
-                                                <property name="text">
-                                                    <string/>
-                                                </property>
-                                            </widget>
-                                        </item>
-                                        <item row="1" column="0">
-                                            <widget class="QLabel" name="_FontTip">
-                                                <property name="minimumSize">
-                                                    <size>
-                                                        <width>0</width>
-                                                        <height>26</height>
-                                                    </size>
-                                                </property>
-                                                <property name="maximumSize">
-                                                    <size>
-                                                        <width>16777215</width>
-                                                        <height>26</height>
-                                                    </size>
-                                                </property>
-                                                <property name="text">
-                                                    <string/>
-                                                </property>
-                                                <property name="alignment">
-                                                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                                                 </property>
                                             </widget>
                                         </item>
@@ -219,7 +219,7 @@
                                                         <number>2</number>
                                                     </property>
                                                     <item>
-                                                        <widget class="QPushButton" name="_ThemeSystem">
+                                                        <widget class="QPushButton" name="_ThemeAuto">
                                                             <property name="minimumSize">
                                                                 <size>
                                                                     <width>0</width>
@@ -285,6 +285,170 @@
                                                         </widget>
                                                     </item>
                                                 </layout>
+                                            </widget>
+                                        </item>
+                                        <item row="1" column="0">
+                                            <widget class="QLabel" name="_FontTip">
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>0</width>
+                                                        <height>26</height>
+                                                    </size>
+                                                </property>
+                                                <property name="maximumSize">
+                                                    <size>
+                                                        <width>16777215</width>
+                                                        <height>26</height>
+                                                    </size>
+                                                </property>
+                                                <property name="text">
+                                                    <string/>
+                                                </property>
+                                                <property name="alignment">
+                                                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item row="5" column="0">
+                                            <widget class="QLabel" name="_TrayIconTip">
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>0</width>
+                                                        <height>26</height>
+                                                    </size>
+                                                </property>
+                                                <property name="maximumSize">
+                                                    <size>
+                                                        <width>16777215</width>
+                                                        <height>26</height>
+                                                    </size>
+                                                </property>
+                                                <property name="text">
+                                                    <string/>
+                                                </property>
+                                                <property name="alignment">
+                                                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item row="4" column="1">
+                                            <widget class="QCheckBox" name="_ContextMenu">
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>0</width>
+                                                        <height>26</height>
+                                                    </size>
+                                                </property>
+                                                <property name="maximumSize">
+                                                    <size>
+                                                        <width>16777215</width>
+                                                        <height>26</height>
+                                                    </size>
+                                                </property>
+                                                <property name="text">
+                                                    <string/>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item row="4" column="0">
+                                            <widget class="QLabel" name="_ContextMenuTip">
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>0</width>
+                                                        <height>26</height>
+                                                    </size>
+                                                </property>
+                                                <property name="maximumSize">
+                                                    <size>
+                                                        <width>16777215</width>
+                                                        <height>26</height>
+                                                    </size>
+                                                </property>
+                                                <property name="text">
+                                                    <string/>
+                                                </property>
+                                                <property name="alignment">
+                                                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item row="6" column="1">
+                                            <widget class="QCheckBox" name="_MinimizeToTray">
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>0</width>
+                                                        <height>26</height>
+                                                    </size>
+                                                </property>
+                                                <property name="maximumSize">
+                                                    <size>
+                                                        <width>16777215</width>
+                                                        <height>26</height>
+                                                    </size>
+                                                </property>
+                                                <property name="text">
+                                                    <string/>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item row="3" column="1">
+                                            <widget class="QCheckBox" name="_AutoSign">
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>0</width>
+                                                        <height>26</height>
+                                                    </size>
+                                                </property>
+                                                <property name="maximumSize">
+                                                    <size>
+                                                        <width>16777215</width>
+                                                        <height>26</height>
+                                                    </size>
+                                                </property>
+                                                <property name="text">
+                                                    <string/>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item row="2" column="1">
+                                            <widget class="QCheckBox" name="_Notice">
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>0</width>
+                                                        <height>26</height>
+                                                    </size>
+                                                </property>
+                                                <property name="maximumSize">
+                                                    <size>
+                                                        <width>16777215</width>
+                                                        <height>26</height>
+                                                    </size>
+                                                </property>
+                                                <property name="text">
+                                                    <string/>
+                                                </property>
+                                            </widget>
+                                        </item>
+                                        <item row="2" column="0">
+                                            <widget class="QLabel" name="_NoticeTip">
+                                                <property name="minimumSize">
+                                                    <size>
+                                                        <width>0</width>
+                                                        <height>26</height>
+                                                    </size>
+                                                </property>
+                                                <property name="maximumSize">
+                                                    <size>
+                                                        <width>16777215</width>
+                                                        <height>26</height>
+                                                    </size>
+                                                </property>
+                                                <property name="text">
+                                                    <string/>
+                                                </property>
+                                                <property name="alignment">
+                                                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                                </property>
                                             </widget>
                                         </item>
                                     </layout>

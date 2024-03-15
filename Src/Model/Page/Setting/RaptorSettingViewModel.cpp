@@ -34,21 +34,21 @@ QVariant RaptorSettingViewModel::headerData(int qSection,
 
     switch (qRole)
     {
-    case Qt::DisplayRole:
-        if (qSection > 0 && qSection <= _Headers.length())
-        {
-            return _Headers[qSection - 1];
-        }
+        case Qt::DisplayRole:
+            if (qSection > 0 && qSection <= _Headers.length())
+            {
+                return _Headers[qSection - 1];
+            }
 
-        return QVariant();
-    case Qt::TextAlignmentRole:
-        return QVariant(Qt::AlignLeft | Qt::AlignVCenter);
-    default:
-        return QVariant();
+            return QVariant();
+        case Qt::TextAlignmentRole:
+            return QVariant(Qt::AlignLeft | Qt::AlignVCenter);
+        default:
+            return QVariant();
     }
 }
 
-int RaptorSettingViewModel::rowCount(const QModelIndex& qIndex) const
+int RaptorSettingViewModel::rowCount(const QModelIndex &qIndex) const
 {
     if (qIndex.isValid())
     {
@@ -58,7 +58,7 @@ int RaptorSettingViewModel::rowCount(const QModelIndex& qIndex) const
     return _Items.length();
 }
 
-int RaptorSettingViewModel::columnCount(const QModelIndex& qIndex) const
+int RaptorSettingViewModel::columnCount(const QModelIndex &qIndex) const
 {
     if (qIndex.isValid())
     {
@@ -68,7 +68,7 @@ int RaptorSettingViewModel::columnCount(const QModelIndex& qIndex) const
     return _ColumnCount;
 }
 
-QVariant RaptorSettingViewModel::data(const QModelIndex& qIndex, int qRole) const
+QVariant RaptorSettingViewModel::data(const QModelIndex &qIndex, int qRole) const
 {
     if (!qIndex.isValid())
     {
@@ -78,29 +78,29 @@ QVariant RaptorSettingViewModel::data(const QModelIndex& qIndex, int qRole) cons
     const auto item = _Items[qIndex.row()];
     switch (qRole)
     {
-    case Qt::UserRole:
-        return QVariant::fromValue<RaptorSettingItem>(item);
-    case Qt::DisplayRole:
-    case Qt::EditRole:
+        case Qt::UserRole:
+            return QVariant::fromValue<RaptorSettingItem>(item);
+        case Qt::DisplayRole:
+        case Qt::EditRole:
         {
             switch (qIndex.column())
             {
-            case 1:
-                return item._Name;
-            case 2:
-                return item._Path;
-            default:
-                return QVariant();
+                case 1:
+                    return item._Name;
+                case 2:
+                    return item._Path;
+                default:
+                    return QVariant();
             }
         }
-    case Qt::TextAlignmentRole:
-        return QVariant(Qt::AlignLeft | Qt::AlignVCenter);
-    default:
-        return QVariant();
+        case Qt::TextAlignmentRole:
+            return QVariant(Qt::AlignLeft | Qt::AlignVCenter);
+        default:
+            return QVariant();
     }
 }
 
-bool RaptorSettingViewModel::setData(const QModelIndex& qIndex, const QVariant& qVariant, int qRole)
+bool RaptorSettingViewModel::setData(const QModelIndex &qIndex, const QVariant &qVariant, int qRole)
 {
     if (!qIndex.isValid())
     {
@@ -148,10 +148,10 @@ bool RaptorSettingViewModel::setData(const QModelIndex& qIndex, const QVariant& 
     output._Data = QVariant::fromValue<QModelIndex>(qIndex);
     Q_EMIT itemEdited(QVariant::fromValue<RaptorOutput>(output));
     Q_EMIT dataChanged(qIndex, qIndex);
-    return true;
+    return QAbstractTableModel::setData(qIndex, qVariant, qRole);
 }
 
-bool RaptorSettingViewModel::removeRow(int qRow, const QModelIndex& qIndex)
+bool RaptorSettingViewModel::removeRow(int qRow, const QModelIndex &qIndex)
 {
     if (qRow < 0 || qRow > _Items.length())
     {
@@ -164,7 +164,7 @@ bool RaptorSettingViewModel::removeRow(int qRow, const QModelIndex& qIndex)
     return true;
 }
 
-Qt::ItemFlags RaptorSettingViewModel::flags(const QModelIndex& qIndex) const
+Qt::ItemFlags RaptorSettingViewModel::flags(const QModelIndex &qIndex) const
 {
     if (qIndex.column() == 2)
     {
@@ -174,24 +174,24 @@ Qt::ItemFlags RaptorSettingViewModel::flags(const QModelIndex& qIndex) const
     return QAbstractTableModel::flags(qIndex);
 }
 
-void RaptorSettingViewModel::invokeHeaderSet(const QVector<QString>& qHeader)
+void RaptorSettingViewModel::invokeHeaderSet(const QVector<QString> &qHeader)
 {
     _Headers = qHeader;
 }
 
-void RaptorSettingViewModel::invokeColumnCountSet(const quint16& qCount)
+void RaptorSettingViewModel::invokeColumnCountSet(const quint16 &qCount)
 {
     _ColumnCount = qCount;
 }
 
-void RaptorSettingViewModel::invokeItemAppend(const RaptorSettingItem& item)
+void RaptorSettingViewModel::invokeItemAppend(const RaptorSettingItem &item)
 {
     beginInsertRows(QModelIndex(), _Items.length(), _Items.length());
     _Items << item;
     endInsertRows();
 }
 
-void RaptorSettingViewModel::invokeItemsAppend(const QVector<RaptorSettingItem>& items)
+void RaptorSettingViewModel::invokeItemsAppend(const QVector<RaptorSettingItem> &items)
 {
     if (items.empty())
     {

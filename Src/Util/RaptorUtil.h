@@ -33,29 +33,18 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QLocale>
-#include <QPainter>
-#include <QPixmap>
 #include <QProcess>
 #include <QRandomGenerator>
 #include <QScreen>
 #include <QStandardItem>
+#include <QStyleHints>
 #include <QtMath>
 #include <QWidget>
 
-#if defined(STANDALONE)
-#include <dsa.h>
-#include <osrng.h>
-#include <hex.h>
-#include <eccrypto.h>
-#include <oids.h>
-#elif defined(INTEGRATED)
 #include <secp256k1.h>
-#endif
-
 #include <sass.h>
 
 #include "../Common/RaptorDeclare.h"
-#include "../Suite/Blur/RaptorBlurSuite.h"
 #include "../Suite/Setting/RaptorSettingSuite.h"
 #include "../Suite/Store/RaptorStoreSuite.h"
 #include "../Suite/Persistence/RaptorPersistenceSuite.h"
@@ -63,54 +52,59 @@
 class RaptorUtil Q_DECL_FINAL
 {
 public:
-    static QString invoke3rdPartyDownloaderEvoke(const QString& qUrl,
-                                                 const QString& qDir,
-                                                 const QString& qName);
+    static QString invoke3rdPartyDownloaderEvoke(const QString &qUrl,
+                                                 const QString &qDir,
+                                                 const QString &qName);
 
-    static QString invoke3rdPartyPlayerEvoke(const QString& qUrl);
+    static QString invoke3rdPartyPlayerEvoke(const QString &qUrl, const QString &qSub);
+
+    static QString invoke3rdPartyExcelEvoke(const QString &qUrl);
+
+    static QString invoke3rdPartyPowerPointEvoke(const QString &qUrl);
+
+    static QString invoke3rdPartyWordEvoke(const QString &qUrl);
+
+    static QString invoke3rdPartyPDFEvoke(const QString &qUrl);
 
     static QVector<QString> invokeFontLoad();
 
     static QQueue<RaptorTimelineItem> invokeTimelineLoad();
 
-    static QString invokeStyleSheetLoad(const QString& qValue);
+    static QString invokeStyleSheetLoad(const QString &qValue);
 
     static QString invokeCompileTimestampCompute();
 
     static QSize invokePrimaryDesktopGeometryCompute();
 
-    static QPixmap invokeShadowGenerate(const QSize& qSize,
-                                        const quint16& qMargin,
-                                        const quint16& qRadius,
-                                        const QColor& qColor);
-
-    static void invokeItemLocate(const QString& qPath);
+    static void invokeItemLocate(const QString &qPath);
 
     static bool invokeSystemDarkThemeConfirm();
 
-    static QString invokeIconMatch(const QString& qName,
-                                   const bool& qFolder = false,
-                                   const bool& qUi = false);
+    static QString invokeIconMatch(const QString &qName,
+                                   const bool &qFolder = false,
+                                   const bool &qUi = false);
 
-    static QString invoke1024SHA1Compute(const QString& qName);
+    static QString invoke1024SHA1Compute(const QString &qName);
 
-    static QString invokeSHA1Compute(const QString& qName);
+    static QString invokeSHA1Compute(const QString &qName);
 
-    static quint64 invokeChunkCompute(const quint64& qValue);
+    static quint64 invokeChunkCompute(const quint64 &qValue);
 
-    static QJsonArray invokeItemPartialCompute(const QString& qName);
+    static QJsonArray invokeItemPartialCompute(const QString &qName);
+
+    static QQueue<QPair<qint64, qint64> > invokeItemRangeCompute(const qint64 &qValue, const quint16& qCount);
 
     static QString invokeUUIDGenerate();
 
     static QString invokePasswordGenerate();
 
-    static RaptorSession invokeDeviceSignature(const RaptorAuthenticationItem& item);
+    static RaptorSession invokeDeviceSignature(const RaptorAuthenticationItem &item);
 
-    static QString invokeStorageUnitConvert(const qint64& qValue);
+    static QString invokeStorageUnitConvert(const qint64 &qValue);
 
-    static QString invokeTimeUnitConvert(const quint64& qValue);
+    static QString invokeTimeUnitConvert(const quint64 &qValue);
 
-    static QString invokeTimestampConvert(const quint64& qValue);
+    static QString invokeTimestampConvert(const quint64 &qValue);
 
 private:
     static inline QLocale _StorageUnitLocale;

@@ -440,11 +440,13 @@
                                                                 <number>0</number>
                                                             </property>
                                                             <item>
-                                                                <widget class="QWidget" name="_SpacePanel" native="true">
+                                                                <widget class="QWidget" name="_SpacePanel"
+                                                                        native="true">
                                                                     <property name="styleSheet">
                                                                         <string notr="true"/>
                                                                     </property>
-                                                                    <layout class="QHBoxLayout" name="_TypePanelHLayout">
+                                                                    <layout class="QHBoxLayout"
+                                                                            name="_TypePanelHLayout">
                                                                         <property name="spacing">
                                                                             <number>3</number>
                                                                         </property>
@@ -585,7 +587,8 @@
                                                                             </widget>
                                                                         </item>
                                                                         <item>
-                                                                            <widget class="RaptorIndicatorButton" name="_Space">
+                                                                            <widget class="RaptorIndicatorButton"
+                                                                                    name="_Space">
                                                                                 <property name="minimumSize">
                                                                                     <size>
                                                                                         <width>0</width>
@@ -619,7 +622,8 @@
                                                                             </widget>
                                                                         </item>
                                                                         <item>
-                                                                            <widget class="RaptorIndicatorButton" name="_Transfer">
+                                                                            <widget class="RaptorIndicatorButton"
+                                                                                    name="_Transfer">
                                                                                 <property name="minimumSize">
                                                                                     <size>
                                                                                         <width>0</width>
@@ -653,7 +657,8 @@
                                                                             </widget>
                                                                         </item>
                                                                         <item>
-                                                                            <widget class="RaptorIndicatorButton" name="_Share">
+                                                                            <widget class="RaptorIndicatorButton"
+                                                                                    name="_Share">
                                                                                 <property name="minimumSize">
                                                                                     <size>
                                                                                         <width>0</width>
@@ -684,7 +689,8 @@
                                                                             </widget>
                                                                         </item>
                                                                         <item>
-                                                                            <widget class="RaptorIndicatorButton" name="_Star">
+                                                                            <widget class="RaptorIndicatorButton"
+                                                                                    name="_Star">
                                                                                 <property name="minimumSize">
                                                                                     <size>
                                                                                         <width>0</width>
@@ -709,7 +715,8 @@
                                                                             </widget>
                                                                         </item>
                                                                         <item>
-                                                                            <widget class="RaptorIndicatorButton" name="_Trash">
+                                                                            <widget class="RaptorIndicatorButton"
+                                                                                    name="_Trash">
                                                                                 <property name="minimumSize">
                                                                                     <size>
                                                                                         <width>0</width>
@@ -759,11 +766,13 @@
                                                                 </widget>
                                                             </item>
                                                             <item>
-                                                                <widget class="QWidget" name="_ExtraPanel" native="true">
+                                                                <widget class="QWidget" name="_ExtraPanel"
+                                                                        native="true">
                                                                     <property name="styleSheet">
                                                                         <string notr="true"/>
                                                                     </property>
-                                                                    <layout class="QVBoxLayout" name="_ExtraPanelLayout">
+                                                                    <layout class="QVBoxLayout"
+                                                                            name="_ExtraPanelLayout">
                                                                         <property name="spacing">
                                                                             <number>6</number>
                                                                         </property>
@@ -780,7 +789,8 @@
                                                                             <number>10</number>
                                                                         </property>
                                                                         <item>
-                                                                            <widget class="QLabel" name="_ExtraPanelTip">
+                                                                            <widget class="QLabel"
+                                                                                    name="_ExtraPanelTip">
                                                                                 <property name="styleSheet">
                                                                                     <string notr="true"/>
                                                                                 </property>
@@ -790,7 +800,8 @@
                                                                             </widget>
                                                                         </item>
                                                                         <item>
-                                                                            <widget class="RaptorIndicatorButton" name="_Plus">
+                                                                            <widget class="RaptorIndicatorButton"
+                                                                                    name="_Plus">
                                                                                 <property name="minimumSize">
                                                                                     <size>
                                                                                         <width>0</width>
@@ -824,7 +835,8 @@
                                                                             </widget>
                                                                         </item>
                                                                         <item>
-                                                                            <widget class="RaptorIndicatorButton" name="_Story">
+                                                                            <widget class="RaptorIndicatorButton"
+                                                                                    name="_Story">
                                                                                 <property name="minimumSize">
                                                                                     <size>
                                                                                         <width>0</width>
@@ -849,7 +861,8 @@
                                                                             </widget>
                                                                         </item>
                                                                         <item>
-                                                                            <widget class="RaptorIndicatorButton" name="_Setting">
+                                                                            <widget class="RaptorIndicatorButton"
+                                                                                    name="_Setting">
                                                                                 <property name="minimumSize">
                                                                                     <size>
                                                                                         <width>0</width>
@@ -920,14 +933,16 @@
                                                                 <number>0</number>
                                                             </property>
                                                             <item>
-                                                                <widget class="QWidget" name="_ProfilePanel" native="true">
+                                                                <widget class="QWidget" name="_ProfilePanel"
+                                                                        native="true">
                                                                     <property name="minimumSize">
                                                                         <size>
                                                                             <width>0</width>
                                                                             <height>100</height>
                                                                         </size>
                                                                     </property>
-                                                                    <layout class="QVBoxLayout" name="_ProfilePanelVLayout">
+                                                                    <layout class="QVBoxLayout"
+                                                                            name="_ProfilePanelVLayout">
                                                                         <property name="spacing">
                                                                             <number>6</number>
                                                                         </property>
@@ -944,7 +959,8 @@
                                                                             <number>6</number>
                                                                         </property>
                                                                         <item>
-                                                                            <widget class="RaptorIndicatorButton" name="_Capacity">
+                                                                            <widget class="RaptorIndicatorButton"
+                                                                                    name="_Capacity">
                                                                                 <property name="minimumSize">
                                                                                     <size>
                                                                                         <width>0</width>
@@ -963,7 +979,8 @@
                                                                             </widget>
                                                                         </item>
                                                                         <item>
-                                                                            <widget class="RaptorIndicatorButton" name="_AlbumCapacity">
+                                                                            <widget class="RaptorIndicatorButton"
+                                                                                    name="_AlbumCapacity">
                                                                                 <property name="minimumSize">
                                                                                     <size>
                                                                                         <width>0</width>
@@ -982,7 +999,8 @@
                                                                             </widget>
                                                                         </item>
                                                                         <item>
-                                                                            <widget class="RaptorIndicatorButton" name="_NoteCapacity">
+                                                                            <widget class="RaptorIndicatorButton"
+                                                                                    name="_NoteCapacity">
                                                                                 <property name="minimumSize">
                                                                                     <size>
                                                                                         <width>0</width>
@@ -1001,7 +1019,8 @@
                                                                             </widget>
                                                                         </item>
                                                                         <item>
-                                                                            <widget class="RaptorIndicatorButton" name="_Meet">
+                                                                            <widget class="RaptorIndicatorButton"
+                                                                                    name="_Meet">
                                                                                 <property name="minimumSize">
                                                                                     <size>
                                                                                         <width>0</width>
@@ -1121,8 +1140,10 @@
                                                                 </widget>
                                                             </item>
                                                             <item>
-                                                                <widget class="QWidget" name="_PoweredPanel" native="true">
-                                                                    <layout class="QHBoxLayout" name="_PoweredPanelLayout">
+                                                                <widget class="QWidget" name="_PoweredPanel"
+                                                                        native="true">
+                                                                    <layout class="QHBoxLayout"
+                                                                            name="_PoweredPanelLayout">
                                                                         <property name="spacing">
                                                                             <number>0</number>
                                                                         </property>
@@ -1139,7 +1160,8 @@
                                                                             <number>0</number>
                                                                         </property>
                                                                         <item>
-                                                                            <widget class="QPushButton" name="_PoweredTip">
+                                                                            <widget class="QPushButton"
+                                                                                    name="_PoweredTip">
                                                                                 <property name="minimumSize">
                                                                                     <size>
                                                                                         <width>0</width>

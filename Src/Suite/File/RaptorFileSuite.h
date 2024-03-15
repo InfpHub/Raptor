@@ -38,50 +38,50 @@ class RaptorFileSuite Q_DECL_FINAL : public QObject
 public:
     using QObject::QObject;
 
-    static RaptorFileSuite* invokeSingletonGet();
+    static RaptorFileSuite *invokeSingletonGet();
 
-    static QVector<RaptorFileItem> invokeMapToItems(const QJsonArray& qArray);
+    static QVector<RaptorFileItem> invokeMapToItems(const QJsonArray &qArray);
 
-    static RaptorOutput invokeItemUrlFetch(const RaptorAuthenticationItem& item,
-                                           const QString& qId);
+    static QPair<QString, QString> invokeItemUrlFetch(const RaptorAuthenticationItem &item,
+                                           const QString &qId);
 
 Q_SIGNALS:
-    Q_SIGNAL void itemsFetched(const QVariant& qVariant) const;
+    Q_SIGNAL void itemsFetched(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemCreated(const QVariant& qVariant) const;
+    Q_SIGNAL void itemCreated(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemRenamed(const QVariant& qVariant) const;
+    Q_SIGNAL void itemsRenamed(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemUrlFetched(const QVariant& qVariant) const;
+    Q_SIGNAL void itemUrlFetched(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemRapided(const QVariant& qVariant) const;
+    Q_SIGNAL void itemRapided(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemsMoved(const QVariant& qVariant) const;
+    Q_SIGNAL void itemsMoved(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemsCopied(const QVariant& qVariant) const;
+    Q_SIGNAL void itemsCopied(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemContentFetched(const QVariant& qVariant) const;
+    Q_SIGNAL void itemContentFetched(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemPreviewPlayInfoFetched(const QVariant& qVariant) const;
+    Q_SIGNAL void itemVideoPreviewPlayInfoFetched(const QVariant &qVariant) const;
 
 public Q_SLOTS:
-    Q_SLOT void onItemsByParentIdFetching(const QVariant& qVariant) const;
+    Q_SLOT void onItemsByParentIdFetching(const QVariant &qVariant) const;
 
-    Q_SLOT void onItemsByIdFetching(const QVariant& qVariant) const;
+    Q_SLOT void onItemsByIdFetching(const QVariant &qVariant) const;
 
-    Q_SLOT void onItemsByConditionFetching(const QVariant& qVariant) const;
+    Q_SLOT void onItemsByConditionFetching(const QVariant &qVariant) const;
 
-    Q_SLOT void onItemCreating(const QVariant& qVariant) const;
+    Q_SLOT void onItemCreating(const QVariant &qVariant) const;
 
-    Q_SLOT void onItemRenaming(const QVariant& qVariant) const;
+    Q_SLOT void onItemsRenaming(const QVariant &qVariant) const;
 
-    Q_SLOT void onItemUrlFetching(const QVariant& qVariant) const;
+    Q_SLOT void onItemUrlFetching(const QVariant &qVariant) const;
 
-    Q_SLOT void onItemsMoving(const QVariant& qVariant) const;
+    Q_SLOT void onItemsMoving(const QVariant &qVariant) const;
 
-    Q_SLOT void onItemsCopying(const QVariant& qVariant) const;
+    Q_SLOT void onItemsCopying(const QVariant &qVariant) const;
 
-    Q_SLOT void onItemPreviewPlayInfoFetching(const QVariant& qVariant) const;
+    Q_SLOT void onItemVideoPreviewPlayInfoFetching(const QVariant &qVariant) const;
 };
 
 #endif // RAPTORFILESUITE_H

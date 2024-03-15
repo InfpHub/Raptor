@@ -25,12 +25,12 @@
 
 Q_GLOBAL_STATIC(RaptorShareSuite, _ShareSuite)
 
-RaptorShareSuite* RaptorShareSuite::invokeSingletonGet()
+RaptorShareSuite *RaptorShareSuite::invokeSingletonGet()
 {
     return _ShareSuite();
 }
 
-RaptorOutput RaptorShareSuite::invokeItemsByTokenFetching(const RaptorInput& input)
+std::tuple<QString, RaptorInput, QVector<RaptorFileItem> > RaptorShareSuite::invokeItemsByTokenFetching(const RaptorInput &input)
 {
     auto inpus = input;
     auto qHttpPayload = RaptorHttpPayload();
@@ -45,67 +45,60 @@ RaptorOutput RaptorShareSuite::invokeItemsByTokenFetching(const RaptorInput& inp
     qRow["order_direction"] = "DESC";
     qRow["marker"] = input._Marker;
     qHttpPayload._Body = QJsonDocument(qRow);
-    auto output = RaptorOutput();
+    auto items = QVector<RaptorFileItem>();
     const auto [qError, qStatus, qBody] = RaptorHttpSuite::invokePost(qHttpPayload);
     if (!qError.isEmpty())
     {
         qCritical() << qError;
-        output._State = false;
-        output._Message = qError;
-        return output;
+        return std::make_tuple(qError, input, items);
     }
 
     const auto qDocument = QJsonDocument::fromJson(qBody);
     if (qStatus != RaptorHttpStatus::OK)
     {
         qCritical() << qDocument.toJson();
-        output._State = false;
-        output._Message = QString("%1: %2").arg(qDocument["code"].toString(), qDocument["message"].toString());
-        return output;
+        return std::make_tuple(QString("%1: %2").arg(qDocument["code"].toString(), qDocument["message"].toString()), input, items);
     }
 
-    auto items = QVector<RaptorFileItem>();
     const auto itens = qDocument["items"].toArray();
     inpus._Marker = qDocument["next_marker"].toString();
-    for (auto iten : itens)
+    for (const auto &iten: itens)
     {
+        const auto iteo = iten.toObject();
         auto item = RaptorFileItem();
-        item._Id = iten["file_id"].toString();
-        item._Parent = iten["parent_file_id"].toString();
-        item._Name = iten["name"].toString();
-        item._Space = iten["drive_id"].toString();
-        item._Domain = iten["domain_id"].toString();
-        item._Extension = iten["file_extension"].toString();
-        item._Type = iten["type"].toString();
-        item._SHA1 = iten["content_hash"].toString();
-        item._Url = iten["url"].toString();
-        if (iten["type"].toString() == "file")
+        item._Id = iteo["file_id"].toString();
+        item._Parent = iteo["parent_file_id"].toString();
+        item._Name = iteo["name"].toString();
+        item._Space = iteo["drive_id"].toString();
+        item._Domain = iteo["domain_id"].toString();
+        item._Extension = iteo["file_extension"].toString();
+        item._Type = iteo["type"].toString();
+        item._SHA1 = iteo["content_hash"].toString();
+        item._Url = iteo["url"].toString();
+        if (iteo["type"].toString() == "file")
         {
-            const auto qSize = iten["size"].toVariant().toULongLong();
+            const auto qSize = iteo["size"].toVariant().toULongLong();
             item._Byte = qSize;
             item._Size = RaptorUtil::invokeStorageUnitConvert(qSize);
             item._Icon = RaptorUtil::invokeIconMatch("Share", false, true);
-        }
-        else
+        } else
         {
             item._Icon = RaptorUtil::invokeIconMatch(QString(), true);
         }
 
-        auto qCreated = QDateTime::fromString(iten["created_at"].toString(), "yyyy-MM-ddTHH:mm:ss.zzzZ");
+        auto qCreated = QDateTime::fromString(iteo["created_at"].toString(), "yyyy-MM-ddTHH:mm:ss.zzzZ");
         qCreated.setTimeSpec(Qt::UTC);
         item._Created = qCreated.toLocalTime().toString("yyyy-MM-dd hh:mm:ss");
-        auto qUpdated = QDateTime::fromString(iten["updated_at"].toString(), "yyyy-MM-ddTHH:mm:ss.zzzZ");
+        auto qUpdated = QDateTime::fromString(iteo["updated_at"].toString(), "yyyy-MM-ddTHH:mm:ss.zzzZ");
         qUpdated.setTimeSpec(Qt::UTC);
         item._Updated = qUpdated.toLocalTime().toString("yyyy-MM-dd hh:mm:ss");
         items << item;
     }
 
-    output._State = true;
-    output._Data = QVariant::fromValue<QPair<RaptorInput, QVector<RaptorFileItem>>>(qMakePair(inpus, items));
-    return output;
+    return std::make_tuple(QString(), inpus, items);
 }
 
-void RaptorShareSuite::onItemsFetching(const QVariant& qVariant) const
+void RaptorShareSuite::onItemsFetching(const QVariant &qVariant) const
 {
     const auto input = qVariant.value<RaptorInput>();
     auto qHttpPayload = RaptorHttpPayload();
@@ -116,33 +109,33 @@ void RaptorShareSuite::onItemsFetching(const QVariant& qVariant) const
     {
         if (!input._Type.isEmpty())
         {
-            qCondition = QStringLiteral(R"(status in ["%1"] and share_name_for_fuzzy match "%2")").arg(input._Type, input._Name);
-        }
-        else
+            qCondition = QStringLiteral(R"(status in ["%1"] and share_name_for_fuzzy match "%2")").arg(
+                input._Type, input._Name);
+        } else
         {
             if (input._Category.isEmpty())
             {
-                qCondition = QStringLiteral(R"(share_name_for_fuzzy match "%1" and expired_time < "%2")").arg(input._Name, QDateTime::currentDateTime().toUTC().toString("yyyy-MM-ddTHH:mm:ss"));
-            }
-            else
+                qCondition = QStringLiteral(R"(share_name_for_fuzzy match "%1" and expired_time < "%2")").arg(
+                    input._Name, QDateTime::currentDateTime().toUTC().toString("yyyy-MM-ddTHH:mm:ss"));
+            } else
             {
-                qCondition = QStringLiteral(R"(share_name_for_fuzzy match "%1" and expired_time = "1970-01-01T00:00:00")").arg(input._Type, input._Name);
+                qCondition = QStringLiteral(
+                    R"(share_name_for_fuzzy match "%1" and expired_time = "1970-01-01T00:00:00")").arg(
+                    input._Type, input._Name);
             }
         }
-    }
-    else
+    } else
     {
         if (!input._Type.isEmpty())
         {
             qCondition = QStringLiteral(R"(status in ["%1"])").arg(input._Type);
-        }
-        else
+        } else
         {
             if (input._Category.isEmpty())
             {
-                qCondition = QStringLiteral(R"(expired_time < "%1")").arg(QDateTime::currentDateTime().toUTC().toString("yyyy-MM-ddTHH:mm:ss"));
-            }
-            else
+                qCondition = QStringLiteral(R"(expired_time < "%1")").arg(
+                    QDateTime::currentDateTime().toUTC().toString("yyyy-MM-ddTHH:mm:ss"));
+            } else
             {
                 qCondition = QStringLiteral(R"(expired_time = "1970-01-01T00:00:00")");
             }
@@ -178,36 +171,37 @@ void RaptorShareSuite::onItemsFetching(const QVariant& qVariant) const
     auto items = QVector<RaptorShareItem>();
     const auto itens = qDocument["items"].toArray();
     const auto qMarker = qDocument["next_marker"].toString();
-    for (auto iten : itens)
+    for (const auto &iten: itens)
     {
+        const auto iteo = iten.toObject();
         auto item = RaptorShareItem();
-        item._Id = iten["share_id"].toString();
-        item._Name = iten["share_name"].toString();
-        item._Description = iten["description"].toString();
-        auto qCreated = QDateTime::fromString(iten["created_at"].toString(), "yyyy-MM-ddTHH:mm:ss.zzzZ");
+        item._Id = iteo["share_id"].toString();
+        item._Name = iteo["share_name"].toString();
+        item._Description = iteo["description"].toString();
+        auto qCreated = QDateTime::fromString(iteo["created_at"].toString(), "yyyy-MM-ddTHH:mm:ss.zzzZ");
         qCreated.setTimeSpec(Qt::UTC);
         item._Created = qCreated.toLocalTime().toString("yyyy-MM-dd hh:mm:ss");
-        auto qUpdated = QDateTime::fromString(iten["updated_at"].toString(), "yyyy-MM-ddTHH:mm:ss.zzzZ");
+        auto qUpdated = QDateTime::fromString(iteo["updated_at"].toString(), "yyyy-MM-ddTHH:mm:ss.zzzZ");
         qUpdated.setTimeSpec(Qt::UTC);
         item._Updated = qUpdated.toLocalTime().toString("yyyy-MM-dd hh:mm:ss");
-        auto qExpired = QDateTime::fromString(iten["expiration"].toString(), "yyyy-MM-ddTHH:mm:ss.zzzZ");
+        auto qExpired = QDateTime::fromString(iteo["expiration"].toString(), "yyyy-MM-ddTHH:mm:ss.zzzZ");
         qExpired.setTimeSpec(Qt::UTC);
         item._Expired = qExpired.toLocalTime().toString("yyyy-MM-dd hh:mm:ss");
-        item._Preview = iten["preview_count"].toVariant().toUInt();
-        item._Save = iten["save_count"].toVariant().toUInt();
-        item._Download = iten["download_count"].toVariant().toUInt();
-        item._Url = iten["share_url"].toString();
-        item._Password = iten["share_pwd"].toString();
+        item._Preview = iteo["preview_count"].toVariant().toUInt();
+        item._Save = iteo["save_count"].toVariant().toUInt();
+        item._Download = iteo["download_count"].toVariant().toUInt();
+        item._Url = iteo["share_url"].toString();
+        item._Password = iteo["share_pwd"].toString();
         item._Icon = RaptorUtil::invokeIconMatch("Share", false, true);
         items << item;
     }
 
     output._State = true;
-    output._Data = QVariant::fromValue<QPair<QVector<RaptorShareItem>, QString>>(qMakePair(items, qMarker));
+    output._Data = QVariant::fromValue<QPair<QVector<RaptorShareItem>, QString> >(qMakePair(items, qMarker));
     Q_EMIT itemsFetched(QVariant::fromValue<RaptorOutput>(output));
 }
 
-void RaptorShareSuite::onItemsExporting(const QVariant& qVariant) const
+void RaptorShareSuite::onItemsExporting(const QVariant &qVariant) const
 {
     const auto input = qVariant.value<RaptorInput>();
     auto qText = QString();
@@ -218,8 +212,7 @@ void RaptorShareSuite::onItemsExporting(const QVariant& qVariant) const
             item._Password.isEmpty())
         {
             qText.append(QStringLiteral("链接: %1").arg(item._Url));
-        }
-        else
+        } else
         {
             qText.append(QStringLiteral("链接: %1 提取码: %2").arg(item._Url, item._Password));
         }
@@ -236,13 +229,13 @@ void RaptorShareSuite::onItemsExporting(const QVariant& qVariant) const
     Q_EMIT itemsExported(QVariant::fromValue<RaptorOutput>(output));
 }
 
-void RaptorShareSuite::onItemsCancelling(const QVariant& qVariant) const
+void RaptorShareSuite::onItemsCancelling(const QVariant &qVariant) const
 {
     const auto input = qVariant.value<RaptorInput>();
     const auto qIndexList = input._Indexes;
     auto qCount = 0;
     auto qMessage = QString();
-    for (auto& qIndex : qIndexList)
+    for (auto &qIndex: qIndexList)
     {
         const auto item = qIndex.data(Qt::UserRole).value<RaptorShareItem>();
         auto qHttpPayload = RaptorHttpPayload();
@@ -285,7 +278,7 @@ void RaptorShareSuite::onItemsCancelling(const QVariant& qVariant) const
     Q_EMIT itemsCancelled(QVariant::fromValue<RaptorOutput>(output));
 }
 
-void RaptorShareSuite::onItemCreating(const QVariant& qVariant) const
+void RaptorShareSuite::onItemCreating(const QVariant &qVariant) const
 {
     auto input = qVariant.value<RaptorInput>();
     auto qHttpPayload = RaptorHttpPayload();
@@ -305,11 +298,11 @@ void RaptorShareSuite::onItemCreating(const QVariant& qVariant) const
                                  "yyyy-MM-ddTHH:mm:ss.zzzZ");
 
     auto qArray = QJsonArray();
-    for (auto& qIndex : qAsConst(input._Indexes))
+    for (const auto &qIndex: input._Indexes)
     {
         qArray << qIndex.data(Qt::UserRole).value<RaptorFileItem>()._Id;
     }
-    
+
     qRow["file_id_list"] = qArray;
     qHttpPayload._Body = QJsonDocument(qRow);
     auto output = RaptorOutput();
@@ -332,15 +325,13 @@ void RaptorShareSuite::onItemCreating(const QVariant& qVariant) const
         output._State = true;
         output._Data = QVariant::fromValue<RaptorInput>(input);
         Q_EMIT itemCreated(QVariant::fromValue<RaptorOutput>(output));
-    }
-    else if (qStatus == RaptorHttpStatus::Forbidden)
+    } else if (qStatus == RaptorHttpStatus::Forbidden)
     {
         qCritical() << qDocument.toJson();
         output._State = false;
         output._Message = qDocument["display_message"].toString();
         Q_EMIT itemCreated(QVariant::fromValue<RaptorOutput>(output));
-    }
-    else
+    } else
     {
         qCritical() << qDocument.toJson();
         output._State = false;
@@ -349,7 +340,7 @@ void RaptorShareSuite::onItemCreating(const QVariant& qVariant) const
     }
 }
 
-void RaptorShareSuite::onItemsRapidCreating(const QVariant& qVariant) const
+void RaptorShareSuite::onItemsRapidCreating(const QVariant &qVariant) const
 {
     const auto input = qVariant.value<RaptorInput>();
     const auto qIndexList = input._Indexes;
@@ -358,7 +349,7 @@ void RaptorShareSuite::onItemsRapidCreating(const QVariant& qVariant) const
     USE_HEADER_DEFAULT(qHttpPayload)
     auto qRow = QJsonObject();
     auto qArray = QJsonArray();
-    for (auto& qIndex : qIndexList)
+    for (auto &qIndex: qIndexList)
     {
         const auto item = qIndex.data(Qt::UserRole).value<RaptorFileItem>();
         auto qDocument = QJsonObject();
@@ -428,31 +419,32 @@ void RaptorShareSuite::onItemsRapidFetching() const
 
     auto items = QVector<RaptorShareItem>();
     const auto itens = qDocument["items"].toArray();
-    for (auto iten : itens)
+    for (const auto &iten: itens)
     {
+        const auto iteo = iten.toObject();
         auto item = RaptorShareItem();
-        item._Id = iten["share_id"].toString();
-        item._Name = iten["share_name"].toString();
-        auto qCreated = QDateTime::fromString(iten["created_at"].toString(), "yyyy-MM-ddTHH:mm:ss.zzzZ");
+        item._Id = iteo["share_id"].toString();
+        item._Name = iteo["share_name"].toString();
+        auto qCreated = QDateTime::fromString(iteo["created_at"].toString(), "yyyy-MM-ddTHH:mm:ss.zzzZ");
         qCreated.setTimeSpec(Qt::UTC);
         item._Created = qCreated.toLocalTime().toString("yyyy-MM-dd hh:mm:ss");
-        auto qUpdated = QDateTime::fromString(iten["updated_at"].toString(), "yyyy-MM-ddTHH:mm:ss.zzzZ");
+        auto qUpdated = QDateTime::fromString(iteo["updated_at"].toString(), "yyyy-MM-ddTHH:mm:ss.zzzZ");
         qUpdated.setTimeSpec(Qt::UTC);
         item._Updated = qUpdated.toLocalTime().toString("yyyy-MM-dd hh:mm:ss");
-        auto qExpired = QDateTime::fromString(iten["expiration"].toString(), "yyyy-MM-ddTHH:mm:ss.zzzZ");
+        auto qExpired = QDateTime::fromString(iteo["expiration"].toString(), "yyyy-MM-ddTHH:mm:ss.zzzZ");
         qExpired.setTimeSpec(Qt::UTC);
         item._Expired = qExpired.toLocalTime().toString("yyyy-MM-dd hh:mm:ss");
-        item._Url = iten["share_url"].toString();
+        item._Url = iteo["share_url"].toString();
         item._Icon = RaptorUtil::invokeIconMatch("Share", false, true);
         items << item;
     }
 
     output._State = true;
-    output._Data = QVariant::fromValue<QPair<QVector<RaptorShareItem>, QString>>(qMakePair(items, QString{}));
+    output._Data = QVariant::fromValue<QPair<QVector<RaptorShareItem>, QString> >(qMakePair(items, QString{}));
     Q_EMIT itemsFetched(QVariant::fromValue<RaptorOutput>(output));
 }
 
-void RaptorShareSuite::onItemRapidImporting(const QVariant& qVariant) const
+void RaptorShareSuite::onItemRapidImporting(const QVariant &qVariant) const
 {
     const auto input = qVariant.value<RaptorInput>();
     const auto qId = input._Link.right(20);
@@ -516,7 +508,7 @@ void RaptorShareSuite::onItemRapidImporting(const QVariant& qVariant) const
     Q_EMIT itemsRapidImported(QVariant::fromValue<RaptorOutput>(output));
 }
 
-void RaptorShareSuite::onItemParsing(const QVariant& qVariant) const
+void RaptorShareSuite::onItemParsing(const QVariant &qVariant) const
 {
     const auto input = qVariant.value<RaptorInput>();
     const auto qId = input._Link.right(11);
@@ -586,27 +578,32 @@ void RaptorShareSuite::onItemParsing(const QVariant& qVariant) const
     auto inpus = RaptorInput();
     inpus._Id = qId;
     inpus._Token = qDocumenu["share_token"].toString();
-    const auto [_State, _Message, _Data] = invokeItemsByTokenFetching(inpus);
-    if (!_State)
+    inpus._Parent = input._Parent.isEmpty() ? "root" : input._Parent;
+    const auto [qErrot, inpuu, items] = invokeItemsByTokenFetching(inpus);
+    if (!qErrot.isEmpty())
     {
-        qCritical() << _Message;
         output._State = false;
-        output._Message = _Message;
+        output._Message = qErrot;
         Q_EMIT itemParsed(QVariant::fromValue<RaptorOutput>(output));
         return;
     }
 
     output._State = true;
-    output._Data = _Data;
+    output._Data = QVariant::fromValue<QPair<RaptorInput, QVector<RaptorFileItem> > >(qMakePair(inpuu, items));
     Q_EMIT itemParsed(QVariant::fromValue<RaptorOutput>(output));
 }
 
-void RaptorShareSuite::onItemsByParentIdFetching(const QVariant& qVariant) const
+void RaptorShareSuite::onItemsByParentIdFetching(const QVariant &qVariant) const
 {
-    Q_EMIT itemParsed(QVariant::fromValue<RaptorOutput>(invokeItemsByTokenFetching(qVariant.value<RaptorInput>())));
+    const auto [qError, input, items] = invokeItemsByTokenFetching(qVariant.value<RaptorInput>());
+    auto output = RaptorOutput();
+    output._State = qError.isEmpty();
+    output._Message = qError;
+    output._Data = QVariant::fromValue<QPair<RaptorInput, QVector<RaptorFileItem> > >(qMakePair(input, items));
+    Q_EMIT itemParsed(QVariant::fromValue<>(output));
 }
 
-void RaptorShareSuite::onItemImporting(const QVariant& qVariant) const
+void RaptorShareSuite::onItemImporting(const QVariant &qVariant) const
 {
     const auto input = qVariant.value<RaptorInput>();
     const auto qId = input._Link.right(11);
@@ -635,7 +632,7 @@ void RaptorShareSuite::onItemImporting(const QVariant& qVariant) const
     }
 
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/v3/batch";
+    qHttpPayload._Url = "https://api.aliyundrive.com/adrive/v4/batch";
     USE_HEADER_DEFAULT(qHttpPayload)
     USE_HEADER_X_SHARE_TOKEN(qHttpPayload, input._Token)
     auto qRow = QJsonObject();

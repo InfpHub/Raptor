@@ -77,10 +77,7 @@ void RaptorAboutPage::invokeInstanceInit()
 void RaptorAboutPage::invokeUiInit()
 {
     _Ui->_ApplicationName->setText(APPLICATION_NAME);
-    _Ui->_ApplicationVersion->setText(QStringLiteral("%1.%2.%3")
-                                      .arg(MAJOR_VERSION)
-                                      .arg(MINOR_VERSION)
-                                      .arg(PATCH_VERSION));
+    _Ui->_ApplicationVersion->setText(QStringLiteral("%1.%2.%3").arg(QString::number(MAJOR_VERSION), QString::number(MINOR_VERSION), QString::number(PATCH_VERSION)));
     _Ui->_MetaSignature->setText(QStringLiteral("尽最大努力，将最好的献给最需要的你。"));
     _Ui->_Avatar->installEventFilter(this);
 
@@ -93,7 +90,8 @@ void RaptorAboutPage::invokeUiInit()
     _Ui->_ThanksCurl->invokeContributorSet(qMakePair(RaptorUtil::invokeIconMatch("Curl", false, true), QStringLiteral("https://curl.se")));
     _Ui->_ThanksSass->invokeContributorSet(qMakePair(RaptorUtil::invokeIconMatch("Sass", false, true), QStringLiteral("https://sass-lang.com")));
     _Ui->_ThanksSECP256K1->invokeContributorSet(qMakePair(RaptorUtil::invokeIconMatch("SECP256K1", false, true), QStringLiteral("https://bitcoincore.org")));
-    _Ui->_ThanksCryptroPP->invokeContributorSet(qMakePair(RaptorUtil::invokeIconMatch("Crypto++", false, true), QStringLiteral("https://www.cryptopp.com")));
+    _Ui->_ThanksUV->invokeContributorSet(qMakePair(RaptorUtil::invokeIconMatch("UV", false, true), QStringLiteral("https://libuv.org")));
+    _Ui->_ThanksYaml->invokeContributorSet(qMakePair(RaptorUtil::invokeIconMatch("Yaml", false, true), QStringLiteral("https://github.com/jbeder/yaml-cpp")));
     _Ui->_ThanksZInt->invokeContributorSet(qMakePair(RaptorUtil::invokeIconMatch("ZInt", false, true), QStringLiteral("https://www.zint.org.uk")));
 
     _Ui->_TimelineTip->setText(QStringLiteral("发行历史"));
@@ -132,10 +130,15 @@ void RaptorAboutPage::invokeSlotInit() const
             this,
             &RaptorAboutPage::onThanksSECP256K1Clicked);
 
-    connect(_Ui->_ThanksCryptroPP,
+    connect(_Ui->_ThanksYaml,
             &QPushButton::clicked,
             this,
-            &RaptorAboutPage::onThanksCryptoPPClicked);
+            &RaptorAboutPage::onThanksYamlClicked);
+
+    connect(_Ui->_ThanksUV,
+            &QPushButton::clicked,
+            this,
+            &RaptorAboutPage::onThanksUVClicked);
 
     connect(_Ui->_ThanksZInt,
             &QPushButton::clicked,
@@ -195,6 +198,18 @@ void RaptorAboutPage::onItemAccessTokenRefreshed(const QVariant& qVariant)
     }
 }
 
+void RaptorAboutPage::onItemSignInInfoFetched(const QVariant &qVariant) const
+{
+    const auto [_State, _Message, _Data] = qVariant.value<RaptorOutput>();
+    if (!_State)
+    {
+        return;
+    }
+
+    const auto qBlessing = _Data.value<QString>();
+    _Ui->_MetaSignature->setText(qBlessing);
+}
+
 void RaptorAboutPage::onItemLogouting(const QVariant& qVariant)
 {
     const auto input = qVariant.value<RaptorInput>();
@@ -218,6 +233,16 @@ void RaptorAboutPage::onThanksCurlClicked() const
     QDesktopServices::openUrl(QUrl(_Ui->_ThanksCurl->invokeContributorGet().second));
 }
 
+void RaptorAboutPage::onThanksUVClicked() const
+{
+    QDesktopServices::openUrl(QUrl(_Ui->_ThanksUV->invokeContributorGet().second));
+}
+
+void RaptorAboutPage::onThanksYamlClicked() const
+{
+    QDesktopServices::openUrl(QUrl(_Ui->_ThanksYaml->invokeContributorGet().second));
+}
+
 void RaptorAboutPage::onThanksSassClicked() const
 {
     QDesktopServices::openUrl(QUrl(_Ui->_ThanksSass->invokeContributorGet().second));
@@ -226,11 +251,6 @@ void RaptorAboutPage::onThanksSassClicked() const
 void RaptorAboutPage::onThanksSECP256K1Clicked() const
 {
     QDesktopServices::openUrl(QUrl(_Ui->_ThanksSECP256K1->invokeContributorGet().second));
-}
-
-void RaptorAboutPage::onThanksCryptoPPClicked() const
-{
-    QDesktopServices::openUrl(QUrl(_Ui->_ThanksCryptroPP->invokeContributorGet().second));
 }
 
 void RaptorAboutPage::onThanksZIntClicked() const

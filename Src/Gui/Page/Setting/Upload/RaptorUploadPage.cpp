@@ -24,7 +24,7 @@
 #include "RaptorUploadPage.h"
 #include "ui_RaptorUploadPage.h"
 
-RaptorUploadPage::RaptorUploadPage(QWidget* qParent) : QWidget(qParent),
+RaptorUploadPage::RaptorUploadPage(QWidget *qParent) : QWidget(qParent),
                                                        _Ui(new Ui::RaptorUploadPage)
 {
     _Ui->setupUi(this);
@@ -40,14 +40,14 @@ RaptorUploadPage::~RaptorUploadPage()
 
 void RaptorUploadPage::invokeInstanceInit()
 {
-    _FilterDelegate = new RaptorTableViewDelegate(this);
-    _FilterHeader = new RaptorTableViewHeader(Qt::Horizontal, _Ui->_FilterView);
-    _FilterHeader->invokeIconSet(RaptorUtil::invokeIconMatch("Legend", false, true));
-    _FilterModel = new RaptorSettingViewModel(this);
+    _FilterViewDelegate = new RaptorTableViewDelegate(this);
+    _FilterViewHeader = new RaptorTableViewHeader(Qt::Horizontal, _Ui->_FilterView);
+    _FilterViewHeader->invokeIconSet(RaptorUtil::invokeIconMatch("Legend", false, true));
+    _FilterViewModel = new RaptorSettingViewModel(this);
     auto qHeader = QVector<QString>();
     qHeader << QStringLiteral("名称");
-    _FilterModel->invokeHeaderSet(qHeader);
-    _FilterModel->invokeColumnCountSet(2);
+    _FilterViewModel->invokeHeaderSet(qHeader);
+    _FilterViewModel->invokeColumnCountSet(2);
     _DebounceTimer = new QTimer(this);
     _DebounceTimer->setSingleShot(true);
     _DebounceTimer->setInterval(1350);
@@ -56,12 +56,13 @@ void RaptorUploadPage::invokeInstanceInit()
 void RaptorUploadPage::invokeUiInit() const
 {
     _Ui->_FilterTip->setText(QStringLiteral("过滤:"));
-    _Ui->_FilterView->setModel(_FilterModel);
-    _Ui->_FilterView->setHorizontalHeader(_FilterHeader);
-    _Ui->_FilterView->setItemDelegate(_FilterDelegate);
+    _Ui->_FilterView->setModel(_FilterViewModel);
+    _Ui->_FilterView->setHorizontalHeader(_FilterViewHeader);
+    _Ui->_FilterView->setItemDelegate(_FilterViewDelegate);
     _Ui->_FilterView->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_FilterView->horizontalHeader()->setFixedHeight(26);
-    _Ui->_FilterView->horizontalHeader()->setMinimumSectionSize(26);
+    _Ui->_FilterView->horizontalHeader()->setMinimumSectionSize(30);
+    _Ui->_FilterView->horizontalHeader()->setDefaultSectionSize(30);
     _Ui->_FilterView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
     _Ui->_FilterView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
     _Ui->_FilterView->verticalHeader()->setDefaultSectionSize(26);
@@ -70,12 +71,12 @@ void RaptorUploadPage::invokeUiInit() const
     _Ui->_FilterView->setColumnWidth(0, 30);
     _Ui->_FilterView->setSelectionBehavior(QAbstractItemView::SelectRows);
     const auto qEngines = RaptorSettingSuite::invokeItemFind(Setting::Section::Upload,
-                                                             Setting::Upload::Filter).value<QVector<QString>>();
-    for (auto& qEngine : qEngines)
+                                                             Setting::Upload::Filter).value<QVector<QString> >();
+    for (auto &qEngine: qEngines)
     {
         auto item = RaptorSettingItem();
         item._Name = qEngine;
-        _FilterModel->invokeItemAppend(item);
+        _FilterViewModel->invokeItemAppend(item);
     }
 
     _Ui->_FilterNameTip->setText(QStringLiteral("名称:"));
@@ -84,11 +85,11 @@ void RaptorUploadPage::invokeUiInit() const
     _Ui->_FilterRemove->setText(QStringLiteral("移除"));
     _Ui->_FilterClear->setText(QStringLiteral("清空"));
     _Ui->_FilterMessageTip->setText(QStringLiteral("消息:"));
-    _Ui->_SkipRapidTip->setText(QStringLiteral("跳过秒传"));
+    _Ui->_SkipRapidTip->setText(QStringLiteral("跳过秒传:"));
     _Ui->_SkipNoRapid->setChecked(RaptorSettingSuite::invokeItemFind(Setting::Section::Upload,
                                                                      Setting::Upload::SkipNoRapid).toBool());
     _Ui->_SkipNoRapid->setText(QStringLiteral("跳过无法秒传的文件"));
-    _Ui->_ConcurrentTip->setText(QStringLiteral("并发"));
+    _Ui->_ConcurrentTip->setText(QStringLiteral("并发:"));
     _Ui->_ConcurrentSlider->setValue(RaptorSettingSuite::invokeItemFind(Setting::Section::Upload,
                                                                         Setting::Upload::Concurrent).toInt());
     _Ui->_Concurrent->setText(RaptorSettingSuite::invokeItemFind(Setting::Section::Upload,
@@ -129,11 +130,13 @@ void RaptorUploadPage::onFilterAddClicked() const
     const auto qText = _Ui->_FilterName->text();
     if (qText.isEmpty())
     {
+        RaptorToast::invokeWarningEject(QStringLiteral("过滤名称不能为空!"));
         return;
     }
-    for (auto i = 0; i < _FilterModel->rowCount(); ++i)
+
+    for (auto i = 0; i < _FilterViewModel->rowCount(); ++i)
     {
-        if (const auto iten = _FilterModel->index(i, 0).data(Qt::UserRole).value<RaptorSettingItem>();
+        if (const auto iten = _FilterViewModel->index(i, 0).data(Qt::UserRole).value<RaptorSettingItem>();
             qText == iten._Name)
         {
             RaptorToast::invokeWarningEject(QStringLiteral("过滤规则 %1 已存在!").arg(qText));
@@ -143,12 +146,14 @@ void RaptorUploadPage::onFilterAddClicked() const
 
     auto item = RaptorSettingItem();
     item._Name = qText;
-    _FilterModel->invokeItemAppend(item);
+    _FilterViewModel->invokeItemAppend(item);
     auto items = RaptorSettingSuite::invokeItemFind(Setting::Section::Upload,
-                                                    Setting::Upload::Filter).value<QVector<QString>>();
+                                                    Setting::Upload::Filter).value<QVector<QString> >();
     items << qText;
     _DebounceTimer->setProperty(Setting::Upload::Filter,
-                                QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Upload, QVariant::fromValue<QVector<QString>>(items))));
+                                QVariant::fromValue<QPair<QString, QVariant> >(
+                                    qMakePair(Setting::Section::Upload,
+                                              QVariant::fromValue<QVector<QString> >(items))));
     _DebounceTimer->start();
 }
 
@@ -163,57 +168,68 @@ void RaptorUploadPage::onFilterRemoveClicked() const
 
     const auto qIndex = qIndexList[0];
     const auto item = qIndex.data(Qt::UserRole).value<RaptorSettingItem>();
-    if (!RaptorMessageBox::invokeWarningEject(QStringLiteral("移除过滤规则"),
-                                              QStringLiteral(R"("即将移除过滤规则 <span style="color: #00A4FF;">%1</span>，是否继续?")").arg(item._Name)))
+    if (const auto qOperate = RaptorMessageBox::invokeWarningEject(QStringLiteral("移除过滤规则"),
+                                                                   QStringLiteral(R"(即将移除过滤规则 %1，是否继续？)").arg(
+                                                                       QString(INFORMATION_TEMPLATE).arg(
+                                                                           item._Name)));
+        qOperate == RaptorMessageBox::No)
     {
         return;
     }
-    _FilterModel->removeRow(qIndex.row());
+
+    _FilterViewModel->removeRow(qIndex.row());
     _Ui->_FilterView->viewport()->update();
     auto items = RaptorSettingSuite::invokeItemFind(Setting::Section::Upload,
-                                                    Setting::Upload::Filter).value<QVector<QString>>();
+                                                    Setting::Upload::Filter).value<QVector<QString> >();
     items.removeOne(item._Name);
     _DebounceTimer->setProperty(Setting::Upload::Filter,
-                                QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Upload, QVariant::fromValue<QVector<QString>>(items))));
+                                QVariant::fromValue<QPair<QString, QVariant> >(
+                                    qMakePair(Setting::Section::Upload,
+                                              QVariant::fromValue<QVector<QString> >(items))));
     _DebounceTimer->start();
 }
 
 void RaptorUploadPage::onFilterClearClicked() const
 {
-    if (!RaptorMessageBox::invokeWarningEject(QStringLiteral("清空过滤规则"),
-                                              QStringLiteral("即将清空所有上传过滤规则，是否继续?")))
+    if (const auto qOperate = RaptorMessageBox::invokeWarningEject(QStringLiteral("清空过滤规则"),
+                                                                   QStringLiteral("即将清空所有上传过滤规则，是否继续?"));
+        qOperate == RaptorMessageBox::No)
     {
         return;
     }
 
-    _FilterModel->invokeItemsClear();
+    _FilterViewModel->invokeItemsClear();
     _Ui->_FilterView->viewport()->update();
     _DebounceTimer->setProperty(Setting::Upload::Filter,
-                                QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Upload, QVariant::fromValue<QVector<QString>>(QVector<QString>{}))));
+                                QVariant::fromValue<QPair<QString, QVariant> >(qMakePair(
+                                    Setting::Section::Upload,
+                                    QVariant::fromValue<QVector<QString> >(QVector<QString>{}))));
     _DebounceTimer->start();
 }
 
-void RaptorUploadPage::onSkipNoRapidStateChanged(const int& qState) const
+void RaptorUploadPage::onSkipNoRapidStateChanged(const int &qState) const
 {
     if (qState == Qt::Checked)
     {
         _DebounceTimer->setProperty(Setting::Upload::SkipNoRapid,
-                                    QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Upload, QVariant::fromValue<bool>(true))));
-    }
-    else if (qState == Qt::Unchecked)
+                                    QVariant::fromValue<QPair<QString, QVariant> >(
+                                        qMakePair(Setting::Section::Upload, QVariant::fromValue<bool>(true))));
+    } else if (qState == Qt::Unchecked)
     {
         _DebounceTimer->setProperty(Setting::Upload::SkipNoRapid,
-                                    QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Upload, QVariant::fromValue<bool>(false))));
+                                    QVariant::fromValue<QPair<QString, QVariant> >(
+                                        qMakePair(Setting::Section::Upload, QVariant::fromValue<bool>(false))));
     }
 
     _DebounceTimer->start();
 }
 
-void RaptorUploadPage::onConcurrentSliderValueChanged(const int& qValue) const
+void RaptorUploadPage::onConcurrentSliderValueChanged(const int &qValue) const
 {
     _Ui->_Concurrent->setText(QString::number(qValue));
     _DebounceTimer->setProperty(Setting::Upload::Concurrent,
-                                QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Upload, QVariant::fromValue<int>(qValue))));
+                                QVariant::fromValue<QPair<QString, QVariant> >(
+                                    qMakePair(Setting::Section::Upload, QVariant::fromValue<int>(qValue))));
 
     _DebounceTimer->start();
 }

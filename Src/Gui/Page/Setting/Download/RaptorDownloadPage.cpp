@@ -24,7 +24,7 @@
 #include "RaptorDownloadPage.h"
 #include "ui_RaptorDownloadPage.h"
 
-RaptorDownloadPage::RaptorDownloadPage(QWidget* qParent) : QWidget(qParent),
+RaptorDownloadPage::RaptorDownloadPage(QWidget *qParent) : QWidget(qParent),
                                                            _Ui(new Ui::RaptorDownloadPage)
 {
     _Ui->setupUi(this);
@@ -61,7 +61,8 @@ void RaptorDownloadPage::invokeUiInit() const
     _Ui->_EngineView->setItemDelegate(_EngineViewDelegate);
     _Ui->_EngineView->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_EngineView->horizontalHeader()->setFixedHeight(26);
-    _Ui->_EngineView->horizontalHeader()->setMinimumSectionSize(26);
+    _Ui->_EngineView->horizontalHeader()->setMinimumSectionSize(30);
+    _Ui->_EngineView->horizontalHeader()->setDefaultSectionSize(30);
     _Ui->_EngineView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
     _Ui->_EngineView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Fixed);
     _Ui->_EngineView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
@@ -74,7 +75,8 @@ void RaptorDownloadPage::invokeUiInit() const
     _Ui->_EngineView->setSelectionMode(QAbstractItemView::SingleSelection);
     _Ui->_EngineView->setSelectionBehavior(QAbstractItemView::SelectRows);
     const auto qEngines = RaptorSettingSuite::invokeItemFind(Setting::Section::Download,
-                                                             Setting::Download::Engine).value<QVector<RaptorSettingItem>>();
+                                                             Setting::Download::Engine).value<QVector<
+        RaptorSettingItem> >();
     const auto qEngine = RaptorSettingSuite::invokeItemFind(Setting::Section::Download,
                                                             Setting::Download::ActiveEngine).toString();
     for (auto i = 0; i < qEngines.length(); ++i)
@@ -106,7 +108,7 @@ void RaptorDownloadPage::invokeUiInit() const
     _Ui->_SkipViolation->setText(QStringLiteral("跳过违规文件"));
     _Ui->_AutoRename->setChecked(RaptorSettingSuite::invokeItemFind(Setting::Section::Download,
                                                                     Setting::Download::AutoRename).toBool());
-    _Ui->_ConcurrentTip->setText(QStringLiteral("并发"));
+    _Ui->_ConcurrentTip->setText(QStringLiteral("并发:"));
     _Ui->_ConcurrentSlider->setValue(RaptorSettingSuite::invokeItemFind(Setting::Section::Download,
                                                                         Setting::Download::Concurrent).toInt());
     _Ui->_Concurrent->setText(RaptorSettingSuite::invokeItemFind(Setting::Section::Download,
@@ -164,14 +166,14 @@ void RaptorDownloadPage::invokeSlotInit() const
 void RaptorDownloadPage::onDebounceTimerTimeout() const
 {
     const auto items = _DebounceTimer->dynamicPropertyNames();
-    for (auto& item : items)
+    for (auto &item: items)
     {
-        const auto qPair = _DebounceTimer->property(item).value<QPair<QString, QVariant>>();
-        RaptorSettingSuite::invokeItemSave(qPair.first, item, qPair.second);
+        const auto [qKey, qValue] = _DebounceTimer->property(item).value<QPair<QString, QVariant> >();
+        RaptorSettingSuite::invokeItemSave(qKey, item, qValue);
     }
 }
 
-void RaptorDownloadPage::onEngineViewModelItemEdited(const QVariant& qVariant) const
+void RaptorDownloadPage::onEngineViewModelItemEdited(const QVariant &qVariant) const
 {
     const auto [_State, _Message, _Data] = qVariant.value<RaptorOutput>();
     if (!_State)
@@ -182,8 +184,8 @@ void RaptorDownloadPage::onEngineViewModelItemEdited(const QVariant& qVariant) c
 
     const auto item = _Data.value<QModelIndex>().data(Qt::UserRole).value<RaptorSettingItem>();
     auto qEngines = RaptorSettingSuite::invokeItemFind(Setting::Section::Download,
-                                                       Setting::Play::Engine).value<QVector<RaptorSettingItem>>();
-    for (auto& iten : qEngines)
+                                                       Setting::Video::Engine).value<QVector<RaptorSettingItem> >();
+    for (auto &iten: qEngines)
     {
         if (iten._Name == item._Name)
         {
@@ -192,14 +194,15 @@ void RaptorDownloadPage::onEngineViewModelItemEdited(const QVariant& qVariant) c
         }
     }
 
-    _DebounceTimer->setProperty(Setting::Download::Engine, QVariant::fromValue<QPair<QString, QVariant>>(
+    _DebounceTimer->setProperty(Setting::Download::Engine, QVariant::fromValue<QPair<QString, QVariant> >(
                                     qMakePair(Setting::Section::Download,
-                                              QVariant::fromValue<QVector<RaptorSettingItem>>(qEngines))));
+                                              QVariant::fromValue<QVector<RaptorSettingItem> >(qEngines))));
     _DebounceTimer->start();
-    RaptorToast::invokeSuccessEject(QStringLiteral("引擎 %1 已更新!").arg(QStringLiteral(CREATIVE_TEMPLATE).arg(item._Name)));
+    RaptorToast::invokeSuccessEject(
+        QStringLiteral("引擎 %1 已更新!").arg(QString(CREATIVE_TEMPLATE).arg(item._Name)));
 }
 
-void RaptorDownloadPage::onEngineViewDoubleClicked(const QModelIndex& qIndex) const
+void RaptorDownloadPage::onEngineViewDoubleClicked(const QModelIndex &qIndex) const
 {
     if (qIndex.column() == 2)
     {
@@ -207,21 +210,26 @@ void RaptorDownloadPage::onEngineViewDoubleClicked(const QModelIndex& qIndex) co
     }
 
     const auto item = qIndex.data(Qt::UserRole).value<RaptorSettingItem>();
-    if (!RaptorMessageBox::invokeInformationEject(QStringLiteral("切换第三方下载引擎"),
-                                                  QStringLiteral(R"(即将切换第三方下载引擎到 %1，是否继续?)").arg(INFORMATION_TEMPLATE).arg(item._Name)))
+    if (const auto qOperate = RaptorMessageBox::invokeInformationEject(QStringLiteral("切换第三方下载引擎"),
+                                                                       QStringLiteral(R"(即将切换第三方下载引擎到 %1，是否继续?)").arg(
+                                                                           QString(INFORMATION_TEMPLATE).arg(
+                                                                               item._Name)));
+        qOperate == RaptorMessageBox::No)
     {
         return;
     }
 
     _Ui->_EngineView->setCurrentIndex(qIndex);
     _DebounceTimer->setProperty(Setting::Download::ActiveEngine,
-                                QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Download, QVariant::fromValue<QString>(item._Name))));
+                                QVariant::fromValue<QPair<QString, QVariant> >(
+                                    qMakePair(Setting::Section::Download, QVariant::fromValue<QString>(item._Name))));
     _DebounceTimer->start();
 }
 
 void RaptorDownloadPage::onPathSelectClicked() const
 {
-    const auto qPath = QFileDialog::getExistingDirectory(RaptorStoreSuite::invokeWorldGet(), QStringLiteral("选择默认下载路径"), qApp->applicationDirPath());
+    const auto qPath = QFileDialog::getExistingDirectory(RaptorStoreSuite::invokeWorldGet(), QStringLiteral("选择默认下载路径"),
+                                                         qApp->applicationDirPath());
     if (qPath.isEmpty())
     {
         return;
@@ -229,79 +237,85 @@ void RaptorDownloadPage::onPathSelectClicked() const
 
     _Ui->_Path->setText(qPath);
     _DebounceTimer->setProperty(Setting::Download::Path,
-                                QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Download, QVariant::fromValue<QString>(qPath))));
+                                QVariant::fromValue<QPair<QString, QVariant> >(
+                                    qMakePair(Setting::Section::Download, QVariant::fromValue<QString>(qPath))));
     _DebounceTimer->start();
 }
 
-void RaptorDownloadPage::onDefaultPathStateChanged(const int& qState) const
+void RaptorDownloadPage::onDefaultPathStateChanged(const int &qState) const
 {
     if (qState == Qt::Checked)
     {
         _DebounceTimer->setProperty(Setting::Download::DefaultPath,
-                                    QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Download, QVariant::fromValue<bool>(true))));
-    }
-    else if (qState == Qt::Unchecked)
+                                    QVariant::fromValue<QPair<QString, QVariant> >(
+                                        qMakePair(Setting::Section::Download, QVariant::fromValue<bool>(true))));
+    } else if (qState == Qt::Unchecked)
     {
         _DebounceTimer->setProperty(Setting::Download::DefaultPath,
-                                    QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Download, QVariant::fromValue<bool>(false))));
+                                    QVariant::fromValue<QPair<QString, QVariant> >(
+                                        qMakePair(Setting::Section::Download, QVariant::fromValue<bool>(false))));
     }
 
     _DebounceTimer->start();
 }
 
-void RaptorDownloadPage::onFullPathStateChanged(const int& qState) const
+void RaptorDownloadPage::onFullPathStateChanged(const int &qState) const
 {
     if (qState == Qt::Checked)
     {
         _DebounceTimer->setProperty(Setting::Download::FullPath,
-                                    QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Download, QVariant::fromValue<bool>(true))));
-    }
-    else if (qState == Qt::Unchecked)
+                                    QVariant::fromValue<QPair<QString, QVariant> >(
+                                        qMakePair(Setting::Section::Download, QVariant::fromValue<bool>(true))));
+    } else if (qState == Qt::Unchecked)
     {
         _DebounceTimer->setProperty(Setting::Download::FullPath,
-                                    QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Download, QVariant::fromValue<bool>(false))));
+                                    QVariant::fromValue<QPair<QString, QVariant> >(
+                                        qMakePair(Setting::Section::Download, QVariant::fromValue<bool>(false))));
     }
 
     _DebounceTimer->start();
 }
 
-void RaptorDownloadPage::onSkipViolationStateChanged(const int& qState) const
+void RaptorDownloadPage::onSkipViolationStateChanged(const int &qState) const
 {
     if (qState == Qt::Checked)
     {
         _DebounceTimer->setProperty(Setting::Download::SkipViolation,
-                                    QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Download, QVariant::fromValue<bool>(true))));
-    }
-    else if (qState == Qt::Unchecked)
+                                    QVariant::fromValue<QPair<QString, QVariant> >(
+                                        qMakePair(Setting::Section::Download, QVariant::fromValue<bool>(true))));
+    } else if (qState == Qt::Unchecked)
     {
         _DebounceTimer->setProperty(Setting::Download::SkipViolation,
-                                    QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Download, QVariant::fromValue<bool>(false))));
+                                    QVariant::fromValue<QPair<QString, QVariant> >(
+                                        qMakePair(Setting::Section::Download, QVariant::fromValue<bool>(false))));
     }
 
     _DebounceTimer->start();
 }
 
-void RaptorDownloadPage::onAutoRenameStateChanged(const int& qState) const
+void RaptorDownloadPage::onAutoRenameStateChanged(const int &qState) const
 {
     if (qState == Qt::Checked)
     {
         _DebounceTimer->setProperty(Setting::Download::AutoRename,
-                                    QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Download, QVariant::fromValue<bool>(true))));
-    }
-    else if (qState == Qt::Unchecked)
+                                    QVariant::fromValue<QPair<QString, QVariant> >(
+                                        qMakePair(Setting::Section::Download, QVariant::fromValue<bool>(true))));
+    } else if (qState == Qt::Unchecked)
     {
         _DebounceTimer->setProperty(Setting::Download::AutoRename,
-                                    QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Download, QVariant::fromValue<bool>(false))));
+                                    QVariant::fromValue<QPair<QString, QVariant> >(
+                                        qMakePair(Setting::Section::Download, QVariant::fromValue<bool>(false))));
     }
 
     _DebounceTimer->start();
 }
 
-void RaptorDownloadPage::onConcurrentSliderValueChanged(const int& qValue) const
+void RaptorDownloadPage::onConcurrentSliderValueChanged(const int &qValue) const
 {
     _Ui->_Concurrent->setText(QString::number(qValue));
     _DebounceTimer->setProperty(Setting::Download::Concurrent,
-                                QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Download, QVariant::fromValue<int>(qValue))));
+                                QVariant::fromValue<QPair<QString, QVariant> >(
+                                    qMakePair(Setting::Section::Download, QVariant::fromValue<int>(qValue))));
 
     _DebounceTimer->start();
 }

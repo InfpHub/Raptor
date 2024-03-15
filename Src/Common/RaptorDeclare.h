@@ -83,6 +83,20 @@ struct RaptorCapacity
 
 Q_DECLARE_METATYPE(RaptorCapacity)
 
+struct RaptorSignIn
+{
+    QString _LeafId;
+    QString _Goods;
+
+    [[nodiscard]]
+    bool invokeItemSignInConfirm() const
+    {
+        return !_LeafId.isEmpty();
+    }
+};
+
+Q_DECLARE_METATYPE(RaptorSignIn)
+
 enum RaptorSpace
 {
     Private,
@@ -90,6 +104,15 @@ enum RaptorSpace
 };
 
 Q_DECLARE_METATYPE(RaptorSpace)
+
+struct RaptorDeviceItem
+{
+    QString _Name;
+    QString _City;
+    QString _Logined;
+};
+
+Q_DECLARE_METATYPE(RaptorDeviceItem)
 
 struct RaptorAuthenticationItem
 {
@@ -105,18 +128,21 @@ struct RaptorAuthenticationItem
     QString _RefreshToken;
     RaptorSession _Session;
     RaptorCapacity _Capacity;
+    RaptorSignIn _SignIn;
     bool _Active;
+    bool _VIP;
 
-    bool operator==(const RaptorAuthenticationItem& item) const
+    bool operator==(const RaptorAuthenticationItem &item) const
     {
         return _LeafId == item._LeafId;
     }
 
-    bool operator!=(const RaptorAuthenticationItem& item) const
+    bool operator!=(const RaptorAuthenticationItem &item) const
     {
         return _LeafId != item._LeafId;
     }
 
+    [[nodiscard]]
     bool isEmpty() const
     {
         return _LeafId.isEmpty();
@@ -143,6 +169,7 @@ struct RaptorInput
     quint16 _Preview = 0;
     quint16 _Save = 0;
     quint16 _Download = 0;
+    quint16 _Parallel = 1;
     quint64 _Speed = 0;
     QString _Space;
     QString _Link;
@@ -168,6 +195,7 @@ struct RaptorFileItem
     QString _Icon;
     QString _Parent;
     QString _Name;
+    QString _Dir;
     QString _Space;
     QString _Domain;
     QString _Extension;
@@ -181,7 +209,7 @@ struct RaptorFileItem
     bool _Starred;
     QString _Mime;
 
-    bool operator==(const RaptorFileItem& item) const
+    bool operator==(const RaptorFileItem &item) const
     {
         return _Id == item._Id;
     }
@@ -191,8 +219,26 @@ Q_DECLARE_METATYPE(RaptorFileItem)
 
 struct RaptorPartial
 {
+    QString _LeafId;
     quint16 _Number;
     QString _Url;
+    qint64 _Offset = 0;
+    qint64 _End = 0;
+    qint64 _Transferred = 0;
+    QString _Name;
+    QString _Path;
+    qint64 _Speed;
+    qint64 _ETR;
+
+    bool operator==(const RaptorPartial &item) const
+    {
+        return _LeafId == item._LeafId;
+    }
+
+    bool operator!=(const RaptorPartial &item) const
+    {
+        return _LeafId == item._LeafId;
+    }
 };
 
 Q_DECLARE_METATYPE(RaptorPartial)
@@ -215,20 +261,20 @@ struct RaptorTransferItem
     QString _Type;
     QString _Status;
     quint64 _Byte = 0;
-    quint64 _Transferred = 0;
+    qint64 _Transferred = 0;
+    quint16 _Parallel;
     QString _Url;
-    quint64 _Offset = 0;
-    quint64 _End = 0;
     quint64 _Limit = 0;
     QString _ETR;
     bool _Rapid;
     QQueue<RaptorPartial> _Partials;
 
-    bool operator==(const RaptorTransferItem& item) const
+    bool operator==(const RaptorTransferItem &item) const
     {
         return _LeafId == item._LeafId;
     }
 
+    [[nodiscard]]
     bool isEmpty() const
     {
         return _LeafId.isEmpty();
@@ -304,7 +350,7 @@ struct RaptorSettingItem
     QString _Name;
     QString _Path;
 
-    bool operator==(const RaptorSettingItem& item) const
+    bool operator==(const RaptorSettingItem &item) const
     {
         return _Name == item._Name;
     }

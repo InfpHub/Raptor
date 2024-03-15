@@ -61,7 +61,7 @@ void RaptorUpload::invokeEject(const QVariant &qVariant)
     _Variant = qVariant;
     _Ui->_Title->setText(
         QStringLiteral("上传文件到 %1").arg(
-            QStringLiteral(CREATIVE_TEMPLATE).arg(_Variant.value<QPair<QString, QString> >().second)));
+            QString(CREATIVE_TEMPLATE).arg(_Variant.value<QPair<QString, QString> >().second)));
     RaptorEject::invokeEject();
 }
 
@@ -82,10 +82,6 @@ void RaptorUpload::invokeUiInit()
 {
     RaptorEject::invokeUiInit();
     installEventFilter(this);
-    invokeCloseCallbackSet([=]() -> void
-    {
-        onClearClicked();
-    });
     _Ui->_Close->setIcon(QIcon(RaptorUtil::invokeIconMatch("Close", false, true)));
     _Ui->_Close->setIconSize(QSize(10, 10));
     _Ui->_Splitter->setStretchFactor(0, 9);
@@ -95,7 +91,8 @@ void RaptorUpload::invokeUiInit()
     _Ui->_ItemView->setItemDelegate(_ItemViewDelegate);
     _Ui->_ItemView->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_ItemView->horizontalHeader()->setFixedHeight(26);
-    _Ui->_ItemView->horizontalHeader()->setMinimumSectionSize(26);
+    _Ui->_ItemView->horizontalHeader()->setMinimumSectionSize(30);
+    _Ui->_ItemView->horizontalHeader()->setDefaultSectionSize(30);
     _Ui->_ItemView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
     _Ui->_ItemView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
     _Ui->_ItemView->verticalHeader()->setDefaultSectionSize(26);
@@ -121,6 +118,10 @@ void RaptorUpload::invokeUiInit()
 void RaptorUpload::invokeSlotInit()
 {
     RaptorEject::invokeSlotInit();
+    invokeCloseCallbackSet([=]() -> void
+    {
+        onClearClicked();
+    });
     connect(_Ui->_Close,
             &QPushButton::clicked,
             this,
@@ -183,6 +184,11 @@ void RaptorUpload::onCloseClicked()
 
 void RaptorUpload::onItemViewClicked(const QModelIndex &qIndex) const
 {
+    if (!qIndex.isValid())
+    {
+        return;
+    }
+
     const auto item = qIndex.data(Qt::UserRole).value<RaptorTransferItem>();
     _Ui->_ItemName->setText(item._Name);
     _Ui->_ItemPath->setText(item._Path);

@@ -38,6 +38,11 @@ RaptorFAQPage::~RaptorFAQPage()
 
 void RaptorFAQPage::invokeUiInit() const
 {
+    if (!_Ui->_FAQ->text().isEmpty())
+    {
+        return;
+    }
+
     if (auto qFile = QFile("./Store/Story/FAQ.html");
         qFile.open(QIODevice::ReadOnly))
     {

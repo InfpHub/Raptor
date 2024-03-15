@@ -41,7 +41,7 @@ class RaptorAuthenticationSuite Q_DECL_FINAL : public QObject
 public :
     explicit RaptorAuthenticationSuite();
 
-    static RaptorAuthenticationSuite* invokeSingletonGet();
+    static RaptorAuthenticationSuite *invokeSingletonGet();
 
     Q_INVOKABLE void invokeStop() const;
 
@@ -50,63 +50,66 @@ private:
 
     void invokeSlotInit() const;
 
-    static void invokeItemDelete(const QString& qId);
+    static void invokeItemDelete(const QString &qId);
 
     static QPair<QString, RaptorAuthenticationItem> invokeItemByActiveFind();
 
-    static void invokeItemSave(const RaptorAuthenticationItem& item);
+    static void invokeItemSave(const RaptorAuthenticationItem &item);
 
-    static void invokeItemUpdate(const RaptorAuthenticationItem& item);
+    static void invokeItemUpdate(const RaptorAuthenticationItem &item);
 
-    QString invokeItemAccessTokenRefresh(RaptorAuthenticationItem& item) const;
+    QString invokeItemAccessTokenRefresh(RaptorAuthenticationItem &item) const;
 
-    static RaptorOutput invokeSessionInit(const RaptorAuthenticationItem& item);
+    static QPair<QString, RaptorSession> invokeSessionInit(const RaptorAuthenticationItem &item);
 
-    static QString invokeItemDetailFetch(RaptorAuthenticationItem& item,
-                                         const QString& qUrl);
+    static QString invokeItemDetailFetch(RaptorAuthenticationItem &item,
+                                         const QString &qUrl);
 
-    static QString invokeItemCapacityFetch(RaptorAuthenticationItem& item);
-
+    static QString invokeItemCapacityFetch(RaptorAuthenticationItem &item);
 
 Q_SIGNALS:
-    Q_SIGNAL void itemsLoaded(const QVariant& qVariant) const;
+    Q_SIGNAL void itemsLoaded(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemLogouted(const QVariant& qVariant) const;
+    Q_SIGNAL void itemLogouted(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemSwitched(const QVariant& qVariant) const;
+    Q_SIGNAL void itemSwitched(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemCapacityRefreshed(const QVariant& qVariant) const;
+    Q_SIGNAL void itemCapacityRefreshed(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemQrCodeGenerated(const QVariant& qVariant) const;
+    Q_SIGNAL void itemQrCodeGenerated(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemQrCodeStatusFetched(const QVariant& qVariant) const;
+    Q_SIGNAL void itemQrCodeStatusFetched(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemAccessTokenRefreshed(const QVariant& qVariant) const;
+    Q_SIGNAL void itemAccessTokenRefreshed(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemsAccessTokenRefreshed(const QVariant& qVariant) const;
+    Q_SIGNAL void itemsAccessTokenRefreshed(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemSignInConfirmed(const QVariant& qVariant) const;
+    Q_SIGNAL void itemDevicesFetched(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemSignedIn(const QVariant& qVariant) const;
+    Q_SIGNAL void itemSignInInfoFetched(const QVariant &qVariant) const;
+
+    Q_SIGNAL void itemSignedIn(const QVariant &qVariant) const;
 
 public Q_SLOTS:
     Q_SLOT void onItemsLoading() const;
 
-    Q_SLOT void onItemLogouting(const QVariant& qVariant) const;
+    Q_SLOT void onItemLogouting(const QVariant &qVariant) const;
 
-    Q_SLOT void onItemSwitching(const QVariant& qVariant) const;
+    Q_SLOT void onItemSwitching(const QVariant &qVariant) const;
 
     Q_SLOT void onItemCapacityRefreshing() const;
 
     Q_SLOT void onItemQrCodeGenerating() const;
 
-    Q_SLOT void onItemQrCodeStatusFetching(const QVariant& qVariant) const;
+    Q_SLOT void onItemQrCodeStatusFetching(const QVariant &qVariant) const;
 
     Q_SLOT void onItemAccessTokenRefreshing() const;
 
-    Q_SLOT void onItemsAccessTokenRefreshing(const QVariant& qVariant) const;
+    Q_SLOT void onItemsAccessTokenRefreshing(const QVariant &qVariant) const;
 
-    Q_SLOT void onItemSignInConfirming() const;
+    Q_SLOT void onItemDevicesFetching() const;
+
+    Q_SLOT void onItemSignInInfoFetching() const;
 
     Q_SLOT void onItemSigningIn() const;
 
@@ -116,8 +119,8 @@ private Q_SLOTS:
     Q_SLOT void onItemAccessTokenTimerTimeout() const;
 
 private:
-    QTimer* _ItemSessionTimer = Q_NULLPTR;
-    QTimer* _ItemAccessTokenTimer = Q_NULLPTR;
+    QTimer *_ItemSessionTimer = Q_NULLPTR;
+    QTimer *_ItemAccessTokenTimer = Q_NULLPTR;
 };
 
 #endif // RAPTORAUTHENTICATIONSUITE_H

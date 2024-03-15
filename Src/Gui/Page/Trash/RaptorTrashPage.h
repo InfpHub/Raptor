@@ -30,6 +30,7 @@
 #include "../../Eject/MessageBox/RaptorMessageBox.h"
 #include "../../Eject/Toast/RaptorToast.h"
 #include "../../../Component/Loading/RaptorLoading.h"
+#include "../../../Component/Menu/RaptorMenu.h"
 #include "../../../Component/TableView/RaptorTableView.h"
 #include "../../../Delegate/Page/Common/RaptorTableViewDelegate.h"
 #include "../../../Header/Page/Common/RaptorTableViewHeader.h"
@@ -74,7 +75,7 @@ Q_SIGNALS:
 
     Q_SIGNAL void itemsDeleting(const QVariant& qVariant) const;
 
-    Q_SIGNAL void itemsRestoring(const QVariant& qVariant) const;
+    Q_SIGNAL void itemsRecovering(const QVariant& qVariant) const;
 
     Q_SIGNAL void itemsClearing() const;
 
@@ -91,7 +92,7 @@ public Q_SLOTS:
 
     Q_SLOT void onItemsFetched(const QVariant& qVariant);
 
-    Q_SLOT void onItemsRestored(const QVariant& qVariant) const;
+    Q_SLOT void onItemsRecovered(const QVariant& qVariant) const;
 
     Q_SLOT void onItemsDeleted(const QVariant& qVariant) const;
 
@@ -100,7 +101,7 @@ public Q_SLOTS:
 private Q_SLOTS:
     Q_SLOT void onLoadingStateChanged(const RaptorLoading::State& state) const;
 
-    Q_SLOT void onRestoreClicked() const;
+    Q_SLOT void onRecoverClicked() const;
 
     Q_SLOT void onDeleteClicked() const;
 
@@ -112,6 +113,8 @@ private Q_SLOTS:
 
     Q_SLOT void onItemViewClicked(const QModelIndex& qIndex) const;
 
+    Q_SLOT void onItemViewCustomContextMenuRequested(const QPoint &qPoint) const;
+
     Q_SLOT void onItemViewSelectionChanged(const QItemSelection& qSelected,
                                            const QItemSelection& qDeselected) const;
 
@@ -119,6 +122,7 @@ private Q_SLOTS:
 
 private:
     Ui::RaptorTrashPage* _Ui = Q_NULLPTR;
+    RaptorMenu *_ItemViewContextMenu = Q_NULLPTR;
     RaptorTableViewDelegate* _ItemViewDelegate = Q_NULLPTR;
     RaptorTableViewHeader* _ItemViewHeader = Q_NULLPTR;
     RaptorTrashViewModel* _ItemViewModel = Q_NULLPTR;

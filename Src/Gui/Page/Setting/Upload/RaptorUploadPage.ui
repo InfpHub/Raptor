@@ -163,7 +163,8 @@
                                                         </widget>
                                                     </item>
                                                     <item>
-                                                        <widget class="QWidget" name="_FilterControlPanel" native="true">
+                                                        <widget class="QWidget" name="_FilterControlPanel"
+                                                                native="true">
                                                             <layout class="QGridLayout" name="_ItemControlPanelLayout">
                                                                 <property name="leftMargin">
                                                                     <number>0</number>

@@ -53,6 +53,7 @@ public:
 
     bool eventFilter(QObject* qObject, QEvent* qEvent) Q_DECL_OVERRIDE;
 
+    [[nodiscard]]
     QModelIndexList invokeSelectItemsGet() const;
 
     void invokeItemsPause() const;

@@ -24,7 +24,7 @@
 #include "RaptorWorld.h"
 #include "ui_RaptorWorld.h"
 
-RaptorWorld::RaptorWorld(QWidget* qParent) : QWidget(qParent),
+RaptorWorld::RaptorWorld(QWidget *qParent) : QWidget(qParent),
                                              _Ui(new Ui::RaptorWorld),
                                              _Maximized(false),
                                              _MousePressed(false)
@@ -35,32 +35,75 @@ RaptorWorld::RaptorWorld(QWidget* qParent) : QWidget(qParent),
     invokeSlotInit();
 }
 
-bool RaptorWorld::eventFilter(QObject* qObject, QEvent* qEvent)
+bool RaptorWorld::eventFilter(QObject *qObject, QEvent *qEvent)
 {
     if (qObject == this)
     {
         // 关闭事件拦截
         if (qEvent->type() == QEvent::Close)
         {
-            if (const auto qCloseEvent = static_cast<QCloseEvent*>(qEvent); windowOpacity() == 0.)
+            if (const auto qCloseEvent = static_cast<QCloseEvent *>(qEvent);
+                windowOpacity() == 0.)
             {
                 qCloseEvent->accept();
-            }
-            else
+            } else
             {
-                if (RaptorMessageBox::invokeWarningEject(QStringLiteral("退出 %1").arg(APPLICATION_NAME),
-                                                         QStringLiteral("即将退出 %1。是否继续?").arg(APPLICATION_NAME)))
+                auto qOperate = RaptorMessageBox::Nothing;
+                const auto qTrayState = RaptorSettingSuite::invokeItemFind(Setting::Section::Ui,
+                                                                           Setting::Ui::TrayIcon).toBool() &&
+                                        RaptorSettingSuite::invokeItemFind(Setting::Section::Ui,
+                                                                           Setting::Ui::MinimizeToTray).toBool();
+                if (qTrayState)
                 {
-                    RaptorStoreSuite::invokeEngineStateSet(false);
-                    QMetaObject::invokeMethod(RaptorStoreSuite::invokeEngineGet(),
-                                              "invokeStop",
-                                              Qt::AutoConnection);
-                    qCloseEvent->ignore();
-                    _CloseAnimation->setStartValue(1);
-                    _CloseAnimation->setEndValue(0);
-                    _CloseAnimation->setDuration(350);
-                    _CloseAnimation->setEasingCurve(QEasingCurve::InOutExpo);
-                    _CloseAnimation->start();
+                    qOperate = RaptorMessageBox::invokeInformationEject(QStringLiteral("最小化到托盘"),
+                                                                        QStringLiteral("最小化 %1 到托盘。是否继续?").arg(
+                                                                            APPLICATION_NAME),
+                                                                        QStringLiteral("最小化到托盘"),
+                                                                        QStringLiteral("直接退出"));
+                } else
+                {
+                    qOperate = RaptorMessageBox::invokeWarningEject(QStringLiteral("退出 %1").arg(APPLICATION_NAME),
+                                                                    QStringLiteral("即将退出 %1。是否继续?").arg(
+                                                                        APPLICATION_NAME));
+                }
+
+                if (qOperate == RaptorMessageBox::Yes)
+                {
+                    if (qTrayState)
+                    {
+                        _TrayAnimation->setStartValue(1);
+                        _TrayAnimation->setEndValue(0);
+                        _TrayAnimation->setDuration(350);
+                        _TrayAnimation->setEasingCurve(QEasingCurve::InOutExpo);
+                        _TrayAnimation->start();
+                    } else
+                    {
+                        RaptorStoreSuite::invokeEngineStateSet(false);
+                        QMetaObject::invokeMethod(RaptorStoreSuite::invokeEngineGet(),
+                                                  "invokeStop",
+                                                  Qt::AutoConnection);
+                        qCloseEvent->ignore();
+                        _CloseAnimation->setStartValue(1);
+                        _CloseAnimation->setEndValue(0);
+                        _CloseAnimation->setDuration(350);
+                        _CloseAnimation->setEasingCurve(QEasingCurve::InOutExpo);
+                        _CloseAnimation->start();
+                    }
+                } else if (qOperate == RaptorMessageBox::No)
+                {
+                    if (qTrayState)
+                    {
+                        RaptorStoreSuite::invokeEngineStateSet(false);
+                        QMetaObject::invokeMethod(RaptorStoreSuite::invokeEngineGet(),
+                                                  "invokeStop",
+                                                  Qt::AutoConnection);
+                        qCloseEvent->ignore();
+                        _CloseAnimation->setStartValue(1);
+                        _CloseAnimation->setEndValue(0);
+                        _CloseAnimation->setDuration(350);
+                        _CloseAnimation->setEasingCurve(QEasingCurve::InOutExpo);
+                        _CloseAnimation->start();
+                    }
                 }
 
                 qCloseEvent->ignore();
@@ -72,7 +115,7 @@ bool RaptorWorld::eventFilter(QObject* qObject, QEvent* qEvent)
         // 任务栏还原到正常状态
         if (qEvent->type() == QEvent::WindowStateChange)
         {
-            if (const auto qWindowStateChangeEvent = static_cast<QWindowStateChangeEvent*>(qEvent);
+            if (const auto qWindowStateChangeEvent = static_cast<QWindowStateChangeEvent *>(qEvent);
                 qWindowStateChangeEvent->oldState() == Qt::WindowMinimized)
             {
                 if (_Maximized)
@@ -109,31 +152,28 @@ bool RaptorWorld::eventFilter(QObject* qObject, QEvent* qEvent)
     {
         if (qEvent->type() == QEvent::MouseButtonPress)
         {
-            if (const auto qMouseEvent = static_cast<QMouseEvent*>(qEvent);
+            if (const auto qMouseEvent = static_cast<QMouseEvent *>(qEvent);
                 qMouseEvent->button() == Qt::LeftButton && qMouseEvent->pos().y() <= _Ui->_Header->height())
             {
                 _MousePressed = true;
-                _MousePoint = qMouseEvent->globalPos() - pos();
+                _MousePoint = qMouseEvent->globalPosition().toPoint() - pos();
                 return true;
             }
-        }
-        else if (qEvent->type() == QEvent::MouseButtonRelease)
+        } else if (qEvent->type() == QEvent::MouseButtonRelease)
         {
             RaptorStoreSuite::invokeViewPaintableSet(true);
             _MousePressed = false;
             return true;
-        }
-        else if (qEvent->type() == QEvent::MouseMove)
+        } else if (qEvent->type() == QEvent::MouseMove)
         {
-            const auto qMouseEvent = static_cast<QMouseEvent*>(qEvent);
+            const auto qMouseEvent = static_cast<QMouseEvent *>(qEvent);
             if (_MousePressed && !_Maximized)
             {
                 RaptorStoreSuite::invokeViewPaintableSet(false);
-                move(qMouseEvent->globalPos() - _MousePoint);
+                move(qMouseEvent->globalPosition().toPoint() - _MousePoint);
                 return true;
             }
-        }
-        else if (qEvent->type() == QEvent::MouseButtonDblClick)
+        } else if (qEvent->type() == QEvent::MouseButtonDblClick)
         {
             onMaximizeClicked();
             return true;
@@ -185,13 +225,13 @@ bool RaptorWorld::eventFilter(QObject* qObject, QEvent* qEvent)
     return QWidget::eventFilter(qObject, qEvent);
 }
 
-void RaptorWorld::paintEvent(QPaintEvent* qPaintEvent)
+void RaptorWorld::paintEvent(QPaintEvent *qPaintEvent)
 {
     if (!_Maximized)
     {
         if (_Shadow.isNull())
         {
-            _Shadow = RaptorUtil::invokeShadowGenerate(size(), _WorldLayoutMargin, 6, QColor(0, 0, 0, 155));
+            _Shadow = RaptorBlurUtil::invokeShadowGenerate(size(), _WorldLayoutMargin, 6, QColor(0, 0, 0, 155));
         }
 
         auto qPainter = QPainter(this);
@@ -199,8 +239,9 @@ void RaptorWorld::paintEvent(QPaintEvent* qPaintEvent)
     }
 }
 
-void RaptorWorld::show()
+void RaptorWorld::invokeRender()
 {
+    Q_EMIT itemCopyWriteFinding();
     _StartAnimation->setStartValue(0);
     _StartAnimation->setEndValue(1);
     _StartAnimation->setDuration(750);
@@ -212,143 +253,195 @@ void RaptorWorld::show()
     _StartAnimatioo->setDuration(750);
     _StartAnimatioo->setEasingCurve(QEasingCurve::InOutExpo);
     _StartAnimationGroup->start();
-    QWidget::show();
-}
-
-void RaptorWorld::invokeRender()
-{
-    Q_EMIT itemCopyWritingFinding();
     show();
 }
 
-RaptorUser* RaptorWorld::invokeUserUiGet() const
+RaptorUser *RaptorWorld::invokeUserUiGet() const
 {
     return _User;
 }
 
-RaptorLogin* RaptorWorld::invokeLoginUiGet() const
+RaptorLogin *RaptorWorld::invokeLoginUiGet() const
 {
     return _Login;
 }
 
-RaptorSpacePage* RaptorWorld::invokeSpacePageGet() const
+RaptorSpacePage *RaptorWorld::invokeSpacePageGet() const
 {
     return _Ui->_SpacePage;
 }
 
-RaptorFolder* RaptorWorld::invokeFolderUiGet() const
+RaptorDevice *RaptorWorld::invokeDeviceUiGet() const
+{
+    return _Device;
+}
+
+RaptorFolder *RaptorWorld::invokeFolderUiGet() const
 {
     return _Ui->_SpacePage->invokeFolderUiGet();
 }
 
-RaptorUpload* RaptorWorld::invokeUploadUiGet() const
+RaptorUpload *RaptorWorld::invokeUploadUiGet() const
 {
     return _Ui->_SpacePage->invokeUploadUiGet();
 }
 
-RaptorImport* RaptorWorld::invokeImportUiGet() const
+RaptorImport *RaptorWorld::invokeImportUiGet() const
 {
     return _Ui->_SpacePage->invokeImportUiGet();
 }
 
-RaptorDownload* RaptorWorld::invokeDownloadUiGet() const
+RaptorDownload *RaptorWorld::invokeDownloadUiGet() const
 {
     return _Ui->_SpacePage->invokeDownloadUiGet();
 }
 
-RaptorShare* RaptorWorld::invokeShareUiGet() const
+RaptorShare *RaptorWorld::invokeShareUiGet() const
 {
     return _Ui->_SpacePage->invokeShareUiGet();
 }
 
-RaptorTransferPage* RaptorWorld::invokeTransferPageGet() const
+RaptorRename *RaptorWorld::invokeRenameUiGet() const
+{
+    return _Ui->_SpacePage->invokeRenameUiGet();
+}
+
+RaptorTransferPage *RaptorWorld::invokeTransferPageGet() const
 {
     return _Ui->_TransferPage;
 }
 
-RaptorDownloadingPage* RaptorWorld::invokeDownloadingPageGet() const
+RaptorDownloadingPage *RaptorWorld::invokeDownloadingPageGet() const
 {
     return invokeTransferPageGet()->invokeDownloadingPageGet();
 }
 
-RaptorDownloadedPage* RaptorWorld::invokeDownloadedPageGet() const
+RaptorDownloadedPage *RaptorWorld::invokeDownloadedPageGet() const
 {
     return invokeTransferPageGet()->invokeDownloadedPageGet();
 }
 
-RaptorUploadingPage* RaptorWorld::invokeUploadingPageGet() const
+RaptorUploadingPage *RaptorWorld::invokeUploadingPageGet() const
 {
     return invokeTransferPageGet()->invokeUploadingPageGet();
 }
 
-RaptorUploadedPage* RaptorWorld::invokeUploadedPageGet() const
+RaptorUploadedPage *RaptorWorld::invokeUploadedPageGet() const
 {
     return invokeTransferPageGet()->invokeUploadedPageGet();
 }
 
-RaptorSharePage* RaptorWorld::invokeSharePageGet() const
+RaptorSharePage *RaptorWorld::invokeSharePageGet() const
 {
     return _Ui->_SharePage;
 }
 
-RaptorStarPage* RaptorWorld::invokeStarPageGet() const
+RaptorStarPage *RaptorWorld::invokeStarPageGet() const
 {
     return _Ui->_StarPage;
 }
 
-RaptorTrashPage* RaptorWorld::invokeTrashPageGet() const
+RaptorTrashPage *RaptorWorld::invokeTrashPageGet() const
 {
     return _Ui->_TrashPage;
 }
 
-RaptorPlusPage* RaptorWorld::invokePlusPageGet() const
+RaptorPlusPage *RaptorWorld::invokePlusPageGet() const
 {
     return _Ui->_PlusPage;
 }
 
-RaptorCopyPage* RaptorWorld::invokeCopyPageGet() const
+RaptorCopyPage *RaptorWorld::invokeCopyPageGet() const
 {
     return invokePlusPageGet()->invokeCopyPageGet();
 }
 
-RaptorCopyUser* RaptorWorld::invokeCopyUserUiGet() const
+RaptorCleanPage *RaptorWorld::invokeCleanPageGet() const
+{
+    return invokePlusPageGet()->invokeCleanPageGet();
+}
+
+RaptorCopyUser *RaptorWorld::invokeCopyUserUiGet() const
 {
     return invokeCopyPageGet()->invokeCopyUserUiGet();
 }
 
-RaptorStoryPage* RaptorWorld::invokeStoryPageGet() const
+RaptorStoryPage *RaptorWorld::invokeStoryPageGet() const
 {
     return _Ui->_StoryPage;
 }
 
-RaptorAboutPage* RaptorWorld::invokeAboutPageGet() const
+RaptorAboutPage *RaptorWorld::invokeAboutPageGet() const
 {
     return _Ui->_StoryPage->invokeAboutPageGet();
 }
 
-RaptorSettingPage* RaptorWorld::invokeSettingPageGet() const
+RaptorSettingPage *RaptorWorld::invokeSettingPageGet() const
 {
     return _Ui->_SettingPage;
 }
 
-RaptorNetworkPage* RaptorWorld::invokeNetworkPageGet() const
+RaptorNetworkPage *RaptorWorld::invokeNetworkPageGet() const
 {
     return invokeSettingPageGet()->invokeNetworkPageGet();
 }
 
-void RaptorWorld::invokeToastSuccessEject(const QString& qMessage) const
+void RaptorWorld::invokeSuccessEject(const QString &qMessage) const
 {
+    if (windowOpacity() != 1.)
+    {
+        return;
+    }
+
     RaptorToast::invokeSuccessEject(qMessage);
 }
 
-void RaptorWorld::invokeToastCriticalEject(const QString& qMessage) const
+void RaptorWorld::invokeWarningEject(const QString &qMessage) const
 {
+    if (windowOpacity() != 1.)
+    {
+        return;
+    }
+
+    RaptorToast::invokeWarningEject(qMessage);
+}
+
+void RaptorWorld::invokeCriticalEject(const QString &qMessage) const
+{
+    if (windowOpacity() != 1.)
+    {
+        return;
+    }
+
     RaptorToast::invokeCriticalEject(qMessage);
 }
 
 void RaptorWorld::invokeLoginEject() const
 {
     _Login->invokeEject();
+}
+
+void RaptorWorld::invokeNoticeEject(const bool &qNewVersion,
+                                    const QString &qId,
+                                    const QString &qTitle,
+                                    const QString &qContent) const
+{
+    if (const auto qWorld = dynamic_cast<RaptorWorld *>(qApp->activeWindow());
+        qWorld && qWorld == this)
+    {
+        _Notice->invokeEject(QVariant::fromValue<std::tuple<bool, QString, QString, QString> >(std::make_tuple(qNewVersion, qId, qTitle, qContent)));
+    }
+}
+
+void RaptorWorld::invokeGoToSpacePage() const
+{
+    if (_Ui->_Space->isChecked())
+    {
+        return;
+    }
+
+    _Ui->_Space->setChecked(true);
+    onSpaceClicked();
 }
 
 void RaptorWorld::invokeInstanceInit()
@@ -373,7 +466,9 @@ void RaptorWorld::invokeInstanceInit()
     _DebounceTimer->setSingleShot(true);
     _DebounceTimer->setInterval(500);
 
+    _Device = new RaptorDevice(this);
     _Login = new RaptorLogin(this);
+    _Notice = new RaptorNotice(this);
     _StartAnimation = new QPropertyAnimation(this, "windowOpacity", this);
     _StartAnimatioo = new QPropertyAnimation(this, "pos", this);
     _StartAnimationGroup = new QParallelAnimationGroup(this);
@@ -382,7 +477,9 @@ void RaptorWorld::invokeInstanceInit()
     _MinimizeAnimation = new QPropertyAnimation(this, "windowOpacity", this);
     _MaximizeAnimation = new QPropertyAnimation(this, "windowOpacity", this);
     _CloseAnimation = new QPropertyAnimation(this, "windowOpacity", this);
+    _TrayAnimation = new QPropertyAnimation(this, "windowOpacity", this);
     _VergeAnimation = new QPropertyAnimation(this, "pos", this);
+    _TrayIcon = new QSystemTrayIcon(this);
     _User = new RaptorUser(this);
 }
 
@@ -390,31 +487,25 @@ void RaptorWorld::invokeUiInit()
 {
     if (const auto qTheme = RaptorSettingSuite::invokeItemFind(Setting::Section::Ui,
                                                                Setting::Ui::Theme).toString();
-        qTheme == Setting::Ui::System)
+        qTheme == Setting::Ui::Auto)
     {
         if (RaptorUtil::invokeSystemDarkThemeConfirm())
         {
             setStyleSheet(RaptorUtil::invokeStyleSheetLoad(Setting::Ui::Dark));
-        }
-        else
+        } else
         {
             setStyleSheet(RaptorUtil::invokeStyleSheetLoad(Setting::Ui::Light));
         }
-    }
-    else
+    } else
     {
         setStyleSheet(RaptorUtil::invokeStyleSheetLoad(qTheme));
     }
 
     qApp->setFont(RaptorSettingSuite::invokeItemFind(Setting::Section::Ui,
                                                      Setting::Ui::Font).toString());
-    setWindowFlags(Qt::FramelessWindowHint | Qt::MSWindowsFixedSizeDialogHint);
+    setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
-    setWindowTitle(QStringLiteral("%1 %2.%3.%4")
-                   .arg(APPLICATION_NAME)
-                   .arg(MAJOR_VERSION)
-                   .arg(MINOR_VERSION)
-                   .arg(PATCH_VERSION));
+    setWindowTitle(QStringLiteral("%1 %2.%3.%4").arg(APPLICATION_NAME, QString::number(MAJOR_VERSION), QString::number(MINOR_VERSION), QString::number(PATCH_VERSION)));
     installEventFilter(this);
     _Ui->_Logo->installEventFilter(this);
     _Ui->_Name->setText(windowTitle());
@@ -429,9 +520,9 @@ void RaptorWorld::invokeUiInit()
     _Ui->_Maximize->setIconSize(QSize(12, 12));
     _Ui->_Close->setIcon(QIcon(RaptorUtil::invokeIconMatch("Close", false, true)));
     _Ui->_Close->setIconSize(QSize(12, 12));
-    _Ui->_Private->setText(QStringLiteral("私有"));
+    _Ui->_Private->setText(QStringLiteral("备份盘"));
     _Ui->_Private->setChecked(true);
-    _Ui->_Public->setText(QStringLiteral("公开"));
+    _Ui->_Public->setText(QStringLiteral("资源盘"));
     _Ui->_CorePanelTip->setText(QStringLiteral("核心"));
     _Ui->_Space->invokeIconSet(RaptorUtil::invokeIconMatch("Space", false, true));
     _Ui->_Space->setContentsMargins(6, 0, 6, 0);
@@ -493,9 +584,10 @@ void RaptorWorld::invokeUiInit()
     _Ui->_Meet->setIconSize(QSize(22, 22));
     _Ui->_Meet->invokeIndicatorHeightSet(16);
     _Ui->_Meet->setText(QStringLiteral("一起走过"));
-    _Ui->_Copyright->setText(QStringLiteral("Copyright © 2024 凉州刺史 - Built on %1").arg(RaptorUtil::invokeCompileTimestampCompute()));
+    _Ui->_Copyright->setText(QStringLiteral("2024 凉州刺史 - Built on %1").arg(RaptorUtil::invokeCompileTimestampCompute()));
     _Ui->_PoweredTip->setText(QStringLiteral("Powered by"));
     _Ui->_Powered->setText(QStringLiteral("Qt"));
+    _TrayIcon->setIcon(QIcon(RaptorUtil::invokeIconMatch("Free", false, true)));
 }
 
 void RaptorWorld::invokeSlotInit() const
@@ -609,6 +701,16 @@ void RaptorWorld::invokeSlotInit() const
             &QPropertyAnimation::finished,
             this,
             &RaptorWorld::onCloseAnimationFinished);
+
+    connect(_TrayAnimation,
+            &QPropertyAnimation::finished,
+            this,
+            &RaptorWorld::onTrayAnimationFinished);
+
+    connect(_TrayIcon,
+            &QSystemTrayIcon::activated,
+            this,
+            &RaptorWorld::onTrayIconActivated);
 }
 
 void RaptorWorld::invokeLogoPaint() const
@@ -624,7 +726,6 @@ void RaptorWorld::invokeLogoPaint() const
 void RaptorWorld::invokeBackgroundPaint()
 {
     auto qPainter = QPainter(_Ui->_Page);
-    auto qName = QString();
     auto qTheme = property(Setting::Ui::Theme).toString();
     if (qTheme.isEmpty())
     {
@@ -635,27 +736,18 @@ void RaptorWorld::invokeBackgroundPaint()
         setProperty(Setting::Ui::Theme, qTheme);
     }
 
-    if (qTheme == Setting::Ui::System)
+    if (qTheme == Setting::Ui::Auto)
     {
         if (RaptorUtil::invokeSystemDarkThemeConfirm())
         {
-            qName = QStringLiteral("Raptor[LandingMoon]");
-        }
-        else
+            qTheme = Setting::Ui::Dark;
+        } else
         {
-            qName = QStringLiteral("Raptor[LandingMoon]");
+            qTheme = Setting::Ui::Light;
         }
-    }
-    else if (qTheme == Setting::Ui::Dark)
-    {
-        qName = QStringLiteral("Raptor[LandingMoon]");
-    }
-    else if (qTheme == Setting::Ui::Light)
-    {
-        qName = QStringLiteral("Raptor[LandingMoon]");
     }
 
-    const auto qPixmap = QPixmap(QStringLiteral("./Store/Image/%1/%2.png").arg(qTheme, qName));
+    const auto qPixmap = QPixmap(QStringLiteral("./Store/Image/%1/Raptor[LANDINGMOON].png").arg(qTheme));
     qPainter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
     qPainter.setOpacity(0.25);
     qPainter.drawPixmap(_Ui->_Page->width() - qPixmap.width(),
@@ -683,15 +775,18 @@ void RaptorWorld::invokeAvatarPaint() const
 
 void RaptorWorld::onAvatarClicked() const
 {
-    if (const auto [qOperate, item] = _User->invokeEject(_Ui->_Avatar->mapToGlobal(QPoint(-(_User->width() - _Ui->_Avatar->width()) / 2, 52)));
+    if (const auto [qOperate, item] = _User->invokeEject(
+            _Ui->_Avatar->mapToGlobal(QPoint(-(_User->width() - _Ui->_Avatar->width()) / 2, 52)));
         qOperate == RaptorUser::Login)
     {
         _Login->invokeEject();
-    }
-    else if (qOperate == RaptorUser::Logout)
+    } else if (qOperate == RaptorUser::Logout)
     {
-        if (!RaptorMessageBox::invokeWarningEject(QStringLiteral("注销用户"),
-                                                  QStringLiteral("即将注销用户 %1,，是否继续?").arg(QStringLiteral(WARNING_TEMPLATE).arg(item._Nickname))))
+        if (const auto qOperatf = RaptorMessageBox::invokeWarningEject(QStringLiteral("注销用户"),
+                                                                       QStringLiteral("即将注销用户 %1,，是否继续?").arg(
+                                                                           QString(WARNING_TEMPLATE).arg(
+                                                                               item._Nickname)));
+            qOperatf == RaptorMessageBox::No)
         {
             return;
         }
@@ -699,11 +794,13 @@ void RaptorWorld::onAvatarClicked() const
         auto input = RaptorInput();
         input._Variant = QVariant::fromValue<RaptorAuthenticationItem>(item);
         Q_EMIT itemLogouting(QVariant::fromValue<RaptorInput>(input));
-    }
-    else if (qOperate == RaptorUser::Switch)
+    } else if (qOperate == RaptorUser::Switch)
     {
-        if (!RaptorMessageBox::invokeWarningEject(QStringLiteral("切换用户"),
-                                                  QStringLiteral("即将切换到用户 %1，是否继续?").arg(QStringLiteral(WARNING_TEMPLATE).arg(item._Nickname))))
+        if (const auto qOperatf = RaptorMessageBox::invokeWarningEject(QStringLiteral("切换用户"),
+                                                                       QStringLiteral("即将切换到用户 %1，是否继续?").arg(
+                                                                           QString(WARNING_TEMPLATE).arg(
+                                                                               item._Nickname)));
+            qOperatf == RaptorMessageBox::No)
         {
             return;
         }
@@ -716,10 +813,14 @@ void RaptorWorld::onAvatarClicked() const
         auto input = RaptorInput();
         input._Variant = QVariant::fromValue<RaptorAuthenticationItem>(item);
         Q_EMIT itemSwitching(QVariant::fromValue<RaptorInput>(input));
+    } else if (qOperate == RaptorUser::Device)
+    {
+        Q_EMIT itemDevicesFetching();
+        _Device->invokeEject();
     }
 }
 
-void RaptorWorld::onItemAccessTokenRefreshed(const QVariant& qVariant)
+void RaptorWorld::onItemAccessTokenRefreshed(const QVariant &qVariant)
 {
     if (const auto [_State, _Message, _Data] = qVariant.value<RaptorOutput>();
         !_State)
@@ -729,22 +830,23 @@ void RaptorWorld::onItemAccessTokenRefreshed(const QVariant& qVariant)
     }
 
     Q_EMIT itemsLoading();
+    Q_EMIT itemSignInInfoFetching();
     const auto item = RaptorStoreSuite::invokeUserGet();
     _Ui->_Capacity->invokeIndicatorTextSet(item._Capacity._Radio);
-    _Ui->_Capacity->invokeIndicatorVisibleSet(true);
+    _Ui->_Capacity->invokeIndicatorVisibleSet(!item._Capacity._Radio.isEmpty());
     _Ui->_AlbumCapacity->invokeIndicatorTextSet(item._Capacity._Album);
-    _Ui->_AlbumCapacity->invokeIndicatorVisibleSet(true);
+    _Ui->_AlbumCapacity->invokeIndicatorVisibleSet(!item._Capacity._Album.isEmpty());
     _Ui->_NoteCapacity->invokeIndicatorTextSet(item._Capacity._Note);
-    _Ui->_NoteCapacity->invokeIndicatorVisibleSet(true);
+    _Ui->_NoteCapacity->invokeIndicatorVisibleSet(!item._Capacity._Note.isEmpty());
     _Ui->_Meet->invokeIndicatorTextSet(item._Meet);
-    _Ui->_Meet->invokeIndicatorVisibleSet(true);
+    _Ui->_Meet->invokeIndicatorVisibleSet(!item._Meet.isEmpty());
     _Avatar.loadFromData(item._Avatar);
     _Ui->_Avatar->setEnabled(true);
     _Ui->_Avatar->update();
     RaptorStoreSuite::invokeSpaceSet(_Ui->_Private->isChecked() ? Private : Public);
 }
 
-void RaptorWorld::onItemLogouting(const QVariant& qVariant) const
+void RaptorWorld::onItemLogouting(const QVariant &qVariant) const
 {
     const auto input = qVariant.value<RaptorInput>();
     if (const auto item = input._Variant.value<RaptorAuthenticationItem>();
@@ -759,7 +861,7 @@ void RaptorWorld::onItemLogouting(const QVariant& qVariant) const
     _Ui->_Meet->invokeIndicatorVisibleSet(false);
 }
 
-void RaptorWorld::onItemLogoutd(const QVariant& qVariant)
+void RaptorWorld::onItemLogoutd(const QVariant &qVariant)
 {
     const auto [_State, _Message, _Data] = qVariant.value<RaptorOutput>();
     if (!_State)
@@ -778,16 +880,18 @@ void RaptorWorld::onItemLogoutd(const QVariant& qVariant)
     // 注销的是当前用户，则选择表中第一个用户为当前用户（如果有）
     if (RaptorStoreSuite::invokeUserIsValidConfirm())
     {
-        RaptorToast::invokeSuccessEject(QStringLiteral("已切换到 %1 用户。").arg(QStringLiteral(INFORMATION_TEMPLATE).arg(RaptorStoreSuite::invokeUserGet()._Nickname)));
+        RaptorToast::invokeSuccessEject(QStringLiteral("已切换到 %1 用户。").arg(
+            QString(INFORMATION_TEMPLATE).arg(RaptorStoreSuite::invokeUserGet()._Nickname)));
         return;
     }
 
     _Avatar = QPixmap();
     _Ui->_Avatar->update();
-    RaptorToast::invokeSuccessEject(QStringLiteral("%1 已退出登录!").arg(QStringLiteral(SUCCESS_TEMPLATE).arg(item._Nickname)));
+    RaptorToast::invokeSuccessEject(
+        QStringLiteral("%1 已退出登录!").arg(QString(SUCCESS_TEMPLATE).arg(item._Nickname)));
 }
 
-void RaptorWorld::onItemSwitched(const QVariant& qVariant) const
+void RaptorWorld::onItemSwitched(const QVariant &qVariant) const
 {
     const auto [_State, _Message, _Data] = qVariant.value<RaptorOutput>();
     if (!_State)
@@ -796,7 +900,8 @@ void RaptorWorld::onItemSwitched(const QVariant& qVariant) const
     }
 
     const auto item = _Data.value<RaptorAuthenticationItem>();
-    RaptorToast::invokeSuccessEject(QStringLiteral("已切换到 %1 用户。").arg(QStringLiteral(INFORMATION_TEMPLATE).arg(item._Nickname)));
+    RaptorToast::invokeSuccessEject(
+        QStringLiteral("已切换到 %1 用户。").arg(QString(INFORMATION_TEMPLATE).arg(item._Nickname)));
     RaptorStoreSuite::invokeUserSwitchingSet(false);
     Q_EMIT itemAccessTokenRefreshing();
     Q_EMIT itemsLoading();
@@ -808,16 +913,13 @@ void RaptorWorld::onDebounceTimerTimeout() const
     if (_Ui->_Space->isChecked())
     {
         invokeSpacePageGet()->invokeNavigate();
-    }
-    else if (_Ui->_Share->isChecked())
+    } else if (_Ui->_Share->isChecked())
     {
         invokeSharePageGet()->invokeNavigate();
-    }
-    else if (_Ui->_Star->isChecked())
+    } else if (_Ui->_Star->isChecked())
     {
         invokeStarPageGet()->invokeNavigate();
-    }
-    else if (_Ui->_Trash->isChecked())
+    } else if (_Ui->_Trash->isChecked())
     {
         invokeTrashPageGet()->invokeNavigate();
     }
@@ -830,7 +932,7 @@ void RaptorWorld::onAdoreClicked() const
     QDesktopServices::openUrl(QUrl(GITHUB));
 }
 
-void RaptorWorld::onPrivateClicked(const bool& qChecked) const
+void RaptorWorld::onPrivateClicked(const bool &qChecked) const
 {
     if (!RaptorStoreSuite::invokeUserIsValidConfirm())
     {
@@ -850,7 +952,7 @@ void RaptorWorld::onPrivateClicked(const bool& qChecked) const
     _DebounceTimer->start();
 }
 
-void RaptorWorld::onPublicClicked(const bool& qChecked) const
+void RaptorWorld::onPublicClicked(const bool &qChecked) const
 {
     if (!RaptorStoreSuite::invokeUserIsValidConfirm())
     {
@@ -954,15 +1056,26 @@ void RaptorWorld::onSettingClicked() const
     _Ui->_Page->setCurrentWidget(_Ui->_SettingPage);
 }
 
-void RaptorWorld::onPoweredClicked() const
-{
-    QDesktopServices::openUrl(QUrl("https://www.qt.io/"));
-}
-
 void RaptorWorld::onStartAnimationGroupFinished() const
 {
     RaptorStoreSuite::invokeEngineStateSet(true);
     Q_EMIT itemAccessTokenRefreshing();
+    if (RaptorSettingSuite::invokeItemFind(Setting::Section::Ui,
+                                           Setting::Ui::TrayIcon).toBool())
+    {
+        _TrayIcon->show();
+    }
+
+    if (RaptorSettingSuite::invokeItemFind(Setting::Section::Ui,
+                                           Setting::Ui::Notice).toBool())
+    {
+        Q_EMIT itemNoticeFetching();
+    }
+}
+
+void RaptorWorld::onPoweredClicked() const
+{
+    QDesktopServices::openUrl(QUrl("https://www.qt.io"));
 }
 
 void RaptorWorld::onMinimizeClicked() const
@@ -979,8 +1092,7 @@ void RaptorWorld::onMinimizeAnimationFinished()
     if (windowOpacity() == 0.)
     {
         setWindowState(Qt::WindowMinimized);
-    }
-    else
+    } else
     {
         if (!_Maximized)
         {
@@ -999,19 +1111,19 @@ void RaptorWorld::onMaximizeClicked()
     _MaximizeAnimation->start();
 }
 
-void RaptorWorld::onMaximizeAnimationValueChanged(const QVariant& qVariant)
+void RaptorWorld::onMaximizeAnimationValueChanged(const QVariant &qVariant)
 {
     Q_UNUSED(qVariant)
     if (windowOpacity() == 0.)
     {
         if (_Maximized)
         {
-            _Ui->_WorldLayout->setMargin(0);
+            _Ui->_WorldLayout->setContentsMargins(0, 0, 0, 0);
             showMaximized();
-        }
-        else
+        } else
         {
-            _Ui->_WorldLayout->setMargin(_WorldLayoutMargin);
+            _Ui->_WorldLayout->setContentsMargins(_WorldLayoutMargin, _WorldLayoutMargin, _WorldLayoutMargin,
+                                                  _WorldLayoutMargin);
             showNormal();
         }
     }
@@ -1031,8 +1143,7 @@ void RaptorWorld::onMaximizeAnimationFinished() const
     if (_Maximized)
     {
         _Ui->_Maximize->setIcon(QIcon(RaptorUtil::invokeIconMatch("Restore", false, true)));
-    }
-    else
+    } else
     {
         _Ui->_Maximize->setIcon(QIcon(RaptorUtil::invokeIconMatch("Maximize", false, true)));
     }
@@ -1046,4 +1157,32 @@ void RaptorWorld::onCloseClicked()
 void RaptorWorld::onCloseAnimationFinished()
 {
     close();
+}
+
+void RaptorWorld::onTrayAnimationFinished()
+{
+    if (windowOpacity() == 0.)
+    {
+        hide();
+    }
+}
+
+void RaptorWorld::onTrayIconActivated(const QSystemTrayIcon::ActivationReason &qReason)
+{
+    if (qReason != QSystemTrayIcon::Trigger)
+    {
+        return;
+    }
+
+    if (isVisible())
+    {
+        return;
+    }
+
+    _TrayAnimation->setStartValue(0);
+    _TrayAnimation->setEndValue(1);
+    _TrayAnimation->setDuration(350);
+    _TrayAnimation->setEasingCurve(QEasingCurve::InOutExpo);
+    _TrayAnimation->start();
+    show();
 }

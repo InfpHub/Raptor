@@ -98,6 +98,16 @@ QObject* RaptorStoreSuite::invokeEngineGet()
     return _Engine;
 }
 
+void RaptorStoreSuite::invokeSpacePageSet(QWidget *qWidget)
+{
+    _SpacePage = qWidget;
+}
+
+QWidget * RaptorStoreSuite::invokeSpacePageGet()
+{
+    return _SpacePage;
+}
+
 void RaptorStoreSuite::invokeViewPaintableSet(const bool& qValue)
 {
     _ViewPaintable = qValue;

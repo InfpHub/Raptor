@@ -40,49 +40,49 @@ class RaptorShareSuite Q_DECL_FINAL : public QObject
 public:
     using QObject::QObject;
 
-    static RaptorShareSuite* invokeSingletonGet();
+    static RaptorShareSuite *invokeSingletonGet();
 
 private:
-    static RaptorOutput invokeItemsByTokenFetching(const RaptorInput& input);
+    static std::tuple<QString, RaptorInput, QVector<RaptorFileItem>> invokeItemsByTokenFetching(const RaptorInput &input);
 
 
 Q_SIGNALS:
-    Q_SIGNAL void itemsFetched(const QVariant& qVariant) const;
+    Q_SIGNAL void itemsFetched(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemsExported(const QVariant& qVariant) const;
+    Q_SIGNAL void itemsExported(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemsCancelled(const QVariant& qVariant) const;
+    Q_SIGNAL void itemsCancelled(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemCreated(const QVariant& qVariant) const;
+    Q_SIGNAL void itemCreated(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemsRapidCreated(const QVariant& qVariant) const;
+    Q_SIGNAL void itemsRapidCreated(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemsRapidImported(const QVariant& qVariant) const;
+    Q_SIGNAL void itemsRapidImported(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemsImported(const QVariant& qVariant) const;
+    Q_SIGNAL void itemsImported(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemParsed(const QVariant& qVariant) const;
+    Q_SIGNAL void itemParsed(const QVariant &qVariant) const;
 
 public Q_SLOTS:
-    Q_SLOT void onItemsFetching(const QVariant& qVariant) const;
+    Q_SLOT void onItemsFetching(const QVariant &qVariant) const;
 
-    Q_SLOT void onItemsExporting(const QVariant& qVariant) const;
+    Q_SLOT void onItemsExporting(const QVariant &qVariant) const;
 
-    Q_SLOT void onItemsCancelling(const QVariant& qVariant) const;
+    Q_SLOT void onItemsCancelling(const QVariant &qVariant) const;
 
-    Q_SLOT void onItemCreating(const QVariant& qVariant) const;
+    Q_SLOT void onItemCreating(const QVariant &qVariant) const;
 
-    Q_SLOT void onItemsRapidCreating(const QVariant& qVariant) const;
+    Q_SLOT void onItemsRapidCreating(const QVariant &qVariant) const;
 
     Q_SLOT void onItemsRapidFetching() const;
 
-    Q_SLOT void onItemRapidImporting(const QVariant& qVariant) const;
+    Q_SLOT void onItemRapidImporting(const QVariant &qVariant) const;
 
-    Q_SLOT void onItemParsing(const QVariant& qVariant) const;
+    Q_SLOT void onItemParsing(const QVariant &qVariant) const;
 
-    Q_SLOT void onItemsByParentIdFetching(const QVariant& qVariant) const;
+    Q_SLOT void onItemsByParentIdFetching(const QVariant &qVariant) const;
 
-    Q_SLOT void onItemImporting(const QVariant& qVariant) const;
+    Q_SLOT void onItemImporting(const QVariant &qVariant) const;
 };
 
 #endif // RAPTORSHARESUITE_H

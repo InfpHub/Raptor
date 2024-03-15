@@ -54,7 +54,8 @@ public:
         Nothing,
         Logout,
         Login,
-        Switch
+        Switch,
+        Device
     };
 
     Q_ENUM(Operate)
@@ -66,7 +67,7 @@ public:
     bool eventFilter(QObject* qObject, QEvent* qEvent) Q_DECL_OVERRIDE;
 
 protected:
-    int exec();
+    int exec() Q_DECL_OVERRIDE;
 
 public:
     QPair<Operate, RaptorAuthenticationItem> invokeEject(const QPoint& qPoint);
@@ -96,8 +97,6 @@ public Q_SLOTS:
 
     Q_SLOT void onItemSwitching(const QVariant& qVariant) const;
 
-    Q_SLOT void onItemSignInConfirmed(const QVariant& qVariant) const;
-
     Q_SLOT void onItemSignedIn(const QVariant& qVariant) const;
 
     Q_SLOT void onItemCapacityRefreshed(const QVariant& qVariant) const;
@@ -106,6 +105,8 @@ private Q_SLOTS:
     Q_SLOT void onRefreshClicked() const;
 
     Q_SLOT void onSignInClicked() const;
+
+    Q_SLOT void onDeviceClicked();
 
     Q_SLOT void onLogoutClicked();
 

@@ -25,11 +25,14 @@
 #define RAPTORSETTINGSUITE_H
 
 #include <QApplication>
-#include <QDataStream>
 #include <QDir>
 #include <QObject>
 #include <QSettings>
 #include <QStandardPaths>
+
+#include <fstream>
+
+#include <yaml-cpp/yaml.h>
 
 #include "../../Common/RaptorDeclare.h"
 
@@ -42,7 +45,8 @@ namespace Setting
         Q_DECL_CONSTEXPR auto Ui = "Ui";
         Q_DECL_CONSTEXPR auto Download = "Download";
         Q_DECL_CONSTEXPR auto Upload = "Upload";
-        Q_DECL_CONSTEXPR auto Play = "Play";
+        Q_DECL_CONSTEXPR auto Video = "Video";
+        Q_DECL_CONSTEXPR auto Office = "Office";
         Q_DECL_CONSTEXPR auto Network = "Network";
         Q_DECL_CONSTEXPR auto Other = "Other";
     }
@@ -50,11 +54,15 @@ namespace Setting
     namespace Ui
     {
         Q_DECL_CONSTEXPR auto Theme = "Theme";
-        Q_DECL_CONSTEXPR auto System = "System";
+        Q_DECL_CONSTEXPR auto Auto = "Auto";
         Q_DECL_CONSTEXPR auto Light = "Light";
         Q_DECL_CONSTEXPR auto Dark = "Dark";
         Q_DECL_CONSTEXPR auto Font = "Font";
+        Q_DECL_CONSTEXPR auto Notice = "Notice";
         Q_DECL_CONSTEXPR auto Sign = "Sign";
+        Q_DECL_CONSTEXPR auto ContextMenu = "ContextMenu";
+        Q_DECL_CONSTEXPR auto TrayIcon = "TrayIcon";
+        Q_DECL_CONSTEXPR auto MinimizeToTray = "MinimizeToTray";
     }
 
     namespace Download
@@ -80,7 +88,7 @@ namespace Setting
         Q_DECL_CONSTEXPR auto Concurrent = "Concurrent";
     }
 
-    namespace Play
+    namespace Video
     {
         Q_DECL_CONSTEXPR auto Engine = "Engine";
         Q_DECL_CONSTEXPR auto ActiveEngine = "ActiveEngine";
@@ -97,6 +105,16 @@ namespace Setting
         Q_DECL_CONSTEXPR auto Quick = "Quick";
         Q_DECL_CONSTEXPR auto Live = "Live";
         Q_DECL_CONSTEXPR auto UseOrigin = "UseOrigin";
+        Q_DECL_CONSTEXPR auto UseSub = "UseSub";
+    }
+
+    namespace Office
+    {
+        Q_DECL_CONSTEXPR auto Engine = "Engine";
+        Q_DECL_CONSTEXPR auto Excel = "Excel";
+        Q_DECL_CONSTEXPR auto PowerPoint = "PowerPoint";
+        Q_DECL_CONSTEXPR auto Word = "Word";
+        Q_DECL_CONSTEXPR auto PDF = "PDF";
     }
 
     namespace Network
@@ -114,6 +132,10 @@ namespace Setting
         Q_DECL_CONSTEXPR auto ProxyPort = "ProxyPort";
         Q_DECL_CONSTEXPR auto ProxyUserName = "ProxyUserName";
         Q_DECL_CONSTEXPR auto ProxyPassword = "ProxyPassword";
+        Q_DECL_CONSTEXPR auto IPResolve = "IPResolve";
+        Q_DECL_CONSTEXPR auto Auto = "Auto";
+        Q_DECL_CONSTEXPR auto IPV4 = "IPV4";
+        Q_DECL_CONSTEXPR auto IPV6 = "IPV6";
     }
 
     namespace Other
@@ -142,32 +164,24 @@ class RaptorSettingSuite Q_DECL_FINAL : public QObject
 public:
     explicit RaptorSettingSuite();
 
-    friend QDataStream& operator<<(QDataStream& qStream,
-                                   const RaptorSettingItem& item);
+    static RaptorSettingSuite *invokeSingletonGet();
 
-    friend QDataStream& operator>>(QDataStream& qStream,
-                                   RaptorSettingItem& item);
+    static QVariant invokeItemFind(const QString &qSection,
+                                   const QString &qKey);
 
-    static RaptorSettingSuite* invokeSingletonGet();
+    static void invokeItemSave(const QString &qSection,
+                               const QString &qKey,
+                               const QVariant &qVariant);
 
-    static QVariant invokeItemFind(const QString& qSection,
-                                   const QString& qKey);
-
-    static void invokeItemSave(const QString& qSection,
-                               const QString& qKey,
-                               const QVariant& qVariant);
-
-    QSettings* invokeINIInstanceGet() const;
-
-    Q_INVOKABLE void invokeStop() const;
+    static void invokeStop();
 
 private:
     void invokeInstanceInit();
 
-    void invokeLogicInit() const;
+    void invokeLogicInit();
 
 private:
-    QSettings* _Settings = Q_NULLPTR;
+    YAML::Node _Yaml;
     static inline QMap<QString, QVariantMap> _Config;
 };
 

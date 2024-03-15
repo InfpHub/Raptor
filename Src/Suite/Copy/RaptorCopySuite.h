@@ -28,6 +28,7 @@
 #include <QJsonObject>
 #include <QObject>
 
+#include "../Downloading/RaptorDownloadingSuite.h"
 #include "../File/RaptorFileSuite.h"
 #include "../Http/RaptorHttpSuite.h"
 #include "../Store/RaptorStoreSuite.h"
@@ -40,33 +41,68 @@ class RaptorCopySuite Q_DECL_FINAL : public QObject
 public:
     using QObject::QObject;
 
-    static RaptorCopySuite* invokeSingletonGet();
+    static RaptorCopySuite *invokeSingletonGet();
 
 private:
-    static RaptorOutput invokeItemRapid(const RaptorAuthenticationItem& item,
-                                        const RaptorFileItem& iten);
+    struct Node
+    {
+        RaptorFileItem _Item;
+        QVector<Node *> _Children;
 
+        [[nodiscard]]
+        bool isEmpty() const
+        {
+            return _Item._Id.isEmpty();
+        }
+
+        bool operator==(const Node &item) const
+        {
+            return _Item._Id == item._Item._Id;
+        }
+
+        bool operator!=(const Node &item) const
+        {
+            return _Item._Id != item._Item._Id;
+        }
+    };
+
+    static QPair<QString, QString> invokeItemCreate(const RaptorAuthenticationItem &item,
+                                                    const QString &qParent,
+                                                    const QString &qName);
+
+    static QPair<QString, bool> invokeItemRapid(const RaptorAuthenticationItem &item,
+                                                const RaptorFileItem &iten);
+
+    void invokeItemsTreeBuild(const QVector<RaptorFileItem> &items, const QString &qParent);
+
+    void invokeItemPreorderTraversal(const Node *qRoot,
+                                     const QString &qParent,
+                                     const QPair<RaptorAuthenticationItem, RaptorAuthenticationItem> &qUser) const;
 
 Q_SIGNALS:
-    Q_SIGNAL void itemsFetched(const QVariant& qVariant);
+    Q_SIGNAL void itemsFetched(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemCopied(const QVariant& qVariant);
+    Q_SIGNAL void itemCopied(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemsCancelled(const QVariant& qVariant);
+    Q_SIGNAL void itemsCancelled(const QVariant &qVariant) const;
+
+    Q_SIGNAL void itemErrored(const QVariant &qVariant) const;
 
 public Q_SLOTS:
-    Q_SLOT void onItemsByParentIdFetching(const QVariant& qVariant);
+    Q_SLOT void onItemsByParentIdFetching(const QVariant &qVariant) const;
 
-    Q_SLOT void onItemsByIdFetching(const QVariant& qVariant);
+    Q_SLOT void onItemsByIdFetching(const QVariant &qVariant) const;
 
-    Q_SLOT void onItemsByConditionFetching(const QVariant& qVariant);
+    Q_SLOT void onItemsByConditionFetching(const QVariant &qVariant) const;
 
-    Q_SLOT void onItemsCopying(const QVariant& qVariant);
+    Q_SLOT void onItemsCopying(const QVariant &qVariant);
 
     Q_SLOT void onItemsCancelling();
 
 private:
     bool _Cancel;
+    QVector<Node *> _Items; // Children
+    Node *_Item; // Root
 };
 
 #endif // RAPTORCOPYSUITE_H

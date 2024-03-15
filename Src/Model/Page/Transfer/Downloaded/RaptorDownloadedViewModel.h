@@ -35,13 +35,17 @@ class RaptorDownloadedViewModel Q_DECL_FINAL : public QAbstractTableModel
 public:
     using QAbstractTableModel::QAbstractTableModel;
 
+    [[nodiscard]]
     QVariant headerData(int qSection, Qt::Orientation qOrientation,
                         int qRole = Qt::DisplayRole) const Q_DECL_OVERRIDE;
 
+    [[nodiscard]]
     int rowCount(const QModelIndex& qIndex) const Q_DECL_OVERRIDE;
 
+    [[nodiscard]]
     int columnCount(const QModelIndex& qIndex) const Q_DECL_OVERRIDE;
 
+    [[nodiscard]]
     QVariant data(const QModelIndex& qIndex, int qRole = Qt::DisplayRole) const Q_DECL_OVERRIDE;
 
     bool setData(const QModelIndex& qIndex,

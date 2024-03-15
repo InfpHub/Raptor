@@ -24,8 +24,6 @@
 #ifndef RAPTORDEFINE_H
 #define RAPTORDEFINE_H
 
-#include <QColor>
-
 #define APPLICATION_NAME "@PROJECT_NAME@"
 
 #define APPLICATION_ID "25dzX3vbYqktVxyX"
@@ -58,7 +56,7 @@
 #define USE_HEADER_REFERER(qHttpPayload) \
         do \
         { \
-            qHttpPayload._Header.insert(RaptorHttpHeader::Referer, "https://www.aliyundrive.com"); \
+            qHttpPayload._Header.insert(RaptorHttpHeader::Referer, "https://www.alipan.com/"); \
         } while(0);
 
 #define USE_HEADER_X_SHARE_TOKEN(qHttpPayload, qValue) \

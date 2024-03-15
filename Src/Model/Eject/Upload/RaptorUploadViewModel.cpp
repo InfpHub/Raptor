@@ -34,21 +34,21 @@ QVariant RaptorUploadViewModel::headerData(int qSection,
 
     switch (qRole)
     {
-    case Qt::DisplayRole:
-        if (qSection > 0 && qSection <= _Headers.length())
-        {
-            return _Headers[qSection - 1];
-        }
+        case Qt::DisplayRole:
+            if (qSection > 0 && qSection <= _Headers.length())
+            {
+                return _Headers[qSection - 1];
+            }
 
-        return QVariant();
-    case Qt::TextAlignmentRole:
-        return QVariant(Qt::AlignLeft | Qt::AlignVCenter);
-    default:
-        return QVariant();
+            return QVariant();
+        case Qt::TextAlignmentRole:
+            return QVariant(Qt::AlignLeft | Qt::AlignVCenter);
+        default:
+            return QVariant();
     }
 }
 
-int RaptorUploadViewModel::rowCount(const QModelIndex& qIndex) const
+int RaptorUploadViewModel::rowCount(const QModelIndex &qIndex) const
 {
     if (qIndex.isValid())
     {
@@ -58,7 +58,7 @@ int RaptorUploadViewModel::rowCount(const QModelIndex& qIndex) const
     return _Items.length();
 }
 
-int RaptorUploadViewModel::columnCount(const QModelIndex& qIndex) const
+int RaptorUploadViewModel::columnCount(const QModelIndex &qIndex) const
 {
     if (qIndex.isValid())
     {
@@ -68,7 +68,7 @@ int RaptorUploadViewModel::columnCount(const QModelIndex& qIndex) const
     return _ColumnCount;
 }
 
-QVariant RaptorUploadViewModel::data(const QModelIndex& qIndex, int qRole) const
+QVariant RaptorUploadViewModel::data(const QModelIndex &qIndex, int qRole) const
 {
     if (!qIndex.isValid())
     {
@@ -78,30 +78,30 @@ QVariant RaptorUploadViewModel::data(const QModelIndex& qIndex, int qRole) const
     const auto item = _Items[qIndex.row()];
     switch (qRole)
     {
-    case Qt::UserRole:
-        return QVariant::fromValue<RaptorTransferItem>(item);
-    case Qt::DisplayRole:
+        case Qt::UserRole:
+            return QVariant::fromValue<RaptorTransferItem>(item);
+        case Qt::DisplayRole:
         {
             switch (qIndex.column())
             {
-            case 1:
-                return item._Name;
-            case 2:
-                return QStringLiteral("%1/%2").arg(RaptorUtil::invokeStorageUnitConvert(item._Transferred), item._Size);
-            case 3:
-                return item._Created.split(' ')[0];
-            default:
-                return QVariant();
+                case 1:
+                    return item._Name;
+                case 2:
+                    return QStringLiteral("%1/%2").arg(RaptorUtil::invokeStorageUnitConvert(item._Transferred), item._Size);
+                case 3:
+                    return item._Created.split(' ')[0];
+                default:
+                    return QVariant();
             }
         }
-    case Qt::TextAlignmentRole:
-        return QVariant(Qt::AlignLeft | Qt::AlignVCenter);
-    default:
-        return QVariant();
+        case Qt::TextAlignmentRole:
+            return QVariant(Qt::AlignLeft | Qt::AlignVCenter);
+        default:
+            return QVariant();
     }
 }
 
-bool RaptorUploadViewModel::setData(const QModelIndex& qIndex, const QVariant& qVariant, int qRole)
+bool RaptorUploadViewModel::setData(const QModelIndex &qIndex, const QVariant &qVariant, int qRole)
 {
     if (!qIndex.isValid())
     {
@@ -121,20 +121,20 @@ bool RaptorUploadViewModel::setData(const QModelIndex& qIndex, const QVariant& q
     const auto item = qVariant.value<RaptorTransferItem>();
     _Items.replace(qIndex.row(), item);
     Q_EMIT dataChanged(qIndex, qIndex);
-    return true;
+    return QAbstractTableModel::setData(qIndex, qVariant, qRole);
 }
 
-void RaptorUploadViewModel::invokeHeaderSet(const QVector<QString>& qHeader)
+void RaptorUploadViewModel::invokeHeaderSet(const QVector<QString> &qHeader)
 {
     _Headers = qHeader;
 }
 
-void RaptorUploadViewModel::invokeColumnCountSet(const quint16& qCount)
+void RaptorUploadViewModel::invokeColumnCountSet(const quint16 &qCount)
 {
     _ColumnCount = qCount;
 }
 
-bool RaptorUploadViewModel::removeRow(int qRow, const QModelIndex& qIndex)
+bool RaptorUploadViewModel::removeRow(int qRow, const QModelIndex &qIndex)
 {
     if (qRow < 0 || qRow > _Items.length())
     {
@@ -147,14 +147,14 @@ bool RaptorUploadViewModel::removeRow(int qRow, const QModelIndex& qIndex)
     return true;
 }
 
-void RaptorUploadViewModel::invokeItemAppend(const RaptorTransferItem& item)
+void RaptorUploadViewModel::invokeItemAppend(const RaptorTransferItem &item)
 {
     beginInsertRows(QModelIndex(), _Items.length(), _Items.length());
     _Items << item;
     endInsertRows();
 }
 
-void RaptorUploadViewModel::invokeItemsAppend(const QVector<RaptorTransferItem>& items)
+void RaptorUploadViewModel::invokeItemsAppend(const QVector<RaptorTransferItem> &items)
 {
     if (items.isEmpty())
     {

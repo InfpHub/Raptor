@@ -132,7 +132,7 @@ void RaptorStoryPage::onTabPrevClicked() const
     {
         if (qPushButtonList[i]->isChecked())
         {
-            if (i == 1)
+            if (i == 0)
             {
                 qPushButtonList[qPushButtonList.length() - 1]->setChecked(true);
             }

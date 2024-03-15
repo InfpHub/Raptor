@@ -25,6 +25,7 @@
 #define RAPTORSHARE_H
 
 #include <QClipboard>
+#include <QRegularExpression>
 
 #include "../Toast/RaptorToast.h"
 #include "../../../Component/Eject/RaptorEject.h"

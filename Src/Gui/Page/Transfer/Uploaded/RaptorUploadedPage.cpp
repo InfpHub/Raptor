@@ -67,8 +67,9 @@ QModelIndexList RaptorUploadedPage::invokeSelectItemsGet() const
 
 void RaptorUploadedPage::invokeItemsClear() const
 {
-    if (!RaptorMessageBox::invokeCriticalEject(QStringLiteral("清空记录"),
-                                               QStringLiteral("即将清空上传记录，是否继续?")))
+    if (const auto qOperate = RaptorMessageBox::invokeCriticalEject(QStringLiteral("清空记录"),
+                                               QStringLiteral("即将清空上传记录，是否继续?"));
+                                               qOperate == RaptorMessageBox::No)
     {
         return;
     }
@@ -85,8 +86,9 @@ void RaptorUploadedPage::invokeItemsDelete() const
         return;
     }
 
-    if (!RaptorMessageBox::invokeWarningEject(QStringLiteral("删除记录"),
-                                              QStringLiteral("即将删除所选上传记录，是否继续?")))
+    if (const auto qOperate = RaptorMessageBox::invokeWarningEject(QStringLiteral("删除记录"),
+                                              QStringLiteral("即将删除所选上传记录，是否继续?"));
+                                              qOperate == RaptorMessageBox::No)
     {
         return;
     }
@@ -126,7 +128,8 @@ void RaptorUploadedPage::invokeUiInit()
     _Ui->_ItemView->setItemDelegate(_ItemViewDelegate);
     _Ui->_ItemView->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_ItemView->horizontalHeader()->setFixedHeight(26);
-    _Ui->_ItemView->horizontalHeader()->setMinimumSectionSize(26);
+    _Ui->_ItemView->horizontalHeader()->setMinimumSectionSize(30);
+    _Ui->_ItemView->horizontalHeader()->setDefaultSectionSize(30);
     _Ui->_ItemView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
     _Ui->_ItemView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
     _Ui->_ItemView->verticalHeader()->setDefaultSectionSize(26);
@@ -229,6 +232,11 @@ void RaptorUploadedPage::onItemCompleted(const QVariant& qVariant) const
 
 void RaptorUploadedPage::onItemViewClicked(const QModelIndex& qIndex) const
 {
+    if (!qIndex.isValid())
+    {
+        return;
+    }
+
     const auto item = qIndex.data(Qt::UserRole).value<RaptorTransferItem>();
     _Ui->_ItemCreated->setText(item._Created);
     _Ui->_ItemName->setText(item._Name);

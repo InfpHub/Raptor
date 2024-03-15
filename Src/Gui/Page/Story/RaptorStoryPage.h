@@ -55,6 +55,7 @@ public:
 
     ~RaptorStoryPage() Q_DECL_OVERRIDE;
 
+    [[nodiscard]]
     RaptorAboutPage* invokeAboutPageGet() const;
 
 private:

@@ -39,10 +39,13 @@ public:
                         Qt::Orientation qOrientation,
                         int qRole = Qt::DisplayRole) const Q_DECL_OVERRIDE;
 
+    [[nodiscard]]
     int rowCount(const QModelIndex& qIndex = QModelIndex()) const Q_DECL_OVERRIDE;
 
+    [[nodiscard]]
     int columnCount(const QModelIndex& qIndex = QModelIndex()) const Q_DECL_OVERRIDE;
 
+    [[nodiscard]]
     QVariant data(const QModelIndex& qIndex, int qRole = Qt::DisplayRole) const Q_DECL_OVERRIDE;
 
     bool setData(const QModelIndex& qIndex,
@@ -51,6 +54,7 @@ public:
 
     bool removeRow(int qRow, const QModelIndex& qIndex = QModelIndex());
 
+    [[nodiscard]]
     Qt::ItemFlags flags(const QModelIndex& qIndex) const Q_DECL_OVERRIDE;
 
     void invokeHeaderSet(const QVector<QString>& qHeader);

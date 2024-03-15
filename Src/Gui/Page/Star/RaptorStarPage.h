@@ -31,6 +31,7 @@
 #include "../../Eject/MessageBox/RaptorMessageBox.h"
 #include "../../Eject/Toast/RaptorToast.h"
 #include "../../../Component/Loading/RaptorLoading.h"
+#include "../../../Component/Menu/RaptorMenu.h"
 #include "../../../Component/TableView/RaptorTableView.h"
 #include "../../../Delegate/Page/Common/RaptorTableViewDelegate.h"
 #include "../../../Header/Page/Common/RaptorTableViewHeader.h"
@@ -72,6 +73,7 @@ private:
 
     void invokeSlotInit() const;
 
+    [[nodiscard]]
     QPair<QString, QString> invokeTypeWithCategoryFilter() const;
 
 Q_SIGNALS:
@@ -125,6 +127,8 @@ private Q_SLOTS:
 
     Q_SLOT void onItemViewClicked(const QModelIndex& qIndex) const;
 
+    Q_SLOT void onItemViewCustomContextMenuRequested(const QPoint &qPoint) const;
+
     Q_SLOT void onItemViewSelectionChanged(const QItemSelection& qSelected,
                                            const QItemSelection& qDeselected) const;
 
@@ -133,6 +137,7 @@ private Q_SLOTS:
 private:
     Ui::RaptorStarPage* _Ui = Q_NULLPTR;
     QButtonGroup* _TabGroup = Q_NULLPTR;
+    RaptorMenu *_ItemViewContextMenu = Q_NULLPTR;
     RaptorStarViewModel* _ItemViewModel = Q_NULLPTR;
     RaptorTableViewHeader* _ItemViewHeader = Q_NULLPTR;
     RaptorTableViewDelegate* _ItemViewDelegate = Q_NULLPTR;

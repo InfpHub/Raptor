@@ -119,7 +119,7 @@ bool RaptorUserViewModel::setData(const QModelIndex& qIndex, const QVariant& qVa
     const auto item = qVariant.value<RaptorAuthenticationItem>();
     _Items.replace(qIndex.row(), item);
     Q_EMIT dataChanged(qIndex, qIndex);
-    return true;
+        return QAbstractTableModel::setData(qIndex, qVariant, qRole);
 }
 
 bool RaptorUserViewModel::removeRow(int qRow, const QModelIndex& qIndex)

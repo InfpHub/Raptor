@@ -24,7 +24,7 @@
 #include "RaptorPlusPage.h"
 #include "ui_RaptorPlusPage.h"
 
-RaptorPlusPage::RaptorPlusPage(QWidget* qParent) : QWidget(qParent),
+RaptorPlusPage::RaptorPlusPage(QWidget *qParent) : QWidget(qParent),
                                                    _Ui(new Ui::RaptorPlusPage)
 {
     _Ui->setupUi(this);
@@ -38,13 +38,13 @@ RaptorPlusPage::~RaptorPlusPage()
     FREE(_Ui)
 }
 
-bool RaptorPlusPage::eventFilter(QObject* qObject, QEvent* qEvent)
+bool RaptorPlusPage::eventFilter(QObject *qObject, QEvent *qEvent)
 {
     if (qObject == _Ui->_SearchEdit)
     {
         if (qEvent->type() == QEvent::KeyPress)
         {
-            if (const auto qKeyEvent = static_cast<QKeyEvent*>(qEvent);
+            if (const auto qKeyEvent = static_cast<QKeyEvent *>(qEvent);
                 qKeyEvent->key() == Qt::Key_Enter || qKeyEvent->key() == Qt::Key_Return)
             {
                 onSearchClicked();
@@ -56,9 +56,14 @@ bool RaptorPlusPage::eventFilter(QObject* qObject, QEvent* qEvent)
     return QWidget::eventFilter(qObject, qEvent);
 }
 
-RaptorCopyPage* RaptorPlusPage::invokeCopyPageGet() const
+RaptorCopyPage *RaptorPlusPage::invokeCopyPageGet() const
 {
     return _Ui->_CopyPage;
+}
+
+RaptorCleanPage *RaptorPlusPage::invokeCleanPageGet() const
+{
+    return _Ui->_CleanPage;
 }
 
 void RaptorPlusPage::invokeInstanceInit()
@@ -66,6 +71,7 @@ void RaptorPlusPage::invokeInstanceInit()
     _TabGroup = new QButtonGroup(this);
     _TabGroup->setExclusive(true);
     _TabGroup->addButton(_Ui->_TabCopy);
+    _TabGroup->addButton(_Ui->_TabClean);
 }
 
 void RaptorPlusPage::invokeUiInit()
@@ -74,7 +80,8 @@ void RaptorPlusPage::invokeUiInit()
     _Ui->_TabPrev->setIcon(QIcon(RaptorUtil::invokeIconMatch("Left", false, true)));
     _Ui->_TabPrev->setIconSize(QSize(14, 14));
     _Ui->_TabCopy->setChecked(true);
-    _Ui->_TabCopy->setText(QStringLiteral("复制"));
+    _Ui->_TabCopy->setText(QStringLiteral("跨网盘复制"));
+    _Ui->_TabClean->setText(QStringLiteral("大文件清理"));
     _Ui->_TabNext->setIcon(QIcon(RaptorUtil::invokeIconMatch("Right", false, true)));
     _Ui->_TabNext->setIconSize(QSize(14, 14));
     _Ui->_SearchEdit->setContextMenuPolicy(Qt::NoContextMenu);
@@ -82,7 +89,9 @@ void RaptorPlusPage::invokeUiInit()
     _Ui->_Search->setIconSize(QSize(16, 16));
     _Ui->_SearchEdit->installEventFilter(this);
     _Ui->_Execute->setText(QStringLiteral("执行"));
+    _Ui->_Refresh->setText(QStringLiteral("刷新"));
     _Ui->_Cancel->setText(QStringLiteral("取消"));
+    _Ui->_Body->setCurrentWidget(_Ui->_CopyPage);
 }
 
 void RaptorPlusPage::invokeSlotInit() const
@@ -96,6 +105,11 @@ void RaptorPlusPage::invokeSlotInit() const
             &QPushButton::toggled,
             this,
             &RaptorPlusPage::onTabCopyToggled);
+
+    connect(_Ui->_TabClean,
+            &QPushButton::toggled,
+            this,
+            &RaptorPlusPage::onTabCleanToggled);
 
     connect(_Ui->_TabNext,
             &QPushButton::clicked,
@@ -117,13 +131,23 @@ void RaptorPlusPage::invokeSlotInit() const
             this,
             &RaptorPlusPage::onExecuteClicked);
 
+    connect(_Ui->_Refresh,
+            &QPushButton::clicked,
+            this,
+            &RaptorPlusPage::onRefreshClicked);
+
     connect(_Ui->_Cancel,
             &QPushButton::clicked,
             this,
             &RaptorPlusPage::onCancelClicked);
+
+    connect(_Ui->_Body,
+            &QStackedWidget::currentChanged,
+            this,
+            &RaptorPlusPage::onBodyChanged);
 }
 
-void RaptorPlusPage::onItemCopyWriterHaveFound(const QVariant& qVariant) const
+void RaptorPlusPage::onItemCopyWriterHaveFound(const QVariant &qVariant) const
 {
     const auto [_State, _Message, _Data] = qVariant.value<RaptorOutput>();
     if (!_State)
@@ -131,8 +155,8 @@ void RaptorPlusPage::onItemCopyWriterHaveFound(const QVariant& qVariant) const
         return;
     }
 
-    const auto items = _Data.value<QVector<RaptorCopyWriter>>();
-    for (auto& [_Page, _Content] : items)
+    const auto items = _Data.value<QVector<RaptorCopyWriter> >();
+    for (auto &[_Page, _Content]: items)
     {
         if (_Page == metaObject()->className())
         {
@@ -142,7 +166,7 @@ void RaptorPlusPage::onItemCopyWriterHaveFound(const QVariant& qVariant) const
     }
 }
 
-void RaptorPlusPage::onItemLogouting(const QVariant& qVariant) const
+void RaptorPlusPage::onItemLogouting(const QVariant &qVariant) const
 {
     const auto input = qVariant.value<RaptorInput>();
     if (const auto item = input._Variant.value<RaptorAuthenticationItem>();
@@ -156,7 +180,7 @@ void RaptorPlusPage::onItemLogouting(const QVariant& qVariant) const
 
 void RaptorPlusPage::onTabPrevClicked() const
 {
-    auto qPushButtonList = _Ui->_TabPanel->findChildren<QPushButton*>();
+    auto qPushButtonList = _Ui->_TabPanel->findChildren<QPushButton *>();
     qPushButtonList.pop_front();
     qPushButtonList.pop_back();
     if (qPushButtonList.length() < 2)
@@ -168,11 +192,10 @@ void RaptorPlusPage::onTabPrevClicked() const
     {
         if (qPushButtonList[i]->isChecked())
         {
-            if (i == 1)
+            if (i == 0)
             {
                 qPushButtonList[qPushButtonList.length() - 1]->setChecked(true);
-            }
-            else
+            } else
             {
                 qPushButtonList[i - 1]->setChecked(true);
             }
@@ -192,9 +215,20 @@ void RaptorPlusPage::onTabCopyToggled() const
     _Ui->_Body->setCurrentWidget(_Ui->_CopyPage);
 }
 
+void RaptorPlusPage::onTabCleanToggled() const
+{
+    if (_Ui->_Body->currentWidget() == _Ui->_CleanPage)
+    {
+        return;
+    }
+
+    _Ui->_CleanPage->invokeNavigate();
+    _Ui->_Body->setCurrentWidget(_Ui->_CleanPage);
+}
+
 void RaptorPlusPage::onTabNextClicked() const
 {
-    auto qPushButtonList = _Ui->_TabPanel->findChildren<QPushButton*>();
+    auto qPushButtonList = _Ui->_TabPanel->findChildren<QPushButton *>();
     qPushButtonList.pop_front();
     qPushButtonList.pop_back();
     if (qPushButtonList.length() < 2)
@@ -209,8 +243,7 @@ void RaptorPlusPage::onTabNextClicked() const
             if (i == qPushButtonList.length() - 1)
             {
                 qPushButtonList[0]->setChecked(true);
-            }
-            else
+            } else
             {
                 qPushButtonList[i + 1]->setChecked(true);
             }
@@ -243,6 +276,25 @@ void RaptorPlusPage::onExecuteClicked() const
     if (_Ui->_Body->currentWidget() == _Ui->_CopyPage)
     {
         _Ui->_CopyPage->invokeItemsCopy();
+    } else if (_Ui->_Body->currentWidget() == _Ui->_CleanPage)
+    {
+        _Ui->_CleanPage->invokeItemClean();
+    }
+}
+
+void RaptorPlusPage::onRefreshClicked() const
+{
+    if (!RaptorStoreSuite::invokeUserIsValidConfirm())
+    {
+        return;
+    }
+
+    if (_Ui->_Body->currentWidget() == _Ui->_CopyPage)
+    {
+        _Ui->_CopyPage->invokeRefresh();
+    } else if (_Ui->_Body->currentWidget() == _Ui->_CleanPage)
+    {
+        _Ui->_CleanPage->invokeNavigate();
     }
 }
 
@@ -256,5 +308,27 @@ void RaptorPlusPage::onCancelClicked() const
     if (_Ui->_Body->currentWidget() == _Ui->_CopyPage)
     {
         _Ui->_CopyPage->invokeItemCancel();
+    }
+}
+
+void RaptorPlusPage::onBodyChanged(const int &qIndex) const
+{
+    if (const auto qWidget = _Ui->_Body->widget(qIndex);
+        qWidget == _Ui->_CopyPage)
+    {
+        _Ui->_SearchEdit->setEnabled(true);
+        _Ui->_SearchEdit->setVisible(true);
+        _Ui->_Search->setEnabled(true);
+        _Ui->_Search->setVisible(true);
+        _Ui->_Cancel->setEnabled(true);
+        _Ui->_Cancel->setVisible(true);
+    } else
+    {
+        _Ui->_SearchEdit->setVisible(false);
+        _Ui->_SearchEdit->setEnabled(false);
+        _Ui->_Search->setVisible(false);
+        _Ui->_Search->setEnabled(false);
+        _Ui->_Cancel->setVisible(false);
+        _Ui->_Cancel->setEnabled(false);
     }
 }

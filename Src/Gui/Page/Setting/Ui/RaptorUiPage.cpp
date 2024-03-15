@@ -24,7 +24,7 @@
 #include "RaptorUiPage.h"
 #include "ui_RaptorUiPage.h"
 
-RaptorUiPage::RaptorUiPage(QWidget* qParent) : QWidget(qParent),
+RaptorUiPage::RaptorUiPage(QWidget *qParent) : QWidget(qParent),
                                                _Ui(new Ui::RaptorUiPage)
 {
     _Ui->setupUi(this);
@@ -41,7 +41,7 @@ RaptorUiPage::~RaptorUiPage()
 void RaptorUiPage::invokeInstanceInit()
 {
     _ThemeGroup = new QButtonGroup(this);
-    _ThemeGroup->addButton(_Ui->_ThemeSystem);
+    _ThemeGroup->addButton(_Ui->_ThemeAuto);
     _ThemeGroup->addButton(_Ui->_ThemeLight);
     _ThemeGroup->addButton(_Ui->_ThemeDark);
     _ThemeGroup->setExclusive(true);
@@ -56,8 +56,8 @@ void RaptorUiPage::invokeUiInit() const
     _Ui->_ThemeTip->setText(QStringLiteral("主题:"));
     const auto qTheme = RaptorSettingSuite::invokeItemFind(Setting::Section::Ui,
                                                            Setting::Ui::Theme).toString();
-    _Ui->_ThemeSystem->setChecked(qTheme == Setting::Ui::System);
-    _Ui->_ThemeSystem->setText(QStringLiteral("系统"));
+    _Ui->_ThemeAuto->setChecked(qTheme == Setting::Ui::Auto);
+    _Ui->_ThemeAuto->setText(QStringLiteral("自动"));
     _Ui->_ThemeLight->setChecked(qTheme == Setting::Ui::Light);
     _Ui->_ThemeLight->setText(QStringLiteral("亮色"));
     _Ui->_ThemeDark->setChecked(qTheme == Setting::Ui::Dark);
@@ -65,10 +65,27 @@ void RaptorUiPage::invokeUiInit() const
     _Ui->_FontTip->setText(QStringLiteral("字体:"));
     _Ui->_Font->setText(RaptorSettingSuite::invokeItemFind(Setting::Section::Ui,
                                                            Setting::Ui::Font).toString());
+    _Ui->_NoticeTip->setText(QStringLiteral("通知:"));
+    _Ui->_Notice->setText(QStringLiteral("允许来自 %1 仓库的新版本和公告通知").arg(APPLICATION_NAME));
+    _Ui->_Notice->setChecked(RaptorSettingSuite::invokeItemFind(Setting::Section::Ui,
+                                                                  Setting::Ui::Notice).toBool());
     _Ui->_AutoSignTip->setText(QStringLiteral("签到:"));
     _Ui->_AutoSign->setText(QStringLiteral("自动签到"));
     _Ui->_AutoSign->setChecked(RaptorSettingSuite::invokeItemFind(Setting::Section::Ui,
                                                                   Setting::Ui::Sign).toBool());
+    _Ui->_ContextMenuTip->setText(QStringLiteral("视图菜单:"));
+    _Ui->_ContextMenu->setText(QStringLiteral("启用视图菜单"));
+    _Ui->_ContextMenu->setChecked(RaptorSettingSuite::invokeItemFind(Setting::Section::Ui,
+                                                                     Setting::Ui::ContextMenu).toBool());
+    _Ui->_TrayIconTip->setText(QStringLiteral("托盘图标:"));
+    _Ui->_TrayIcon->setText(QStringLiteral("启用托盘图标"));
+    _Ui->_TrayIcon->setChecked(RaptorSettingSuite::invokeItemFind(Setting::Section::Ui,
+                                                                  Setting::Ui::TrayIcon).toBool());
+    _Ui->_MinimizeToTrayTip->setText(QStringLiteral("最小化到托盘:"));
+    _Ui->_MinimizeToTray->setText(QStringLiteral("关闭时最小化到托盘而不是退出"));
+    _Ui->_MinimizeToTray->setEnabled(_Ui->_TrayIcon->isChecked());
+    _Ui->_MinimizeToTray->setChecked(RaptorSettingSuite::invokeItemFind(Setting::Section::Ui,
+                                                                        Setting::Ui::MinimizeToTray).toBool());
 }
 
 void RaptorUiPage::invokeSlotInit() const
@@ -78,10 +95,10 @@ void RaptorUiPage::invokeSlotInit() const
             this,
             &RaptorUiPage::onDebounceTimerTimeout);
 
-    connect(_Ui->_ThemeSystem,
+    connect(_Ui->_ThemeAuto,
             &QPushButton::clicked,
             this,
-            &RaptorUiPage::onThemeSystemClicked);
+            &RaptorUiPage::onThemeAutoClicked);
 
     connect(_Ui->_ThemeLight,
             &QPushButton::clicked,
@@ -98,23 +115,43 @@ void RaptorUiPage::invokeSlotInit() const
             this,
             &RaptorUiPage::onFontClicked);
 
+    connect(_Ui->_Notice,
+            &QCheckBox::stateChanged,
+            this,
+            &RaptorUiPage::onNoticeStateChanged);
+
     connect(_Ui->_AutoSign,
             &QCheckBox::stateChanged,
             this,
             &RaptorUiPage::onAutoSignStateChanged);
+
+    connect(_Ui->_ContextMenu,
+            &QCheckBox::stateChanged,
+            this,
+            &RaptorUiPage::onContextMenuStateChanged);
+
+    connect(_Ui->_TrayIcon,
+            &QCheckBox::stateChanged,
+            this,
+            &RaptorUiPage::onTrayIconStateChanged);
+
+    connect(_Ui->_MinimizeToTray,
+            &QCheckBox::stateChanged,
+            this,
+            &RaptorUiPage::onMinimizeToTrayStateChanged);
 }
 
 void RaptorUiPage::onDebounceTimerTimeout() const
 {
     const auto items = _DebounceTimer->dynamicPropertyNames();
-    for (auto& item : items)
+    for (auto &item: items)
     {
-        const auto qPair = _DebounceTimer->property(item).value<QPair<QString, QVariant>>();
-        RaptorSettingSuite::invokeItemSave(qPair.first, item, qPair.second);
+        const auto [qKey, qValue] = _DebounceTimer->property(item).value<QPair<QString, QVariant> >();
+        RaptorSettingSuite::invokeItemSave(qKey, item, qValue);
     }
 }
 
-void RaptorUiPage::onThemeSystemClicked(const bool& qChecked) const
+void RaptorUiPage::onThemeAutoClicked(const bool &qChecked) const
 {
     if (!qChecked)
     {
@@ -122,11 +159,13 @@ void RaptorUiPage::onThemeSystemClicked(const bool& qChecked) const
     }
 
     _DebounceTimer->setProperty(Setting::Ui::Theme,
-                                QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Ui, QVariant::fromValue<QString>(Setting::Ui::System))));
+                                QVariant::fromValue<QPair<QString, QVariant> >(
+                                    qMakePair(Setting::Section::Ui,
+                                              QVariant::fromValue<QString>(Setting::Ui::Auto))));
     _DebounceTimer->start();
 }
 
-void RaptorUiPage::onThemeLightClicked(const bool& qChecked) const
+void RaptorUiPage::onThemeLightClicked(const bool &qChecked) const
 {
     if (!qChecked)
     {
@@ -134,11 +173,12 @@ void RaptorUiPage::onThemeLightClicked(const bool& qChecked) const
     }
 
     _DebounceTimer->setProperty(Setting::Ui::Theme,
-                                QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Ui, QVariant::fromValue<QString>(Setting::Ui::Light))));
+                                QVariant::fromValue<QPair<QString, QVariant> >(
+                                    qMakePair(Setting::Section::Ui, QVariant::fromValue<QString>(Setting::Ui::Light))));
     _DebounceTimer->start();
 }
 
-void RaptorUiPage::onThemeDarkClicked(const bool& qChecked) const
+void RaptorUiPage::onThemeDarkClicked(const bool &qChecked) const
 {
     if (!qChecked)
     {
@@ -146,7 +186,8 @@ void RaptorUiPage::onThemeDarkClicked(const bool& qChecked) const
     }
 
     _DebounceTimer->setProperty(Setting::Ui::Theme,
-                                QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Ui, QVariant::fromValue<QString>(Setting::Ui::Dark))));
+                                QVariant::fromValue<QPair<QString, QVariant> >(
+                                    qMakePair(Setting::Section::Ui, QVariant::fromValue<QString>(Setting::Ui::Dark))));
     _DebounceTimer->start();
 }
 
@@ -160,21 +201,93 @@ void RaptorUiPage::onFontClicked() const
 
     _Ui->_Font->setText(qFontName);
     _DebounceTimer->setProperty(Setting::Ui::Font,
-                                QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Ui, QVariant::fromValue<QString>(qFontName))));
+                                QVariant::fromValue<QPair<QString, QVariant> >(
+                                    qMakePair(Setting::Section::Ui, QVariant::fromValue<QString>(qFontName))));
     _DebounceTimer->start();
 }
 
-void RaptorUiPage::onAutoSignStateChanged(const int& qState) const
+void RaptorUiPage::onNoticeStateChanged(const int &qState) const
+{
+    if (qState == Qt::Checked)
+    {
+        _DebounceTimer->setProperty(Setting::Ui::Notice,
+                                    QVariant::fromValue<QPair<QString, QVariant> >(
+                                        qMakePair(Setting::Section::Ui, QVariant::fromValue<bool>(true))));
+    } else if (qState == Qt::Unchecked)
+    {
+        _DebounceTimer->setProperty(Setting::Ui::Notice,
+                                    QVariant::fromValue<QPair<QString, QVariant> >(
+                                        qMakePair(Setting::Section::Ui, QVariant::fromValue<bool>(false))));
+    }
+
+    _DebounceTimer->start();
+}
+
+void RaptorUiPage::onAutoSignStateChanged(const int &qState) const
 {
     if (qState == Qt::Checked)
     {
         _DebounceTimer->setProperty(Setting::Ui::Sign,
-                                    QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Ui, QVariant::fromValue<bool>(true))));
-    }
-    else if (qState == Qt::Unchecked)
+                                    QVariant::fromValue<QPair<QString, QVariant> >(
+                                        qMakePair(Setting::Section::Ui, QVariant::fromValue<bool>(true))));
+    } else if (qState == Qt::Unchecked)
     {
         _DebounceTimer->setProperty(Setting::Ui::Sign,
-                                    QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Ui, QVariant::fromValue<bool>(false))));
+                                    QVariant::fromValue<QPair<QString, QVariant> >(
+                                        qMakePair(Setting::Section::Ui, QVariant::fromValue<bool>(false))));
+    }
+
+    _DebounceTimer->start();
+}
+
+void RaptorUiPage::onContextMenuStateChanged(const int &qState) const
+{
+    if (qState == Qt::Checked)
+    {
+        _DebounceTimer->setProperty(Setting::Ui::ContextMenu,
+                                    QVariant::fromValue<QPair<QString, QVariant> >(
+                                        qMakePair(Setting::Section::Ui, QVariant::fromValue<bool>(true))));
+    } else if (qState == Qt::Unchecked)
+    {
+        _DebounceTimer->setProperty(Setting::Ui::ContextMenu,
+                                    QVariant::fromValue<QPair<QString, QVariant> >(
+                                        qMakePair(Setting::Section::Ui, QVariant::fromValue<bool>(false))));
+    }
+
+    _DebounceTimer->start();
+}
+
+void RaptorUiPage::onTrayIconStateChanged(const int &qState) const
+{
+    if (qState == Qt::Checked)
+    {
+        _Ui->_MinimizeToTray->setEnabled(true);
+        _DebounceTimer->setProperty(Setting::Ui::TrayIcon,
+                                    QVariant::fromValue<QPair<QString, QVariant> >(
+                                        qMakePair(Setting::Section::Ui, QVariant::fromValue<bool>(true))));
+    } else if (qState == Qt::Unchecked)
+    {
+        _Ui->_MinimizeToTray->setEnabled(false);
+        _DebounceTimer->setProperty(Setting::Ui::TrayIcon,
+                                    QVariant::fromValue<QPair<QString, QVariant> >(
+                                        qMakePair(Setting::Section::Ui, QVariant::fromValue<bool>(false))));
+    }
+
+    _DebounceTimer->start();
+}
+
+void RaptorUiPage::onMinimizeToTrayStateChanged(const int &qState) const
+{
+    if (qState == Qt::Checked)
+    {
+        _DebounceTimer->setProperty(Setting::Ui::MinimizeToTray,
+                                    QVariant::fromValue<QPair<QString, QVariant> >(
+                                        qMakePair(Setting::Section::Ui, QVariant::fromValue<bool>(true))));
+    } else if (qState == Qt::Unchecked)
+    {
+        _DebounceTimer->setProperty(Setting::Ui::MinimizeToTray,
+                                    QVariant::fromValue<QPair<QString, QVariant> >(
+                                        qMakePair(Setting::Section::Ui, QVariant::fromValue<bool>(false))));
     }
 
     _DebounceTimer->start();

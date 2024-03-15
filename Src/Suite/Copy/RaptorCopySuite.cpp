@@ -25,40 +25,72 @@
 
 Q_GLOBAL_STATIC(RaptorCopySuite, _CopySuite)
 
-RaptorCopySuite* RaptorCopySuite::invokeSingletonGet()
+RaptorCopySuite *RaptorCopySuite::invokeSingletonGet()
 {
     return _CopySuite();
 }
 
-RaptorOutput RaptorCopySuite::invokeItemRapid(const RaptorAuthenticationItem& item,
-                                              const RaptorFileItem& iten)
+
+QPair<QString, QString> RaptorCopySuite::invokeItemCreate(const RaptorAuthenticationItem &item,
+                                                          const QString &qParent,
+                                                          const QString &qName)
+{
+    auto qHttpPayload = RaptorHttpPayload();
+    qHttpPayload._Url = "https://api.aliyundrive.com/adrive/v2/file/createWithFolders";
+    USE_HEADER_X_CANARY(qHttpPayload)
+    USE_HEADER_REFERER(qHttpPayload)
+    USE_HEADER_CUSTOM_X_DEVICE_ID(qHttpPayload, item._Session._Device)
+    USE_HEADER_CUSTOM_X_SIGNATURE(qHttpPayload, item._Session._Signature)
+    USE_HEADER_CUSTOM_AUTHORIZATION(qHttpPayload, item._AccessToken)
+    USE_HEADER_APPLICATION_JSON(qHttpPayload)
+    auto qRow = QJsonObject();
+    qRow["check_name_mode"] = "refuse";
+    qRow["drive_id"] = item._Space;
+    qRow["parent_file_id"] = qParent;
+    qRow["type"] = "folder";
+    qRow["name"] = qName;
+    qHttpPayload._Body = QJsonDocument(qRow);
+    const auto [qError, qStatus, qBody] = RaptorHttpSuite::invokePost(qHttpPayload);
+    if (!qError.isEmpty())
+    {
+        qCritical() << qError;
+        return qMakePair(qError, QString());
+    }
+
+    const auto qDocument = QJsonDocument::fromJson(qBody);
+    if (qStatus != RaptorHttpStatus::Created)
+    {
+        qCritical() << qDocument.toJson();
+        return qMakePair(QString("%1: %2").arg(qDocument["code"].toString(), qDocument["message"].toString()), QString());
+    }
+
+    return qMakePair(QString(), qDocument["file_id"].toString());
+}
+
+QPair<QString, bool> RaptorCopySuite::invokeItemRapid(const RaptorAuthenticationItem &item,
+                                                      const RaptorFileItem &iten)
 {
     const auto qMD5 = QCryptographicHash::hash(item._AccessToken.toUtf8(), QCryptographicHash::Md5)
-                      .toHex()
-                      .left(16)
-                      .toULongLong(Q_NULLPTR, 16);
+            .toHex()
+            .left(16)
+            .toULongLong(Q_NULLPTR, 16);
     const auto qByte = iten._Byte;
     const auto qOffset = qByte ? qMD5 % qByte : 0;
     auto qHttpPayload = RaptorHttpPayload();
     qHttpPayload._Url = iten._Url;
     qHttpPayload._Header.insert("Range", QStringLiteral("bytes=%1-%2").arg(qOffset).arg(qMin(8 + qOffset, qByte) - 1));
-    auto output = RaptorOutput();
     const auto [qError, qStatus, qBody] = RaptorHttpSuite::invokeGet(qHttpPayload);
     if (!qError.isEmpty())
     {
         qCritical() << qError;
-        output._State = false;
-        output._Message = qError;
-        return output;
+        return qMakePair(qError, false);
     }
 
     const auto qDocument = QJsonDocument::fromJson(qBody);
     if (qStatus != RaptorHttpStatus::PartialContent)
     {
         qCritical() << qDocument.toJson();
-        output._State = false;
-        output._Message = QString("%1: %2").arg(qDocument["code"].toString(), qDocument["message"].toString());
-        return output;
+        return qMakePair(QString("%1: %2").arg(qDocument["code"].toString(), qDocument["message"].toString()), false);
     }
 
     const auto qProofCode = QString::fromUtf8(qBody.toBase64());
@@ -76,11 +108,7 @@ RaptorOutput RaptorCopySuite::invokeItemRapid(const RaptorAuthenticationItem& it
     qRow["content_hash"] = iten._SHA1;
     qRow["content_hash_name"] = "sha1";
     qRow["create_scene"] = "file_upload";
-    qRow["device_name"] = QStringLiteral("%1 %2.%3.%4")
-                          .arg(APPLICATION_NAME)
-                          .arg(MAJOR_VERSION)
-                          .arg(MINOR_VERSION)
-                          .arg(PATCH_VERSION);
+    qRow["device_name"] = QStringLiteral("%1 %2.%3.%4").arg(APPLICATION_NAME, QString::number(MAJOR_VERSION), QString::number(MINOR_VERSION), QString::number(PATCH_VERSION));
     qRow["drive_id"] = item._Space;
     qRow["name"] = iten._Name;
     qRow["proof_code"] = qProofCode;
@@ -91,36 +119,139 @@ RaptorOutput RaptorCopySuite::invokeItemRapid(const RaptorAuthenticationItem& it
     const auto [qErros, qStatut, qBodz] = RaptorHttpSuite::invokePost(qHttpPayloae);
     if (!qErros.isEmpty())
     {
-        qCritical() << qError;
-        output._State = false;
-        output._Message = qErros;
-        return output;
+        qCritical() << qErros;
+        return qMakePair(qErros, false);
     }
 
     const auto qDocumenu = QJsonDocument::fromJson(qBodz);
     if (qStatut != RaptorHttpStatus::Created)
     {
         qCritical() << qDocumenu.toJson();
-        output._State = false;
-        output._Message = qDocumenu["message"].toString();
-        return output;
+        return qMakePair(qDocumenu["message"].toString(), false);
     }
 
-    if (qDocumenu["rapid_upload"].toBool())
+    if (!qDocumenu["rapid_upload"].toBool())
     {
-        output._State = true;
-        output._Data = QVariant::fromValue<bool>(true);
-    }
-    else
-    {
-        output._State = false;
-        output._Data = QVariant::fromValue<bool>(false);
+        return qMakePair(QStringLiteral("秒传失败"), false);
     }
 
-    return output;
+    return qMakePair(QString(), true);
 }
 
-void RaptorCopySuite::onItemsByParentIdFetching(const QVariant& qVariant)
+void RaptorCopySuite::invokeItemsTreeBuild(const QVector<RaptorFileItem> &items, const QString &qParent)
+{
+    for (const auto &item: items)
+    {
+        const auto iten = new Node();
+        iten->_Item = item;
+        _Items << iten;
+    }
+
+    for (const auto item: _Items)
+    {
+        if (item->_Item._Id == qParent || item->_Item._Parent == qParent)
+        {
+            _Item = item;
+            break;
+        }
+    }
+
+    for (const auto item: _Items)
+    {
+        if (item == _Item)
+        {
+            continue;
+        }
+
+        for (const auto iten: _Items)
+        {
+            if (iten->_Item._Id == item->_Item._Parent)
+            {
+                iten->_Children << item;
+                break;
+            }
+        }
+    }
+}
+
+void RaptorCopySuite::invokeItemPreorderTraversal(const Node *qRoot,
+                                                  const QString &qParent,
+                                                  const QPair<RaptorAuthenticationItem, RaptorAuthenticationItem> &qUser) const
+{
+    if (!qRoot)
+    {
+        return;
+    }
+
+    auto item = qRoot->_Item;
+    qDebug() << item._Name;
+    auto qParenu = qParent;
+    auto output = RaptorOutput();
+    if (item._Type == "folder")
+    {
+        const auto [qError, qParenv] = invokeItemCreate(qUser.second, qParent, item._Name);
+        if (!qError.isEmpty())
+        {
+            output._State = false;
+            output._Message = qError;
+            output._Data = QVariant::fromValue<RaptorFileItem>(item);
+            Q_EMIT itemCopied(QVariant::fromValue<RaptorOutput>(output));
+            return;
+        }
+
+        qParenu = qParenv;
+    } else if (item._Type == "file")
+    {
+        const auto [qError, qUrl] = RaptorFileSuite::invokeItemUrlFetch(qUser.first, item._Id);
+        if (!qError.isEmpty())
+        {
+            output._State = qError.isEmpty();
+            output._Message = qError;
+            output._Data = QVariant::fromValue<RaptorFileItem>(item);
+            Q_EMIT itemCopied(QVariant::fromValue<RaptorOutput>(output));
+            return;
+        }
+
+        item._Url = qUrl;
+        item._Parent = qParenu;
+        const auto [qErros, qState] = invokeItemRapid(qUser.second, item);
+        if (!qErros.isEmpty())
+        {
+            output._State = false;
+            output._Message = qErros;
+            output._Data = QVariant::fromValue<RaptorFileItem>(item);
+            Q_EMIT itemCopied(QVariant::fromValue<RaptorOutput>(output));
+            return;
+        }
+
+        if (!qState)
+        {
+            output._State = false;
+            output._Message = qErros;
+            output._Data = QVariant::fromValue<RaptorFileItem>(item);
+            Q_EMIT itemCopied(QVariant::fromValue<RaptorOutput>(output));
+            return;
+        }
+
+        output._State = true;
+        output._Data = QVariant::fromValue<RaptorFileItem>(item);
+        Q_EMIT itemCopied(QVariant::fromValue<RaptorOutput>(output));
+    }
+
+    for (const auto iten: qRoot->_Children)
+    {
+        if (_Cancel)
+        {
+            output._State = true;
+            Q_EMIT itemsCancelled(QVariant::fromValue<RaptorOutput>(output));
+            break;
+        }
+
+        invokeItemPreorderTraversal(iten, qParenu, qUser);
+    }
+}
+
+void RaptorCopySuite::onItemsByParentIdFetching(const QVariant &qVariant) const
 {
     auto input = qVariant.value<RaptorInput>();
     auto qHttpPayload = RaptorHttpPayload();
@@ -163,11 +294,11 @@ void RaptorCopySuite::onItemsByParentIdFetching(const QVariant& qVariant)
     input._Marker = qDocument["next_marker"].toString();
     const auto items = RaptorFileSuite::invokeMapToItems(itens);
     output._State = true;
-    output._Data = QVariant::fromValue<QPair<RaptorInput, QVector<RaptorFileItem>>>(qMakePair(input, items));
+    output._Data = QVariant::fromValue<QPair<RaptorInput, QVector<RaptorFileItem> > >(qMakePair(input, items));
     Q_EMIT itemsFetched(QVariant::fromValue<RaptorOutput>(output));
 }
 
-void RaptorCopySuite::onItemsByIdFetching(const QVariant& qVariant)
+void RaptorCopySuite::onItemsByIdFetching(const QVariant &qVariant) const
 {
     auto input = qVariant.value<RaptorInput>();
     auto qHttpPayload = RaptorHttpPayload();
@@ -207,7 +338,7 @@ void RaptorCopySuite::onItemsByIdFetching(const QVariant& qVariant)
     onItemsByParentIdFetching(QVariant::fromValue<RaptorInput>(input));
 }
 
-void RaptorCopySuite::onItemsByConditionFetching(const QVariant& qVariant)
+void RaptorCopySuite::onItemsByConditionFetching(const QVariant &qVariant) const
 {
     auto input = qVariant.value<RaptorInput>();
     auto qHttpPayload = RaptorHttpPayload();
@@ -218,7 +349,7 @@ void RaptorCopySuite::onItemsByConditionFetching(const QVariant& qVariant)
     USE_HEADER_CUSTOM_X_SIGNATURE(qHttpPayload, input._Variant.value<RaptorAuthenticationItem>()._Session._Signature)
     USE_HEADER_CUSTOM_AUTHORIZATION(qHttpPayload, input._Variant.value<RaptorAuthenticationItem>()._AccessToken)
     USE_HEADER_APPLICATION_JSON(qHttpPayload)
-    auto qCondition = QStringLiteral(R"(name match "%1")").arg(input._Name);
+    const auto qCondition = QStringLiteral(R"(name match "%1")").arg(input._Name);
     auto qRow = QJsonObject();
     qRow["drive_id"] = input._Variant.value<RaptorAuthenticationItem>()._Space;
     qRow["query"] = qCondition;
@@ -250,23 +381,17 @@ void RaptorCopySuite::onItemsByConditionFetching(const QVariant& qVariant)
     input._Marker = qDocument["marker"].toString();
     const auto items = RaptorFileSuite::invokeMapToItems(itens);
     output._State = true;
-    output._Data = QVariant::fromValue<QPair<RaptorInput, QVector<RaptorFileItem>>>(qMakePair(input, items));
+    output._Data = QVariant::fromValue<QPair<RaptorInput, QVector<RaptorFileItem> > >(qMakePair(input, items));
     Q_EMIT itemsFetched(QVariant::fromValue<RaptorOutput>(output));
 }
 
-void RaptorCopySuite::onItemsCopying(const QVariant& qVariant)
+void RaptorCopySuite::onItemsCopying(const QVariant &qVariant)
 {
     const auto input = qVariant.value<RaptorInput>();
-    const auto qPair = input._Variant.value<QPair<RaptorAuthenticationItem, RaptorAuthenticationItem>>();
-    const auto qIndexList = input._Indexes;
+    const auto qUser = input._Variant.value<QPair<RaptorAuthenticationItem, RaptorAuthenticationItem> >();
     auto output = RaptorOutput();
-    for (auto i = 0; i < qIndexList.length(); ++i)
+    for (const auto &qIndex: input._Indexes)
     {
-        if (!RaptorStoreSuite::invokeUserIsValidConfirm())
-        {
-            break;
-        }
-
         if (_Cancel)
         {
             output._State = true;
@@ -274,36 +399,22 @@ void RaptorCopySuite::onItemsCopying(const QVariant& qVariant)
             break;
         }
 
-        const auto qIndex = qIndexList[i];
-        auto item = qIndex.data(Qt::UserRole).value<RaptorFileItem>();
-        const auto [_State, _Message, _Data] = RaptorFileSuite::invokeItemUrlFetch(qPair.first, item._Id);
-        if (!_State)
+        const auto item = qIndex.data(Qt::UserRole).value<RaptorFileItem>();
+        auto [qError, items] = RaptorDownloadingSuite::invokeItemsWalk(item._Id);
+        if (!qError.isEmpty())
         {
-            output._State = false;
-            output._Message = _Message;
-            Q_EMIT itemCopied(QVariant::fromValue<RaptorOutput>(output));
+            output._State = true;
+            output._Message = qError;
+            Q_EMIT itemErrored(QVariant::fromValue<RaptorOutput>(output));
             continue;
         }
 
-        item._Url = _Data.value<QString>();
-        item._Parent = input._Id;
-        const auto [_Statf, _Messagf, _Datb] = invokeItemRapid(qPair.second, item);
-        if (!_Statf)
+        items.insert(0, item);
+        invokeItemsTreeBuild(items, item._Id);
+        invokeItemPreorderTraversal(_Item, input._Id, qUser);
+        for (auto iten: _Items)
         {
-            output._State = false;
-            output._Message = _Messagf;
-            output._Data = QVariant::fromValue<RaptorFileItem>(item);
-            Q_EMIT itemCopied(QVariant::fromValue<RaptorOutput>(output));
-            continue;
-        }
-
-        if (!_Data.value<bool>())
-        {
-            output._State = false;
-            output._Message = _Messagf;
-            output._Data = QVariant::fromValue<RaptorFileItem>(item);
-            Q_EMIT itemCopied(QVariant::fromValue<RaptorOutput>(output));
-            continue;
+            FREE(iten)
         }
 
         output._State = true;

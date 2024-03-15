@@ -49,12 +49,16 @@ public:
 
     ~RaptorTransferPage() Q_DECL_OVERRIDE;
 
+    [[nodiscard]]
     RaptorDownloadingPage* invokeDownloadingPageGet() const;
 
+    [[nodiscard]]
     RaptorDownloadedPage* invokeDownloadedPageGet() const;
 
+    [[nodiscard]]
     RaptorUploadingPage* invokeUploadingPageGet() const;
 
+    [[nodiscard]]
     RaptorUploadedPage* invokeUploadedPageGet() const;
 
 private:

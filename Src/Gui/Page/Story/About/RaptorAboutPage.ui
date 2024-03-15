@@ -437,9 +437,6 @@
                                                                         <property name="text">
                                                                             <string/>
                                                                         </property>
-                                                                        <property name="alignment">
-                                                                            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-                                                                        </property>
                                                                         <property name="wordWrap">
                                                                             <bool>true</bool>
                                                                         </property>
@@ -510,28 +507,6 @@
                                                                     <number>0</number>
                                                                 </property>
                                                                 <item>
-                                                                    <widget class="RaptorContributor" name="_ThanksCryptroPP">
-                                                                        <property name="minimumSize">
-                                                                            <size>
-                                                                                <width>48</width>
-                                                                                <height>48</height>
-                                                                            </size>
-                                                                        </property>
-                                                                        <property name="maximumSize">
-                                                                            <size>
-                                                                                <width>48</width>
-                                                                                <height>48</height>
-                                                                            </size>
-                                                                        </property>
-                                                                        <property name="cursor">
-                                                                            <cursorShape>PointingHandCursor</cursorShape>
-                                                                        </property>
-                                                                        <property name="text">
-                                                                            <string/>
-                                                                        </property>
-                                                                    </widget>
-                                                                </item>
-                                                                <item>
                                                                     <widget class="RaptorContributor" name="_ThanksCurl">
                                                                         <property name="minimumSize">
                                                                             <size>
@@ -546,7 +521,7 @@
                                                                             </size>
                                                                         </property>
                                                                         <property name="cursor">
-                                                                            <cursorShape>PointingHandCursor</cursorShape>
+                                                                            <cursorShape>ArrowCursor</cursorShape>
                                                                         </property>
                                                                         <property name="text">
                                                                             <string/>
@@ -568,7 +543,7 @@
                                                                             </size>
                                                                         </property>
                                                                         <property name="cursor">
-                                                                            <cursorShape>PointingHandCursor</cursorShape>
+                                                                            <cursorShape>ArrowCursor</cursorShape>
                                                                         </property>
                                                                         <property name="text">
                                                                             <string/>
@@ -609,10 +584,48 @@
                                                                             </size>
                                                                         </property>
                                                                         <property name="cursor">
-                                                                            <cursorShape>PointingHandCursor</cursorShape>
+                                                                            <cursorShape>ArrowCursor</cursorShape>
                                                                         </property>
                                                                         <property name="styleSheet">
                                                                             <string notr="true"/>
+                                                                        </property>
+                                                                        <property name="text">
+                                                                            <string/>
+                                                                        </property>
+                                                                    </widget>
+                                                                </item>
+                                                                <item>
+                                                                    <widget class="RaptorContributor" name="_ThanksUV">
+                                                                        <property name="minimumSize">
+                                                                            <size>
+                                                                                <width>48</width>
+                                                                                <height>48</height>
+                                                                            </size>
+                                                                        </property>
+                                                                        <property name="maximumSize">
+                                                                            <size>
+                                                                                <width>48</width>
+                                                                                <height>48</height>
+                                                                            </size>
+                                                                        </property>
+                                                                        <property name="text">
+                                                                            <string/>
+                                                                        </property>
+                                                                    </widget>
+                                                                </item>
+                                                                <item>
+                                                                    <widget class="RaptorContributor" name="_ThanksYaml">
+                                                                        <property name="minimumSize">
+                                                                            <size>
+                                                                                <width>48</width>
+                                                                                <height>48</height>
+                                                                            </size>
+                                                                        </property>
+                                                                        <property name="maximumSize">
+                                                                            <size>
+                                                                                <width>48</width>
+                                                                                <height>48</height>
+                                                                            </size>
                                                                         </property>
                                                                         <property name="text">
                                                                             <string/>
@@ -634,7 +647,7 @@
                                                                             </size>
                                                                         </property>
                                                                         <property name="cursor">
-                                                                            <cursorShape>PointingHandCursor</cursorShape>
+                                                                            <cursorShape>ArrowCursor</cursorShape>
                                                                         </property>
                                                                         <property name="styleSheet">
                                                                             <string notr="true"/>

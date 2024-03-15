@@ -127,11 +127,21 @@ void RaptorFont::onCloseClicked()
 
 void RaptorFont::onItemViewClicked(const QModelIndex& qIndex)
 {
+    if (!qIndex.isValid())
+    {
+        return;
+    }
+
     _FontName = qIndex.data().value<QString>();
 }
 
 void RaptorFont::onItemViewDoubleClicked(const QModelIndex& qIndex)
 {
+    if (!qIndex.isValid())
+    {
+        return;
+    }
+
     _FontName = qIndex.data().value<QString>();
     close();
 }

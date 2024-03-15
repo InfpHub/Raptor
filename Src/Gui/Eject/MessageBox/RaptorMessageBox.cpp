@@ -24,9 +24,9 @@
 #include "RaptorMessageBox.h"
 #include "ui_RaptorMessageBox.h"
 
-RaptorMessageBox::RaptorMessageBox(QWidget* qParent) : RaptorEject(qParent),
+RaptorMessageBox::RaptorMessageBox(QWidget *qParent) : RaptorEject(qParent),
                                                        _Ui(new Ui::RaptorMessageBox),
-                                                       _State(false)
+                                                       _Operate(Nothing)
 {
     _Ui->setupUi(this);
     invokeUiInit();
@@ -38,19 +38,18 @@ RaptorMessageBox::~RaptorMessageBox()
     FREE(_Ui)
 }
 
-bool RaptorMessageBox::eventFilter(QObject* qObject, QEvent* qEvent)
+bool RaptorMessageBox::eventFilter(QObject *qObject, QEvent *qEvent)
 {
     if (qObject == this)
     {
         if (qEvent->type() == QEvent::KeyPress)
         {
-            if (const auto qKeyEvent = static_cast<QKeyEvent*>(qEvent);
+            if (const auto qKeyEvent = static_cast<QKeyEvent *>(qEvent);
                 qKeyEvent->key() == Qt::Key_Escape)
             {
                 onCloseClicked();
                 return true;
-            }
-            else if (qKeyEvent->key() == Qt::Key_Return)
+            } else if (qKeyEvent->key() == Qt::Key_Return)
             {
                 onYesClicked();
                 return true;
@@ -61,24 +60,36 @@ bool RaptorMessageBox::eventFilter(QObject* qObject, QEvent* qEvent)
     return RaptorEject::eventFilter(qObject, qEvent);
 }
 
-bool RaptorMessageBox::invokeInformationEject(const QString& qTitle, const QString& qContent)
+RaptorMessageBox::Operate RaptorMessageBox::invokeInformationEject(const QString &qTitle,
+                                                                   const QString &qContent,
+                                                                   const QString &qYesText,
+                                                                   const QString &qNoText)
 {
-    return invokeEject(qTitle, qContent, "Information");
+    return invokeEject(qTitle, qContent, qYesText, qNoText, "Information");
 }
 
-bool RaptorMessageBox::invokeSuccessEject(const QString& qTitle, const QString& qContent)
+RaptorMessageBox::Operate RaptorMessageBox::invokeSuccessEject(const QString &qTitle,
+                                                               const QString &qContent,
+                                                               const QString &qYesText,
+                                                               const QString &qNoText)
 {
-    return invokeEject(qTitle, qContent, "Success");
+    return invokeEject(qTitle, qContent, qYesText, qNoText, "Success");
 }
 
-bool RaptorMessageBox::invokeWarningEject(const QString& qTitle, const QString& qContent)
+RaptorMessageBox::Operate RaptorMessageBox::invokeWarningEject(const QString &qTitle,
+                                                               const QString &qContent,
+                                                               const QString &qYesText,
+                                                               const QString &qNoText)
 {
-    return invokeEject(qTitle, qContent, "Warning");
+    return invokeEject(qTitle, qContent, qYesText, qNoText, "Warning");
 }
 
-bool RaptorMessageBox::invokeCriticalEject(const QString& qTitle, const QString& qContent)
+RaptorMessageBox::Operate RaptorMessageBox::invokeCriticalEject(const QString &qTitle,
+                                                                const QString &qContent,
+                                                                const QString &qYesText,
+                                                                const QString &qNoText)
 {
-    return invokeEject(qTitle, qContent, "Critical");
+    return invokeEject(qTitle, qContent, qYesText, qNoText, "Critical");
 }
 
 void RaptorMessageBox::invokeUiInit()
@@ -110,44 +121,48 @@ void RaptorMessageBox::invokeSlotInit()
             &RaptorMessageBox::onNoClicked);
 }
 
-bool RaptorMessageBox::invokeEject(const QString& qTitle,
-                                   const QString& qContent,
-                                   const QString& qLevel)
+RaptorMessageBox::Operate RaptorMessageBox::invokeEject(const QString &qTitle,
+                                                        const QString &qContent,
+                                                        const QString &qYesText,
+                                                        const QString &qNoText,
+                                                        const QString &qLevel)
 {
     auto qInstance = RaptorMessageBox(RaptorStoreSuite::invokeWorldGet());
     qInstance.invokeTitleSet(qTitle);
     qInstance.invokeContentSet(qContent);
+    qInstance._Ui->_Yes->setText(qYesText);
     qInstance._Ui->_Yes->setProperty("Level", qLevel);
     qInstance._Ui->_Yes->style()->unpolish(qInstance._Ui->_Yes);
     qInstance._Ui->_Yes->style()->polish(qInstance._Ui->_Yes);
+    qInstance._Ui->_No->setText(qNoText);
     qInstance.exec();
-    return qInstance._State;
+    return qInstance._Operate;
 }
 
-void RaptorMessageBox::invokeTitleSet(const QString& qTitle) const
+void RaptorMessageBox::invokeTitleSet(const QString &qTitle) const
 {
     _Ui->_Title->setText(qTitle);
 }
 
-void RaptorMessageBox::invokeContentSet(const QString& qContent) const
+void RaptorMessageBox::invokeContentSet(const QString &qContent) const
 {
     _Ui->_Content->setText(qContent);
 }
 
 void RaptorMessageBox::onCloseClicked()
 {
-    _State = false;
-    onNoClicked();
+    _Operate = Nothing;
+    close();
 }
 
 void RaptorMessageBox::onYesClicked()
 {
-    _State = true;
+    _Operate = Yes;
     close();
 }
 
 void RaptorMessageBox::onNoClicked()
 {
-    _State = false;
+    _Operate = No;
     close();
 }

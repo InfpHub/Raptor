@@ -24,7 +24,7 @@
 #include "RaptorStarPage.h"
 #include "ui_RaptorStarPage.h"
 
-RaptorStarPage::RaptorStarPage(QWidget* qParent) : QWidget(qParent),
+RaptorStarPage::RaptorStarPage(QWidget *qParent) : QWidget(qParent),
                                                    _Ui(new Ui::RaptorStarPage)
 {
     _Ui->setupUi(this);
@@ -38,13 +38,13 @@ RaptorStarPage::~RaptorStarPage()
     FREE(_Ui)
 }
 
-bool RaptorStarPage::eventFilter(QObject* qObject, QEvent* qEvent)
+bool RaptorStarPage::eventFilter(QObject *qObject, QEvent *qEvent)
 {
     if (qObject == _Ui->_SearchEdit)
     {
         if (qEvent->type() == QEvent::KeyPress)
         {
-            if (const auto qKeyEvent = static_cast<QKeyEvent*>(qEvent);
+            if (const auto qKeyEvent = static_cast<QKeyEvent *>(qEvent);
                 qKeyEvent->key() == Qt::Key_Enter || qKeyEvent->key() == Qt::Key_Return)
             {
                 onSearchClicked();
@@ -57,13 +57,12 @@ bool RaptorStarPage::eventFilter(QObject* qObject, QEvent* qEvent)
     {
         if (qEvent->type() == QEvent::KeyPress)
         {
-            if (const auto qKeyEvent = static_cast<QKeyEvent*>(qEvent);
+            if (const auto qKeyEvent = static_cast<QKeyEvent *>(qEvent);
                 qKeyEvent->key() == Qt::Key_Delete)
             {
                 onUnStarredClicked();
                 return true;
-            }
-            else if (qKeyEvent->matches(QKeySequence::Refresh))
+            } else if (qKeyEvent->matches(QKeySequence::Refresh))
             {
                 onRefreshClicked();
                 return true;
@@ -107,6 +106,7 @@ void RaptorStarPage::invokeInstanceInit()
     _TabGroup->addButton(_Ui->_TabImage);
     _TabGroup->addButton(_Ui->_TabDocument);
 
+    _ItemViewContextMenu = new RaptorMenu(_Ui->_ItemView);
     _ItemViewModel = new RaptorStarViewModel(this);
     auto qHeader = QVector<QString>();
     qHeader << QStringLiteral("名称") << QStringLiteral("大小") << QStringLiteral("最后修改");
@@ -145,9 +145,10 @@ void RaptorStarPage::invokeUiInit()
     _Ui->_ItemView->setModel(_ItemViewModel);
     _Ui->_ItemView->setHorizontalHeader(_ItemViewHeader);
     _Ui->_ItemView->setItemDelegate(_ItemViewDelegate);
-    _Ui->_ItemView->setContextMenuPolicy(Qt::NoContextMenu);
+    _Ui->_ItemView->setContextMenuPolicy(Qt::CustomContextMenu);
     _Ui->_ItemView->horizontalHeader()->setFixedHeight(26);
-    _Ui->_ItemView->horizontalHeader()->setMinimumSectionSize(26);
+    _Ui->_ItemView->horizontalHeader()->setMinimumSectionSize(30);
+    _Ui->_ItemView->horizontalHeader()->setDefaultSectionSize(30);
     _Ui->_ItemView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
     _Ui->_ItemView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
     _Ui->_ItemView->verticalHeader()->setDefaultSectionSize(26);
@@ -161,6 +162,10 @@ void RaptorStarPage::invokeUiInit()
     _Ui->_ItemName->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_ItemUpdatedTip->setText(QStringLiteral("最后修改:"));
     _Ui->_ItemSizeTip->setText(QStringLiteral("大小:"));
+    _ItemViewContextMenu->invokeItemAdd("取消收藏",
+                                        RaptorUtil::invokeIconMatch("Star", false, true),
+                                        QKeySequence(),
+                                        std::bind(&RaptorStarPage::onUnStarredClicked, this));
 }
 
 void RaptorStarPage::invokeSlotInit() const
@@ -235,6 +240,11 @@ void RaptorStarPage::invokeSlotInit() const
             this,
             &RaptorStarPage::onItemViewClicked);
 
+    connect(_Ui->_ItemView,
+            &RaptorTableView::customContextMenuRequested,
+            this,
+            &RaptorStarPage::onItemViewCustomContextMenuRequested);
+
     connect(_Ui->_ItemView->selectionModel(),
             &QItemSelectionModel::selectionChanged,
             this,
@@ -253,22 +263,18 @@ QPair<QString, QString> RaptorStarPage::invokeTypeWithCategoryFilter() const
     if (_Ui->_TabFolder->isChecked())
     {
         qType = "folder";
-    }
-    else
+    } else
     {
         if (_Ui->_TabAudio->isChecked())
         {
             qCategory = "audio";
-        }
-        else if (_Ui->_TabVideo->isChecked())
+        } else if (_Ui->_TabVideo->isChecked())
         {
             qCategory = "video";
-        }
-        else if (_Ui->_TabImage->isChecked())
+        } else if (_Ui->_TabImage->isChecked())
         {
             qCategory = "image";
-        }
-        else if (_Ui->_TabDocument->isChecked())
+        } else if (_Ui->_TabDocument->isChecked())
         {
             qCategory = "doc";
         }
@@ -277,7 +283,7 @@ QPair<QString, QString> RaptorStarPage::invokeTypeWithCategoryFilter() const
     return qMakePair(qType, qCategory);
 }
 
-void RaptorStarPage::onItemCopyWriterHaveFound(const QVariant& qVariant) const
+void RaptorStarPage::onItemCopyWriterHaveFound(const QVariant &qVariant) const
 {
     const auto [_State, _Message, _Data] = qVariant.value<RaptorOutput>();
     if (!_State)
@@ -285,8 +291,8 @@ void RaptorStarPage::onItemCopyWriterHaveFound(const QVariant& qVariant) const
         return;
     }
 
-    const auto items = _Data.value<QVector<RaptorCopyWriter>>();
-    for (auto& [_Page, _Content] : items)
+    const auto items = _Data.value<QVector<RaptorCopyWriter> >();
+    for (auto &[_Page, _Content]: items)
     {
         if (_Page == metaObject()->className())
         {
@@ -296,13 +302,13 @@ void RaptorStarPage::onItemCopyWriterHaveFound(const QVariant& qVariant) const
     }
 }
 
-void RaptorStarPage::onItemAccessTokenRefreshed(const QVariant& qVariant)
+void RaptorStarPage::onItemAccessTokenRefreshed(const QVariant &qVariant)
 {
     Q_UNUSED(qVariant)
     _Payload._Marker.clear();
 }
 
-void RaptorStarPage::onItemLogouting(const QVariant& qVariant) const
+void RaptorStarPage::onItemLogouting(const QVariant &qVariant) const
 {
     const auto input = qVariant.value<RaptorInput>();
     const auto item = input._Variant.value<RaptorAuthenticationItem>();
@@ -328,7 +334,7 @@ void RaptorStarPage::onItemSpaceChanging()
     _Payload._Marker.clear();
 }
 
-void RaptorStarPage::onItemSwitching(const QVariant& qVariant) const
+void RaptorStarPage::onItemSwitching(const QVariant &qVariant) const
 {
     Q_UNUSED(qVariant)
     _ItemViewModel->invokeItemsClear();
@@ -338,7 +344,7 @@ void RaptorStarPage::onItemSwitching(const QVariant& qVariant) const
     _Ui->_ItemSize->clear();
 }
 
-void RaptorStarPage::onItemsFetched(const QVariant& qVariant)
+void RaptorStarPage::onItemsFetched(const QVariant &qVariant)
 {
     _Loading->invokeStateSet(RaptorLoading::State::Finished);
     if (!RaptorStoreSuite::invokeUserIsValidConfirm())
@@ -363,7 +369,7 @@ void RaptorStarPage::onItemsFetched(const QVariant& qVariant)
         return;
     }
 
-    const auto [items, qMarker] = _Data.value<QPair<QVector<RaptorStarItem>, QString>>();
+    const auto [items, qMarker] = _Data.value<QPair<QVector<RaptorStarItem>, QString> >();
     if (items.isEmpty())
     {
         _Ui->_ItemView->invokeServerCodeSet(RaptorTableView::NotFound);
@@ -379,7 +385,7 @@ void RaptorStarPage::onItemsFetched(const QVariant& qVariant)
     _ItemViewModel->invokeItemsAppend(items);
 }
 
-void RaptorStarPage::onItemsUnStarred(const QVariant& qVariant) const
+void RaptorStarPage::onItemsUnStarred(const QVariant &qVariant) const
 {
     auto [_State, _Message, _Data] = qVariant.value<RaptorOutput>();
     if (!_State)
@@ -388,7 +394,7 @@ void RaptorStarPage::onItemsUnStarred(const QVariant& qVariant) const
         return;
     }
 
-    if (auto [qIndexList, qState] = _Data.value<QPair<QModelIndexList, bool>>();
+    if (auto [qIndexList, qState] = _Data.value<QPair<QModelIndexList, bool> >();
         !qState)
     {
         std::reverse(qIndexList.begin(), qIndexList.end());
@@ -399,7 +405,7 @@ void RaptorStarPage::onItemsUnStarred(const QVariant& qVariant) const
 
         _Ui->_ItemView->selectionModel()->clearSelection();
         _Ui->_ItemView->viewport()->update();
-        RaptorToast::invokeInformationEject(QStringLiteral("The selected item has been unstarred!"));
+        RaptorToast::invokeInformationEject(QStringLiteral("所选文件已取消收藏!"));
     }
 
     if (_ItemViewModel->rowCount() == 0)
@@ -412,7 +418,7 @@ void RaptorStarPage::onItemsUnStarred(const QVariant& qVariant) const
     }
 }
 
-void RaptorStarPage::onLoadingStateChanged(const RaptorLoading::State& state) const
+void RaptorStarPage::onLoadingStateChanged(const RaptorLoading::State &state) const
 {
     _Ui->_Refresh->setEnabled(state == RaptorLoading::State::Finished);
     _Ui->_TabPrev->setEnabled(state == RaptorLoading::State::Finished);
@@ -440,8 +446,9 @@ void RaptorStarPage::onUnStarredClicked() const
         return;
     }
 
-    if (!RaptorMessageBox::invokeWarningEject(QStringLiteral("取消收藏"),
-                                              QStringLiteral("即将取消收藏所选文件，是否继续?")))
+    if (const auto qOperate = RaptorMessageBox::invokeWarningEject(QStringLiteral("取消收藏"),
+                                                                   QStringLiteral("即将取消收藏所选文件，是否继续?"));
+        qOperate == RaptorMessageBox::No)
     {
         return;
     }
@@ -454,7 +461,7 @@ void RaptorStarPage::onUnStarredClicked() const
 
 void RaptorStarPage::onTabPrevClicked() const
 {
-    auto qPushButtonList = _Ui->_TabPanel->findChildren<QPushButton*>();
+    auto qPushButtonList = _Ui->_TabPanel->findChildren<QPushButton *>();
     qPushButtonList.pop_front();
     qPushButtonList.pop_back();
     if (qPushButtonList.length() < 2)
@@ -466,11 +473,10 @@ void RaptorStarPage::onTabPrevClicked() const
     {
         if (qPushButtonList[i]->isChecked())
         {
-            if (i == 1)
+            if (i == 0)
             {
                 qPushButtonList[qPushButtonList.length() - 1]->setChecked(true);
-            }
-            else
+            } else
             {
                 qPushButtonList[i - 1]->setChecked(true);
             }
@@ -480,7 +486,7 @@ void RaptorStarPage::onTabPrevClicked() const
     }
 }
 
-void RaptorStarPage::onTabAllToggled(const bool& qChecked)
+void RaptorStarPage::onTabAllToggled(const bool &qChecked)
 {
     if (!RaptorStoreSuite::invokeUserIsValidConfirm())
     {
@@ -498,7 +504,7 @@ void RaptorStarPage::onTabAllToggled(const bool& qChecked)
     Q_EMIT itemsFetching(QVariant::fromValue<RaptorInput>(RaptorInput()));
 }
 
-void RaptorStarPage::onTabFolderToggled(const bool& qChecked)
+void RaptorStarPage::onTabFolderToggled(const bool &qChecked)
 {
     if (!RaptorStoreSuite::invokeUserIsValidConfirm())
     {
@@ -520,7 +526,7 @@ void RaptorStarPage::onTabFolderToggled(const bool& qChecked)
     Q_EMIT itemsFetching(QVariant::fromValue<RaptorInput>(input));
 }
 
-void RaptorStarPage::onTabAudioToggled(const bool& qChecked)
+void RaptorStarPage::onTabAudioToggled(const bool &qChecked)
 {
     if (!RaptorStoreSuite::invokeUserIsValidConfirm())
     {
@@ -542,7 +548,7 @@ void RaptorStarPage::onTabAudioToggled(const bool& qChecked)
     Q_EMIT itemsFetching(QVariant::fromValue<RaptorInput>(input));
 }
 
-void RaptorStarPage::onTabVideoToggled(const bool& qChecked)
+void RaptorStarPage::onTabVideoToggled(const bool &qChecked)
 {
     if (!RaptorStoreSuite::invokeUserIsValidConfirm())
     {
@@ -564,7 +570,7 @@ void RaptorStarPage::onTabVideoToggled(const bool& qChecked)
     Q_EMIT itemsFetching(QVariant::fromValue<RaptorInput>(input));
 }
 
-void RaptorStarPage::onTabImageToggled(const bool& qChecked)
+void RaptorStarPage::onTabImageToggled(const bool &qChecked)
 {
     if (!RaptorStoreSuite::invokeUserIsValidConfirm())
     {
@@ -586,7 +592,7 @@ void RaptorStarPage::onTabImageToggled(const bool& qChecked)
     Q_EMIT itemsFetching(QVariant::fromValue<RaptorInput>(input));
 }
 
-void RaptorStarPage::onTabDocumentToggled(const bool& qChecked)
+void RaptorStarPage::onTabDocumentToggled(const bool &qChecked)
 {
     if (!RaptorStoreSuite::invokeUserIsValidConfirm())
     {
@@ -610,7 +616,7 @@ void RaptorStarPage::onTabDocumentToggled(const bool& qChecked)
 
 void RaptorStarPage::onTabNextClicked() const
 {
-    auto qPushButtonList = _Ui->_TabPanel->findChildren<QPushButton*>();
+    auto qPushButtonList = _Ui->_TabPanel->findChildren<QPushButton *>();
     qPushButtonList.pop_front();
     qPushButtonList.pop_back();
     if (qPushButtonList.length() < 2)
@@ -625,8 +631,7 @@ void RaptorStarPage::onTabNextClicked() const
             if (i == qPushButtonList.length() - 1)
             {
                 qPushButtonList[0]->setChecked(true);
-            }
-            else
+            } else
             {
                 qPushButtonList[i + 1]->setChecked(true);
             }
@@ -651,8 +656,7 @@ void RaptorStarPage::onSearchClicked()
     if (qKeyword.isEmpty())
     {
         onRefreshClicked();
-    }
-    else
+    } else
     {
         input._Name = qKeyword;
         const auto [qType, qCategory] = invokeTypeWithCategoryFilter();
@@ -679,7 +683,7 @@ void RaptorStarPage::onRefreshClicked()
     Q_EMIT itemsFetching(QVariant::fromValue<RaptorInput>(input));
 }
 
-void RaptorStarPage::onItemViewIndicatorClicked(const RaptorTableView::Code& qCode) const
+void RaptorStarPage::onItemViewIndicatorClicked(const RaptorTableView::Code &qCode) const
 {
     if (qCode == RaptorTableView::Forbidden)
     {
@@ -689,16 +693,40 @@ void RaptorStarPage::onItemViewIndicatorClicked(const RaptorTableView::Code& qCo
     }
 }
 
-void RaptorStarPage::onItemViewClicked(const QModelIndex& qIndex) const
+void RaptorStarPage::onItemViewClicked(const QModelIndex &qIndex) const
 {
+    if (!qIndex.isValid())
+    {
+        return;
+    }
+
     const auto item = qIndex.data(Qt::UserRole).value<RaptorStarItem>();
     _Ui->_ItemName->setText(item._Name);
     _Ui->_ItemUpdated->setText(item._Updated);
     _Ui->_ItemSize->setText(item._Size);
 }
 
-void RaptorStarPage::onItemViewSelectionChanged(const QItemSelection& qSelected,
-                                                const QItemSelection& qDeselected) const
+void RaptorStarPage::onItemViewCustomContextMenuRequested(const QPoint &qPoint) const
+{
+    if (!_Ui->_ItemView->indexAt(qPoint).isValid())
+    {
+        return;
+    }
+
+    if (!RaptorSettingSuite::invokeItemFind(Setting::Section::Ui,
+                                            Setting::Ui::ContextMenu).toBool())
+    {
+        return;
+    }
+
+    _ItemViewContextMenu->move(_Ui->_ItemView->mapToGlobal(QPoint(qPoint.x(),
+                                                                  qPoint.y() + _Ui->_ItemView->verticalHeader()->
+                                                                  defaultSectionSize())));
+    _ItemViewContextMenu->invokeEject();
+}
+
+void RaptorStarPage::onItemViewSelectionChanged(const QItemSelection &qSelected,
+                                                const QItemSelection &qDeselected) const
 {
     Q_UNUSED(qDeselected)
     if (qSelected.length() == 1)
@@ -715,7 +743,7 @@ void RaptorStarPage::onItemViewSelectionChanged(const QItemSelection& qSelected,
     _Ui->_ItemSize->clear();
 }
 
-void RaptorStarPage::onItemViewVerticalScrollValueChanged(const int& qValue) const
+void RaptorStarPage::onItemViewVerticalScrollValueChanged(const int &qValue) const
 {
     if (!RaptorStoreSuite::invokeUserIsValidConfirm())
     {

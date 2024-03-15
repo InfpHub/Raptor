@@ -75,11 +75,12 @@ private Q_SLOTS:
 private:
     Ui::RaptorCopyUser* _Ui = Q_NULLPTR;
     QPair<RaptorAuthenticationItem, RaptorAuthenticationItem> _User;
-    RaptorUserViewHeader* _SourceHeader = Q_NULLPTR;
-    RaptorUserViewModel* _SourceModel = Q_NULLPTR;
-    RaptorUserViewHeader* _TargetHeader = Q_NULLPTR;
-    RaptorUserViewModel* _TargetModel = Q_NULLPTR;
-    RaptorUserViewDelegate* _CommonViewDelegate = Q_NULLPTR;
+    RaptorUserViewHeader* _SourceViewHeader = Q_NULLPTR;
+    RaptorUserViewModel* _SourceViewModel = Q_NULLPTR;
+    RaptorUserViewHeader* _TargetViewHeader = Q_NULLPTR;
+    RaptorUserViewModel* _TargetViewModel = Q_NULLPTR;
+    RaptorUserViewDelegate* _SourceViewDelegate = Q_NULLPTR;
+    RaptorUserViewDelegate* _TargetViewDelegate = Q_NULLPTR;
 };
 
 #endif // RAPTORCOPYUSER_H

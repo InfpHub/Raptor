@@ -35,7 +35,7 @@ RaptorPersistenceSuite::~RaptorPersistenceSuite()
     _SqlDatabase.close();
 }
 
-RaptorPersistenceSuite* RaptorPersistenceSuite::invokeSingletonGet()
+RaptorPersistenceSuite *RaptorPersistenceSuite::invokeSingletonGet()
 {
     return _PersistenceSuite();
 }
@@ -62,10 +62,7 @@ QSqlDatabase RaptorPersistenceSuite::invokeConnectionGet()
 
 void RaptorPersistenceSuite::invokeInstanceInit()
 {
-    _SqlDatabase = QSqlDatabase::addDatabase("QSQLITE", QStringLiteral("%1 %2.%3.%4 Persistence Connection").arg(APPLICATION_NAME)
-                                                                                                            .arg(MAJOR_VERSION)
-                                                                                                            .arg(MINOR_VERSION)
-                                                                                                            .arg(PATCH_VERSION));
+    _SqlDatabase = QSqlDatabase::addDatabase("QSQLITE", QStringLiteral("%1 %2.%3.%4 Persistence Connection"));
     _SqlDatabase.setDatabaseName(QStringLiteral("%1.db").arg(APPLICATION_NAME));
     if (!_SqlDatabase.open())
     {

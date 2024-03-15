@@ -52,14 +52,17 @@ public:
 
     void invokeDashOffsetSet(const qreal& qOffset);
 
+    [[nodiscard]]
     qreal invokeDashOffsetGet() const;
 
     void invokeDashLengthSet(const qreal& qLength);
 
+    [[nodiscard]]
     qreal invokeDashLengthGet() const;
 
     void invokeAngleSet(const int& qAngle);
 
+    [[nodiscard]]
     int invokeAngleGet() const;
 
 protected:

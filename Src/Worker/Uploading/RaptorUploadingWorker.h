@@ -28,6 +28,7 @@
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QMutex>
 #include <QObject>
 #include <QRunnable>
 #include <QtMath>
@@ -61,15 +62,18 @@ public:
 private:
     void invokeInstanceInit();
 
-    RaptorOutput invokeItemByIdFetch(const QString& qId) const;
+    [[nodiscard]]
+    QPair<QString, RaptorFileItem> invokeItemByIdFetch(const QString& qId) const;
 
     void invokeItemRapid();
 
     void invokeItemUpload();
 
-    RaptorOutput invokeItemUploadUrlFetch() const;
+    [[nodiscard]]
+    QPair<QString, QQueue<RaptorPartial>> invokeItemUploadUrlFetch() const;
 
-    RaptorOutput invokeItemUploadedPartialFetch() const;
+    [[nodiscard]]
+    QPair<QString, quint32> invokeItemUploadedPartialFetch() const;
 
     int invokeItemPartialUploadProgressCallback(const curl_off_t& ulnow);
 
@@ -113,6 +117,8 @@ private:
     CURL* _Curl = Q_NULLPTR;
     RaptorTransferItem _Item;
     quint64 _LastTransferred;
+    inline static QMutex _ReadMutex;
+    inline static QMutex _ProgressMutex;
     bool _Paused;
     bool _Cancel;
 };

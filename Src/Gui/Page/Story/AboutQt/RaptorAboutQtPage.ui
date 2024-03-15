@@ -13,7 +13,7 @@
         <property name="windowTitle">
             <string>RaptorAboutQtPage</string>
         </property>
-        <layout class="QVBoxLayout" name="_PageVLayout">
+        <layout class="QVBoxLayout" name="_AboutPageLayout">
             <property name="spacing">
                 <number>0</number>
             </property>

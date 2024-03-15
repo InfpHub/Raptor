@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <class>RaptorCleanPage</class>
+    <widget class="QWidget" name="RaptorCleanPage">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>1008</width>
+                <height>647</height>
+            </rect>
+        </property>
+        <property name="windowTitle">
+            <string>RaptorCleanPage</string>
+        </property>
+        <layout class="QVBoxLayout" name="_CleanPageLayout">
+            <property name="spacing">
+                <number>0</number>
+            </property>
+            <property name="leftMargin">
+                <number>0</number>
+            </property>
+            <property name="topMargin">
+                <number>0</number>
+            </property>
+            <property name="rightMargin">
+                <number>0</number>
+            </property>
+            <property name="bottomMargin">
+                <number>0</number>
+            </property>
+            <item>
+                <widget class="QSplitter" name="_Splitter">
+                    <property name="orientation">
+                        <enum>Qt::Orientation::Horizontal</enum>
+                    </property>
+                    <property name="handleWidth">
+                        <number>1</number>
+                    </property>
+                    <property name="childrenCollapsible">
+                        <bool>false</bool>
+                    </property>
+                    <widget class="RaptorTableView" name="_ItemView"/>
+                    <widget class="QWidget" name="_ItemAttributePanel" native="true">
+                        <layout class="QGridLayout" name="gridLayout">
+                            <property name="leftMargin">
+                                <number>12</number>
+                            </property>
+                            <property name="topMargin">
+                                <number>12</number>
+                            </property>
+                            <property name="rightMargin">
+                                <number>0</number>
+                            </property>
+                            <property name="bottomMargin">
+                                <number>12</number>
+                            </property>
+                            <property name="spacing">
+                                <number>12</number>
+                            </property>
+                            <item row="4" column="0">
+                                <widget class="QLabel" name="_ItemDirTip">
+                                    <property name="minimumSize">
+                                        <size>
+                                            <width>0</width>
+                                            <height>26</height>
+                                        </size>
+                                    </property>
+                                    <property name="styleSheet">
+                                        <string notr="true"/>
+                                    </property>
+                                    <property name="text">
+                                        <string/>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTop|Qt::AlignmentFlag::AlignTrailing</set>
+                                    </property>
+                                    <property name="wordWrap">
+                                        <bool>true</bool>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="4" column="1">
+                                <widget class="QTextEdit" name="_ItemDir">
+                                    <property name="minimumSize">
+                                        <size>
+                                            <width>0</width>
+                                            <height>26</height>
+                                        </size>
+                                    </property>
+                                    <property name="contextMenuPolicy">
+                                        <enum>Qt::ContextMenuPolicy::NoContextMenu</enum>
+                                    </property>
+                                    <property name="styleSheet">
+                                        <string notr="true"/>
+                                    </property>
+                                    <property name="verticalScrollBarPolicy">
+                                        <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
+                                    </property>
+                                    <property name="horizontalScrollBarPolicy">
+                                        <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+                                    </property>
+                                    <property name="undoRedoEnabled">
+                                        <bool>false</bool>
+                                    </property>
+                                    <property name="readOnly">
+                                        <bool>true</bool>
+                                    </property>
+                                    <property name="textInteractionFlags">
+                                        <set>Qt::TextInteractionFlag::NoTextInteraction</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="3" column="0">
+                                <widget class="QLabel" name="_ItemUpdatedTip">
+                                    <property name="minimumSize">
+                                        <size>
+                                            <width>0</width>
+                                            <height>26</height>
+                                        </size>
+                                    </property>
+                                    <property name="maximumSize">
+                                        <size>
+                                            <width>16777215</width>
+                                            <height>26</height>
+                                        </size>
+                                    </property>
+                                    <property name="styleSheet">
+                                        <string notr="true"/>
+                                    </property>
+                                    <property name="text">
+                                        <string/>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="1" column="0">
+                                <widget class="QLabel" name="_ItemCreatedTip">
+                                    <property name="minimumSize">
+                                        <size>
+                                            <width>0</width>
+                                            <height>26</height>
+                                        </size>
+                                    </property>
+                                    <property name="maximumSize">
+                                        <size>
+                                            <width>16777215</width>
+                                            <height>26</height>
+                                        </size>
+                                    </property>
+                                    <property name="styleSheet">
+                                        <string notr="true"/>
+                                    </property>
+                                    <property name="text">
+                                        <string/>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="0" column="1">
+                                <widget class="QTextEdit" name="_ItemName">
+                                    <property name="sizePolicy">
+                                        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
+                                    <property name="minimumSize">
+                                        <size>
+                                            <width>0</width>
+                                            <height>26</height>
+                                        </size>
+                                    </property>
+                                    <property name="contextMenuPolicy">
+                                        <enum>Qt::ContextMenuPolicy::NoContextMenu</enum>
+                                    </property>
+                                    <property name="styleSheet">
+                                        <string notr="true"/>
+                                    </property>
+                                    <property name="verticalScrollBarPolicy">
+                                        <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
+                                    </property>
+                                    <property name="horizontalScrollBarPolicy">
+                                        <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+                                    </property>
+                                    <property name="sizeAdjustPolicy">
+                                        <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored</enum>
+                                    </property>
+                                    <property name="readOnly">
+                                        <bool>true</bool>
+                                    </property>
+                                    <property name="markdown">
+                                        <string>
+
+
+                                        </string>
+                                    </property>
+                                    <property name="html">
+                                        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+                                            &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+                                            p, li { white-space: pre-wrap; }
+                                            hr { height: 1px; border-width: 0; }
+                                            li.unchecked::marker { content: &quot;\2610&quot;; }
+                                            li.checked::marker { content: &quot;\2612&quot;; }
+                                            &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Segoe UI'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+                                            &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun';&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+                                            &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun';&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+                                            &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun';&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+                                            &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'SimSun';&quot;&gt; &lt;/span&gt; &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+                                        </string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="0" column="0">
+                                <widget class="QLabel" name="_ItemNameTip">
+                                    <property name="minimumSize">
+                                        <size>
+                                            <width>0</width>
+                                            <height>26</height>
+                                        </size>
+                                    </property>
+                                    <property name="styleSheet">
+                                        <string notr="true"/>
+                                    </property>
+                                    <property name="text">
+                                        <string/>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTop|Qt::AlignmentFlag::AlignTrailing</set>
+                                    </property>
+                                    <property name="wordWrap">
+                                        <bool>true</bool>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="6" column="1">
+                                <spacer name="_ItemAttributePanelSpacer">
+                                    <property name="orientation">
+                                        <enum>Qt::Orientation::Vertical</enum>
+                                    </property>
+                                    <property name="sizeHint" stdset="0">
+                                        <size>
+                                            <width>20</width>
+                                            <height>98</height>
+                                        </size>
+                                    </property>
+                                </spacer>
+                            </item>
+                            <item row="3" column="1">
+                                <widget class="QLabel" name="_ItemUpdated">
+                                    <property name="sizePolicy">
+                                        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
+                                    <property name="minimumSize">
+                                        <size>
+                                            <width>0</width>
+                                            <height>26</height>
+                                        </size>
+                                    </property>
+                                    <property name="maximumSize">
+                                        <size>
+                                            <width>16777215</width>
+                                            <height>26</height>
+                                        </size>
+                                    </property>
+                                    <property name="styleSheet">
+                                        <string notr="true"/>
+                                    </property>
+                                    <property name="text">
+                                        <string/>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="1" column="1">
+                                <widget class="QLabel" name="_ItemCreated">
+                                    <property name="sizePolicy">
+                                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
+                                    <property name="minimumSize">
+                                        <size>
+                                            <width>0</width>
+                                            <height>26</height>
+                                        </size>
+                                    </property>
+                                    <property name="maximumSize">
+                                        <size>
+                                            <width>16777215</width>
+                                            <height>26</height>
+                                        </size>
+                                    </property>
+                                    <property name="styleSheet">
+                                        <string notr="true"/>
+                                    </property>
+                                    <property name="text">
+                                        <string/>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="2" column="0">
+                                <widget class="QLabel" name="_ItemSizeTip">
+                                    <property name="minimumSize">
+                                        <size>
+                                            <width>0</width>
+                                            <height>26</height>
+                                        </size>
+                                    </property>
+                                    <property name="maximumSize">
+                                        <size>
+                                            <width>16777215</width>
+                                            <height>26</height>
+                                        </size>
+                                    </property>
+                                    <property name="styleSheet">
+                                        <string notr="true"/>
+                                    </property>
+                                    <property name="text">
+                                        <string/>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="2" column="1">
+                                <widget class="QLabel" name="_ItemSize">
+                                    <property name="sizePolicy">
+                                        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
+                                    <property name="minimumSize">
+                                        <size>
+                                            <width>0</width>
+                                            <height>26</height>
+                                        </size>
+                                    </property>
+                                    <property name="maximumSize">
+                                        <size>
+                                            <width>16777215</width>
+                                            <height>26</height>
+                                        </size>
+                                    </property>
+                                    <property name="styleSheet">
+                                        <string notr="true"/>
+                                    </property>
+                                    <property name="text">
+                                        <string/>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="5" column="1">
+                                <widget class="QPushButton" name="_ItemGoToDir">
+                                    <property name="minimumSize">
+                                        <size>
+                                            <width>0</width>
+                                            <height>26</height>
+                                        </size>
+                                    </property>
+                                    <property name="maximumSize">
+                                        <size>
+                                            <width>16777215</width>
+                                            <height>26</height>
+                                        </size>
+                                    </property>
+                                    <property name="text">
+                                        <string/>
+                                    </property>
+                                </widget>
+                            </item>
+                        </layout>
+                    </widget>
+                </widget>
+            </item>
+        </layout>
+    </widget>
+    <customwidgets>
+        <customwidget>
+            <class>RaptorTableView</class>
+            <extends>QTableView</extends>
+            <header>../../../Src/Component/TableView/RaptorTableView.h</header>
+        </customwidget>
+    </customwidgets>
+    <resources/>
+    <connections/>
+</ui>

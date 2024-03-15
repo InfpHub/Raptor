@@ -25,6 +25,7 @@
 #define RAPTORFOLDER_H
 
 #include <QButtonGroup>
+#include <QPainter>
 
 #include "../Toast/RaptorToast.h"
 #include "../../../Common/RaptorDeclare.h"
@@ -63,6 +64,7 @@ private:
 
     void invokeIconDrawing() const;
 
+    [[nodiscard]]
     QString invokeRuleFilter() const;
 
 Q_SIGNALS:

@@ -121,7 +121,7 @@ bool RaptorTrashViewModel::setData(const QModelIndex& qIndex, const QVariant& qV
     const auto item = qVariant.value<RaptorTrashItem>();
     _Items.replace(qIndex.row(), item);
     Q_EMIT dataChanged(qIndex, qIndex);
-    return true;
+        return QAbstractTableModel::setData(qIndex, qVariant, qRole);
 }
 
 bool RaptorTrashViewModel::removeRow(int qRow, const QModelIndex& qIndex)

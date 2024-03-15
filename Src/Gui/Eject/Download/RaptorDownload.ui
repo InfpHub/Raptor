@@ -356,6 +356,153 @@
                                                 <property name="spacing">
                                                     <number>12</number>
                                                 </property>
+                                                <item row="5" column="1">
+                                                    <widget class="QWidget" name="_DirPanel" native="true">
+                                                        <property name="minimumSize">
+                                                            <size>
+                                                                <width>0</width>
+                                                                <height>0</height>
+                                                            </size>
+                                                        </property>
+                                                        <property name="maximumSize">
+                                                            <size>
+                                                                <width>16777215</width>
+                                                                <height>16777215</height>
+                                                            </size>
+                                                        </property>
+                                                        <layout class="QHBoxLayout" name="_DirPanelLayout">
+                                                            <property name="spacing">
+                                                                <number>10</number>
+                                                            </property>
+                                                            <property name="leftMargin">
+                                                                <number>0</number>
+                                                            </property>
+                                                            <property name="topMargin">
+                                                                <number>0</number>
+                                                            </property>
+                                                            <property name="rightMargin">
+                                                                <number>0</number>
+                                                            </property>
+                                                            <property name="bottomMargin">
+                                                                <number>0</number>
+                                                            </property>
+                                                            <item>
+                                                                <spacer name="_DirPanelSpacer">
+                                                                    <property name="orientation">
+                                                                        <enum>Qt::Horizontal</enum>
+                                                                    </property>
+                                                                    <property name="sizeHint" stdset="0">
+                                                                        <size>
+                                                                            <width>40</width>
+                                                                            <height>20</height>
+                                                                        </size>
+                                                                    </property>
+                                                                </spacer>
+                                                            </item>
+                                                            <item>
+                                                                <widget class="QPushButton" name="_DirSelect">
+                                                                    <property name="minimumSize">
+                                                                        <size>
+                                                                            <width>0</width>
+                                                                            <height>26</height>
+                                                                        </size>
+                                                                    </property>
+                                                                    <property name="maximumSize">
+                                                                        <size>
+                                                                            <width>16777215</width>
+                                                                            <height>26</height>
+                                                                        </size>
+                                                                    </property>
+                                                                    <property name="styleSheet">
+                                                                        <string notr="true"/>
+                                                                    </property>
+                                                                    <property name="text">
+                                                                        <string/>
+                                                                    </property>
+                                                                </widget>
+                                                            </item>
+                                                        </layout>
+                                                    </widget>
+                                                </item>
+                                                <item row="1" column="1">
+                                                    <widget class="QTextEdit" name="_Name">
+                                                        <property name="sizePolicy">
+                                                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                                                <horstretch>0</horstretch>
+                                                                <verstretch>0</verstretch>
+                                                            </sizepolicy>
+                                                        </property>
+                                                        <property name="minimumSize">
+                                                            <size>
+                                                                <width>0</width>
+                                                                <height>0</height>
+                                                            </size>
+                                                        </property>
+                                                        <property name="maximumSize">
+                                                            <size>
+                                                                <width>16777215</width>
+                                                                <height>16777215</height>
+                                                            </size>
+                                                        </property>
+                                                        <property name="styleSheet">
+                                                            <string notr="true"/>
+                                                        </property>
+                                                        <property name="horizontalScrollBarPolicy">
+                                                            <enum>Qt::ScrollBarAlwaysOff</enum>
+                                                        </property>
+                                                    </widget>
+                                                </item>
+                                                <item row="1" column="0">
+                                                    <widget class="QLabel" name="_NameTip">
+                                                        <property name="styleSheet">
+                                                            <string notr="true"/>
+                                                        </property>
+                                                        <property name="text">
+                                                            <string/>
+                                                        </property>
+                                                        <property name="alignment">
+                                                            <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+                                                        </property>
+                                                    </widget>
+                                                </item>
+                                                <item row="4" column="1">
+                                                    <widget class="QLineEdit" name="_Dir">
+                                                        <property name="minimumSize">
+                                                            <size>
+                                                                <width>0</width>
+                                                                <height>26</height>
+                                                            </size>
+                                                        </property>
+                                                        <property name="maximumSize">
+                                                            <size>
+                                                                <width>16777215</width>
+                                                                <height>26</height>
+                                                            </size>
+                                                        </property>
+                                                        <property name="styleSheet">
+                                                            <string notr="true"/>
+                                                        </property>
+                                                        <property name="readOnly">
+                                                            <bool>true</bool>
+                                                        </property>
+                                                        <property name="clearButtonEnabled">
+                                                            <bool>false</bool>
+                                                        </property>
+                                                    </widget>
+                                                </item>
+                                                <item row="4" column="0">
+                                                    <widget class="QLabel" name="_DirTip">
+                                                        <property name="styleSheet">
+                                                            <string notr="true"/>
+                                                        </property>
+                                                        <property name="text">
+                                                            <string/>
+                                                        </property>
+                                                        <property name="alignment">
+                                                            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                                        </property>
+                                                    </widget>
+                                                </item>
                                                 <item row="2" column="1">
                                                     <widget class="QWidget" name="_SpeedPanel" native="true">
                                                         <layout class="QHBoxLayout" name="_SpeedPanelLayout">
@@ -502,23 +649,46 @@
                                                         </layout>
                                                     </widget>
                                                 </item>
-                                                <item row="4" column="1">
-                                                    <widget class="QWidget" name="_DirPanel" native="true">
+                                                <item row="2" column="0">
+                                                    <widget class="QLabel" name="_SpeedTip">
+                                                        <property name="styleSheet">
+                                                            <string notr="true"/>
+                                                        </property>
+                                                        <property name="text">
+                                                            <string/>
+                                                        </property>
+                                                        <property name="alignment">
+                                                            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                                        </property>
+                                                    </widget>
+                                                </item>
+                                                <item row="3" column="0">
+                                                    <widget class="QLabel" name="_ParallelTip">
                                                         <property name="minimumSize">
                                                             <size>
                                                                 <width>0</width>
-                                                                <height>0</height>
+                                                                <height>26</height>
                                                             </size>
                                                         </property>
                                                         <property name="maximumSize">
                                                             <size>
                                                                 <width>16777215</width>
-                                                                <height>16777215</height>
+                                                                <height>26</height>
                                                             </size>
                                                         </property>
-                                                        <layout class="QHBoxLayout" name="_DirPanelLayout">
+                                                        <property name="text">
+                                                            <string/>
+                                                        </property>
+                                                        <property name="alignment">
+                                                            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                                        </property>
+                                                    </widget>
+                                                </item>
+                                                <item row="3" column="1">
+                                                    <widget class="QWidget" name="_ParallelPanel" native="true">
+                                                        <layout class="QHBoxLayout" name="_ParallelPanelLayout">
                                                             <property name="spacing">
-                                                                <number>10</number>
+                                                                <number>12</number>
                                                             </property>
                                                             <property name="leftMargin">
                                                                 <number>0</number>
@@ -533,20 +703,7 @@
                                                                 <number>0</number>
                                                             </property>
                                                             <item>
-                                                                <spacer name="_DirPanelSpacer">
-                                                                    <property name="orientation">
-                                                                        <enum>Qt::Horizontal</enum>
-                                                                    </property>
-                                                                    <property name="sizeHint" stdset="0">
-                                                                        <size>
-                                                                            <width>40</width>
-                                                                            <height>20</height>
-                                                                        </size>
-                                                                    </property>
-                                                                </spacer>
-                                                            </item>
-                                                            <item>
-                                                                <widget class="QPushButton" name="_DirSelect">
+                                                                <widget class="QSlider" name="_ParallelSlider">
                                                                     <property name="minimumSize">
                                                                         <size>
                                                                             <width>0</width>
@@ -559,8 +716,30 @@
                                                                             <height>26</height>
                                                                         </size>
                                                                     </property>
-                                                                    <property name="styleSheet">
-                                                                        <string notr="true"/>
+                                                                    <property name="maximum">
+                                                                        <number>32</number>
+                                                                    </property>
+                                                                    <property name="pageStep">
+                                                                        <number>1</number>
+                                                                    </property>
+                                                                    <property name="orientation">
+                                                                        <enum>Qt::Horizontal</enum>
+                                                                    </property>
+                                                                </widget>
+                                                            </item>
+                                                            <item>
+                                                                <widget class="QLabel" name="_Parallel">
+                                                                    <property name="minimumSize">
+                                                                        <size>
+                                                                            <width>0</width>
+                                                                            <height>26</height>
+                                                                        </size>
+                                                                    </property>
+                                                                    <property name="maximumSize">
+                                                                        <size>
+                                                                            <width>16777215</width>
+                                                                            <height>26</height>
+                                                                        </size>
                                                                     </property>
                                                                     <property name="text">
                                                                         <string/>
@@ -568,98 +747,6 @@
                                                                 </widget>
                                                             </item>
                                                         </layout>
-                                                    </widget>
-                                                </item>
-                                                <item row="1" column="1">
-                                                    <widget class="QTextEdit" name="_Name">
-                                                        <property name="sizePolicy">
-                                                            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                                                                <horstretch>0</horstretch>
-                                                                <verstretch>0</verstretch>
-                                                            </sizepolicy>
-                                                        </property>
-                                                        <property name="minimumSize">
-                                                            <size>
-                                                                <width>0</width>
-                                                                <height>0</height>
-                                                            </size>
-                                                        </property>
-                                                        <property name="maximumSize">
-                                                            <size>
-                                                                <width>16777215</width>
-                                                                <height>16777215</height>
-                                                            </size>
-                                                        </property>
-                                                        <property name="styleSheet">
-                                                            <string notr="true"/>
-                                                        </property>
-                                                        <property name="horizontalScrollBarPolicy">
-                                                            <enum>Qt::ScrollBarAlwaysOff</enum>
-                                                        </property>
-                                                    </widget>
-                                                </item>
-                                                <item row="1" column="0">
-                                                    <widget class="QLabel" name="_NameTip">
-                                                        <property name="styleSheet">
-                                                            <string notr="true"/>
-                                                        </property>
-                                                        <property name="text">
-                                                            <string/>
-                                                        </property>
-                                                        <property name="alignment">
-                                                            <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
-                                                        </property>
-                                                    </widget>
-                                                </item>
-                                                <item row="3" column="0">
-                                                    <widget class="QLabel" name="_DirTip">
-                                                        <property name="styleSheet">
-                                                            <string notr="true"/>
-                                                        </property>
-                                                        <property name="text">
-                                                            <string/>
-                                                        </property>
-                                                        <property name="alignment">
-                                                            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                                                        </property>
-                                                    </widget>
-                                                </item>
-                                                <item row="2" column="0">
-                                                    <widget class="QLabel" name="_SpeedTip">
-                                                        <property name="styleSheet">
-                                                            <string notr="true"/>
-                                                        </property>
-                                                        <property name="text">
-                                                            <string/>
-                                                        </property>
-                                                        <property name="alignment">
-                                                            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                                                        </property>
-                                                    </widget>
-                                                </item>
-                                                <item row="3" column="1">
-                                                    <widget class="QLineEdit" name="_Dir">
-                                                        <property name="minimumSize">
-                                                            <size>
-                                                                <width>0</width>
-                                                                <height>26</height>
-                                                            </size>
-                                                        </property>
-                                                        <property name="maximumSize">
-                                                            <size>
-                                                                <width>16777215</width>
-                                                                <height>26</height>
-                                                            </size>
-                                                        </property>
-                                                        <property name="styleSheet">
-                                                            <string notr="true"/>
-                                                        </property>
-                                                        <property name="readOnly">
-                                                            <bool>true</bool>
-                                                        </property>
-                                                        <property name="clearButtonEnabled">
-                                                            <bool>false</bool>
-                                                        </property>
                                                     </widget>
                                                 </item>
                                             </layout>
@@ -698,6 +785,25 @@
                                                 <property name="bottomMargin">
                                                     <number>0</number>
                                                 </property>
+                                                <item>
+                                                    <widget class="QLabel" name="_Tip">
+                                                        <property name="minimumSize">
+                                                            <size>
+                                                                <width>0</width>
+                                                                <height>26</height>
+                                                            </size>
+                                                        </property>
+                                                        <property name="maximumSize">
+                                                            <size>
+                                                                <width>16777215</width>
+                                                                <height>26</height>
+                                                            </size>
+                                                        </property>
+                                                        <property name="text">
+                                                            <string/>
+                                                        </property>
+                                                    </widget>
+                                                </item>
                                                 <item>
                                                     <spacer name="_ControlPanelSpacer">
                                                         <property name="orientation">

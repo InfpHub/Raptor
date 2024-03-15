@@ -40,7 +40,7 @@ RaptorUploadingSuite* RaptorUploadingSuite::invokeSingletonGet()
 void RaptorUploadingSuite::invokeStop() const
 {
     _ItemsStatusTimer->stop();
-    for (auto& item : qAsConst(_ItemsQueue))
+    for (const auto& item : _ItemsQueue)
     {
         Q_EMIT itemPausing(QVariant::fromValue<RaptorTransferItem>(item));
     }
@@ -186,7 +186,7 @@ void RaptorUploadingSuite::invokeItemDelete(const RaptorTransferItem& item,
         qArray << qDocument;
 
         auto qHttpPayload = RaptorHttpPayload();
-        qHttpPayload._Url = "https://api.aliyundrive.com/v3/batch";
+        qHttpPayload._Url = "https://api.aliyundrive.com/adrive/v4/batch";
         USE_HEADER_DEFAULT(qHttpPayload)
         auto qRow = QJsonObject();
         qRow["requests"] = qArray;
@@ -248,12 +248,13 @@ QString RaptorUploadingSuite::invokeItemCreate(RaptorTransferItem& item)
         {
             auto items = QQueue<RaptorPartial>();
             const auto iteos = qDocument["part_info_list"].toArray();
-            for (auto iteo : iteos)
+            for (const auto& iteo : iteos)
             {
-                auto itep = RaptorPartial();
-                itep._Number = iteo["part_number"].toVariant().toUInt();
-                itep._Url = iteo["upload_url"].toString();
-                items << itep;
+                const auto itep = iteo.toObject();
+                auto iteq = RaptorPartial();
+                iteq._Number = itep["part_number"].toVariant().toUInt();
+                iteq._Url = itep["upload_url"].toString();
+                items << iteq;
             }
 
             item._WorkerId = qDocument["upload_id"].toString();
@@ -422,7 +423,7 @@ void RaptorUploadingSuite::onItemsUploading(const QVariant& qVariant)
             for (auto& iteo : itens)
             {
                 auto qAbsolutePath = QStringLiteral("%1/").arg(qTopPath);
-                for (auto qIterator = iteo.begin(); qIterator != iteo.end(); qIterator++)
+                for (auto qIterator = iteo.begin(); qIterator != iteo.end(); ++qIterator)
                 {
                     qAbsolutePath.append(*qIterator);
                     if (std::next(qIterator) != iteo.end())
@@ -610,7 +611,7 @@ void RaptorUploadingSuite::onItemsLoading() const
 void RaptorUploadingSuite::onItemsPausing(const QVariant& qVariant) const
 {
     const auto input = qVariant.value<RaptorInput>();
-    for (auto& qIndex : qAsConst(input._Indexes))
+    for (const auto &qIndex: input._Indexes)
     {
         auto item = qIndex.data(Qt::UserRole).value<RaptorTransferItem>();
         if (_ItemsQueue.contains(item))
@@ -636,7 +637,7 @@ void RaptorUploadingSuite::onItemsResuming(const QVariant& qVariant)
         _ItemsStatusTimer->start();
     }
 
-    for (auto& qIndex : qAsConst(input._Indexes))
+    for (const auto &qIndex: input._Indexes)
     {
         const auto item = qIndex.data(Qt::UserRole).value<RaptorTransferItem>();
         invokeItemUpdate(item, 0);

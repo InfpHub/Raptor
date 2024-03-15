@@ -41,12 +41,14 @@ public:
 
     static RaptorTrashSuite* invokeSingletonGet();
 
+    static QPair<QString, QModelIndexList> invokeItemsTrash(const QModelIndexList& qIndexList);
+
 Q_SIGNALS:
     Q_SIGNAL void itemsFetched(const QVariant& qVariant) const;
 
     Q_SIGNAL void itemsTrashed(const QVariant& qVariant) const;
 
-    Q_SIGNAL void itemsRestored(const QVariant& qVariant) const;
+    Q_SIGNAL void itemsRecovered(const QVariant& qVariant) const;
 
     Q_SIGNAL void itemsDeleted(const QVariant& qVariant) const;
 
@@ -57,7 +59,7 @@ public Q_SLOTS:
 
     Q_SLOT void onItemsTrashing(const QVariant& qVariant) const;
 
-    Q_SLOT void onItemsRestoring(const QVariant& qVariant) const;
+    Q_SLOT void onItemsRecovering(const QVariant& qVariant) const;
 
     Q_SLOT void onItemsDeleting(const QVariant& qVariant) const;
 

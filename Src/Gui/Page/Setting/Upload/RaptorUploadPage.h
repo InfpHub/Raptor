@@ -70,9 +70,9 @@ private Q_SLOTS:
 
 private:
     Ui::RaptorUploadPage* _Ui = Q_NULLPTR;
-    RaptorTableViewDelegate* _FilterDelegate = Q_NULLPTR;
-    RaptorTableViewHeader* _FilterHeader = Q_NULLPTR;
-    RaptorSettingViewModel* _FilterModel = Q_NULLPTR;
+    RaptorTableViewDelegate* _FilterViewDelegate = Q_NULLPTR;
+    RaptorTableViewHeader* _FilterViewHeader = Q_NULLPTR;
+    RaptorSettingViewModel* _FilterViewModel = Q_NULLPTR;
     QTimer* _DebounceTimer = Q_NULLPTR;
 };
 

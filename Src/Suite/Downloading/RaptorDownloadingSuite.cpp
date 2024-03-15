@@ -31,15 +31,92 @@ RaptorDownloadingSuite::RaptorDownloadingSuite()
     invokeSlotInit();
 }
 
-RaptorDownloadingSuite* RaptorDownloadingSuite::invokeSingletonGet()
+RaptorDownloadingSuite *RaptorDownloadingSuite::invokeSingletonGet()
 {
     return _DownloadingSuite();
+}
+
+QPair<QString, QVector<RaptorFileItem> > RaptorDownloadingSuite::invokeItemsWalk(const QString &qParent, const QString &qMarker)
+{
+    auto qHttpPayload = RaptorHttpPayload();
+    qHttpPayload._Url = "https://api.aliyundrive.com/v2/file/walk";
+    USE_HEADER_DEFAULT(qHttpPayload)
+    auto qRow = QJsonObject();
+    qRow["drive_id"] = RaptorStoreSuite::invokeUserGet()._Space;
+    qRow["parent_file_id"] = qParent;
+    qRow["limit"] = 1000;
+    qRow["marker"] = qMarker;
+    qRow["url_expire_sec"] = 86400;
+    qHttpPayload._Body = QJsonDocument(qRow);
+    auto items = QVector<RaptorFileItem>();
+    const auto [qError, qStatus, qBody] = RaptorHttpSuite::invokePost(qHttpPayload);
+    if (!qError.isEmpty())
+    {
+        qCritical() << qError;
+        return qMakePair(qError, items);
+    }
+
+    const auto qDocument = QJsonDocument::fromJson(qBody);
+    if (qStatus != RaptorHttpStatus::OK)
+    {
+        qCritical() << qDocument.toJson();
+        return qMakePair(QString("%1: %2").arg(qDocument["code"].toString(), qDocument["message"].toString()), items);
+    }
+
+    const auto itens = qDocument["items"].toArray();
+    const auto qMarkes = qDocument["next_marker"].toString();
+    for (const auto &iten: itens)
+    {
+        const auto iteo = iten.toObject();
+        if (iteo["status"].toString() != "available")
+        {
+            continue;
+        }
+
+        auto item = RaptorFileItem();
+        item._Id = iteo["file_id"].toString();
+        item._Parent = iteo["parent_file_id"].toString();
+        item._Name = iteo["name"].toString();
+        item._Space = iteo["drive_id"].toString();
+        item._Domain = iteo["domain_id"].toString();
+        item._Extension = iteo["file_extension"].toString();
+        item._Type = iteo["type"].toString();
+        item._SHA1 = iteo["content_hash"].toString();
+        if (iteo["type"].toString() == "file")
+        {
+            const auto size = iteo["size"].toVariant().toULongLong();
+            item._Byte = size;
+            item._Size = RaptorUtil::invokeStorageUnitConvert(size);
+            item._Icon = RaptorUtil::invokeIconMatch(item._Name);
+        } else
+        {
+            item._Icon = RaptorUtil::invokeIconMatch(QString(), true);
+        }
+
+        item._Url = iteo["url"].toString();
+        item._Created = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+        item._Updated = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+        items << item;
+    }
+
+    if (!qMarkes.isEmpty())
+    {
+        const auto [qErros, qChildren] = invokeItemsWalk(qParent, qMarkes);
+        if (!qErros.isEmpty())
+        {
+            return qMakePair(qErros, items);
+        }
+
+        items << qChildren;
+    }
+
+    return qMakePair(QString(), items);
 }
 
 void RaptorDownloadingSuite::invokeStop()
 {
     _ItemsStatusTimer->stop();
-    for (auto& item : qAsConst(_ItemsQueue))
+    for (const auto &item: _ItemsQueue)
     {
         Q_EMIT itemPausing(QVariant::fromValue<RaptorTransferItem>(item));
     }
@@ -60,7 +137,7 @@ void RaptorDownloadingSuite::invokeSlotInit() const
             &RaptorDownloadingSuite::onItemStatusTimerTimeout);
 }
 
-QVector<RaptorTransferItem> RaptorDownloadingSuite::invokeItemsByLimitSelect(const quint32& qLimit)
+QVector<RaptorTransferItem> RaptorDownloadingSuite::invokeItemsByLimitSelect(const quint32 &qLimit)
 {
     auto qSQLQuery = RaptorPersistenceSuite::invokeQueryGenerate();
     const auto qSQL = R"(
@@ -89,22 +166,22 @@ QVector<RaptorTransferItem> RaptorDownloadingSuite::invokeItemsByLimitSelect(con
         item._SHA1 = qSQLQuery.value("SHA1").toString();
         item._Icon = RaptorUtil::invokeIconMatch(item._Name);
         item._Limit = qSQLQuery.value("Limit").toLongLong();
+        item._Parallel = qSQLQuery.value("Parallel").toUInt();
         items << item;
     }
 
     return items;
 }
 
-void RaptorDownloadingSuite::invokeItemsSave(QVector<RaptorTransferItem>& items,
-                                             const qint64& qLimit)
+void RaptorDownloadingSuite::invokeItemsSave(QVector<RaptorTransferItem> &items)
 {
     RaptorPersistenceSuite::invokeTransaction();
     auto qSQLQuery = RaptorPersistenceSuite::invokeQueryGenerate();
     const auto qSQL = R"(
-        INSERT INTO Downloading ("Id", "Name", "Created", "Path", "Size", "Transferred", "Byte", "SHA1", "UserId", "Limit", "State")
-        VALUES (:Id, :Name, :Created, :Path, :Size, :Transferred, :Byte, :SHA1, :UserId, :Limit, :State)
+        INSERT INTO Downloading ("Id", "Name", "Created", "Path", "Size", "Byte", "SHA1", "UserId", "Limit", "State", "Parallel")
+        VALUES (:Id, :Name, :Created, :Path, :Size, :Byte, :SHA1, :UserId, :Limit, :State, :Parallel)
     )";
-    for (auto& item : items)
+    for (auto &item: items)
     {
         if (const auto qFileInfo = QFileInfo(QStringLiteral("%1/%2").arg(item._Path, item._Name));
             qFileInfo.exists())
@@ -113,8 +190,7 @@ void RaptorDownloadingSuite::invokeItemsSave(QVector<RaptorTransferItem>& items,
                                                    Setting::Download::AutoRename).toBool())
             {
                 item._Name = QStringLiteral("RC[%1]-%2").arg(RaptorUtil::invokeUUIDGenerate().left(5), item._Name);
-            }
-            else
+            } else
             {
                 if (!QFile::remove(qFileInfo.absoluteFilePath()))
                 {
@@ -130,12 +206,12 @@ void RaptorDownloadingSuite::invokeItemsSave(QVector<RaptorTransferItem>& items,
         qSQLQuery.bindValue(":Created", item._Created);
         qSQLQuery.bindValue(":Path", item._Path);
         qSQLQuery.bindValue(":Size", item._Size);
-        qSQLQuery.bindValue(":Transferred", 0);
         qSQLQuery.bindValue(":Byte", item._Byte);
         qSQLQuery.bindValue(":SHA1", item._SHA1);
         qSQLQuery.bindValue(":UserId", RaptorStoreSuite::invokeUserGet()._LeafId);
-        qSQLQuery.bindValue(":Limit", qLimit);
+        qSQLQuery.bindValue(":Limit", item._Limit);
         qSQLQuery.bindValue(":State", 0);
+        qSQLQuery.bindValue(":Parallel", item._Parallel);
         qSQLQuery.exec();
         if (qSQLQuery.lastError().isValid())
         {
@@ -149,7 +225,7 @@ void RaptorDownloadingSuite::invokeItemsSave(QVector<RaptorTransferItem>& items,
     RaptorPersistenceSuite::invokeCommit();
 }
 
-void RaptorDownloadingSuite::invokeItemDelete(const RaptorTransferItem& item)
+void RaptorDownloadingSuite::invokeItemDelete(const RaptorTransferItem &item)
 {
     auto qSQLQuery = RaptorPersistenceSuite::invokeQueryGenerate();
     const auto qSQL = R"(
@@ -173,15 +249,29 @@ void RaptorDownloadingSuite::invokeItemDelete(const RaptorTransferItem& item)
  *         1: 传输中
  *         0: 等待中
  */
-void RaptorDownloadingSuite::invokeItemUpdate(const RaptorTransferItem& item,
-                                              const qint8& qState)
+void RaptorDownloadingSuite::invokeItemUpdate(const RaptorTransferItem &item,
+                                              const qint8 &qState)
 {
     auto qSQLQuery = RaptorPersistenceSuite::invokeQueryGenerate();
     const auto qSQL = R"(
-        UPDATE Downloading SET Transferred = :Transferred, State = :State WHERE LeafId = :LeafId AND UserId = :UserId
+        UPDATE Downloading SET Partial = :Partial, State = :State WHERE LeafId = :LeafId AND UserId = :UserId
     )";
+
+    auto qArray = QJsonArray();
+    for (const auto &iten: item._Partials)
+    {
+        auto qBody = QJsonObject();
+        qBody["LeafId"] = iten._LeafId;
+        qBody["Name"] = iten._Name;
+        qBody["Offset"] = iten._Offset;
+        qBody["Transferred"] = iten._Transferred;
+        qBody["End"] = iten._End;
+        qBody["Path"] = iten._Path;
+        qArray << qBody;
+    }
+
     qSQLQuery.prepare(qSQL);
-    qSQLQuery.bindValue(":Transferred", item._Transferred);
+    qSQLQuery.bindValue(":Partial", QJsonDocument(qArray).toJson());
     qSQLQuery.bindValue(":State", qState);
     qSQLQuery.bindValue(":LeafId", item._LeafId);
     qSQLQuery.bindValue(":UserId", RaptorStoreSuite::invokeUserGet()._LeafId);
@@ -192,86 +282,6 @@ void RaptorDownloadingSuite::invokeItemUpdate(const RaptorTransferItem& item,
     }
 }
 
-QPair<QString, QVector<RaptorFileItem>> RaptorDownloadingSuite::invokeItemsWalk(const RaptorInput& input)
-{
-    auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/v2/file/walk";
-    USE_HEADER_DEFAULT(qHttpPayload)
-    auto qRow = QJsonObject();
-    qRow["drive_id"] = RaptorStoreSuite::invokeUserGet()._Space;
-    qRow["parent_file_id"] = input._Parent;
-    qRow["limit"] = 1000;
-    qRow["marker"] = input._Marker;
-    qRow["category"] = input._Category;
-    qRow["url_expire_sec"] = 86400;
-    qHttpPayload._Body = QJsonDocument(qRow);
-    auto items = QVector<RaptorFileItem>();
-    const auto [qError, qStatus, qBody] = RaptorHttpSuite::invokePost(qHttpPayload);
-    if (!qError.isEmpty())
-    {
-        qCritical() << qError;
-        return qMakePair(qError, items);
-    }
-
-    const auto qDocument = QJsonDocument::fromJson(qBody);
-    if (qStatus != RaptorHttpStatus::OK)
-    {
-        qCritical() << qDocument.toJson();
-        return qMakePair(QString("%1: %2").arg(qDocument["code"].toString(), qDocument["message"].toString()), items);
-    }
-
-    const auto itens = qDocument["items"].toArray();
-    const auto qMarker = qDocument["next_marker"].toString();
-    for (auto iten : itens)
-    {
-        if (iten["status"].toString() != "available")
-        {
-            continue;
-        }
-
-        auto item = RaptorFileItem();
-        item._Id = iten["file_id"].toString();
-        item._Parent = iten["parent_file_id"].toString();
-        item._Name = iten["name"].toString();
-        item._Space = iten["drive_id"].toString();
-        item._Domain = iten["domain_id"].toString();
-        item._Extension = iten["file_extension"].toString();
-        item._Type = iten["type"].toString();
-        item._SHA1 = iten["content_hash"].toString();
-        if (iten["type"].toString() == "file")
-        {
-            const auto size = iten["size"].toVariant().toULongLong();
-            item._Byte = size;
-            item._Size = RaptorUtil::invokeStorageUnitConvert(size);
-            item._Icon = RaptorUtil::invokeIconMatch(item._Name);
-        }
-        else
-        {
-            item._Icon = RaptorUtil::invokeIconMatch(QString{}, true);
-        }
-
-        item._Url = iten["url"].toString();
-        item._Created = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
-        item._Updated = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
-        items << item;
-    }
-
-    if (!qMarker.isEmpty())
-    {
-        auto inpuu = input;
-        inpuu._Marker = qMarker;
-        const auto [qErros, qChildren] = invokeItemsWalk(inpuu);
-        if (!qErros.isEmpty())
-        {
-            return qMakePair(qErros, items);
-        }
-
-        items << qChildren;
-    }
-
-    return qMakePair(QString(), items);
-}
-
 /**
  * \brief 组装文件的完整路径、并创建所需文件夹
  * \param qId 顶级文件夹 Id
@@ -280,13 +290,13 @@ QPair<QString, QVector<RaptorFileItem>> RaptorDownloadingSuite::invokeItemsWalk(
  * \param qPathComponent
  * \return
  */
-QPair<QString, QVector<RaptorTransferItem>> RaptorDownloadingSuite::invokeItemsBuild(const QString& qId,
-                                                                                     const QString& qDir,
-                                                                                     const QVector<RaptorFileItem>& items,
-                                                                                     const QStringList& qPathComponent)
+QPair<QString, QVector<RaptorTransferItem> > RaptorDownloadingSuite::invokeItemsBuild(const QString &qId,
+                                                                                      const QString &qDir,
+                                                                                      const QVector<RaptorFileItem> &items,
+                                                                                      const QStringList &qPathComponent)
 {
     auto itens = QVector<RaptorTransferItem>();
-    for (auto& item : items)
+    for (auto &item: items)
     {
         if (item._Parent == qId)
         {
@@ -303,8 +313,7 @@ QPair<QString, QVector<RaptorTransferItem>> RaptorDownloadingSuite::invokeItemsB
                                                        Setting::Download::FullPath).toBool())
                 {
                     iten._Path = QDir(qDir + "/" + qSuffix.join("/")).path();
-                }
-                else
+                } else
                 {
                     iten._Path = qDir;
                 }
@@ -331,18 +340,18 @@ QPair<QString, QVector<RaptorTransferItem>> RaptorDownloadingSuite::invokeItemsB
     return qMakePair(QString(), itens);
 }
 
-QPair<QString, QVector<RaptorTransferItem>> RaptorDownloadingSuite::invokeItemsAssemble(const QVariant& qVariant)
+QPair<QString, QVector<RaptorTransferItem> > RaptorDownloadingSuite::invokeItemsAssemble(const QVariant &qVariant)
 {
     auto input = qVariant.value<RaptorInput>();
     const auto qIndexList = input._Indexes;
     auto items = QVector<RaptorTransferItem>();
-    for (auto& qIndex : qAsConst(qIndexList))
+    for (const auto &qIndex: qIndexList)
     {
         const auto item = qIndex.data(Qt::UserRole).value<RaptorFileItem>();
         input._Parent = item._Id;
         if (item._Type == "folder")
         {
-            const auto [qError, itens] = invokeItemsWalk(input);
+            const auto [qError, itens] = invokeItemsWalk(input._Parent, input._Marker);
             if (!qError.isEmpty())
             {
                 return qMakePair(qError, items);
@@ -354,25 +363,21 @@ QPair<QString, QVector<RaptorTransferItem>> RaptorDownloadingSuite::invokeItemsA
                 input._Dir = input._Dir.left(2);
             }
 
-            const auto [qErros, iteos] = invokeItemsBuild(item._Id,
-                                                          QStringLiteral("%1/%2").arg(input._Dir, item._Name),
-                                                          itens);
+            const auto [qErros, iteos] = invokeItemsBuild(item._Id, QStringLiteral("%1/%2").arg(input._Dir, item._Name), itens);
             if (!qErros.isEmpty())
             {
                 return qMakePair(qError, iteos);
             }
 
             items << iteos;
-        }
-        else
+        } else
         {
             auto iten = RaptorTransferItem();
             iten._Id = item._Id;
             if (!input._Name.isEmpty() && input._Name.compare(item._Name, Qt::CaseSensitive) != 0)
             {
                 iten._Name = input._Name;
-            }
-            else
+            } else
             {
                 iten._Name = item._Name;
             }
@@ -395,9 +400,9 @@ QPair<QString, QVector<RaptorTransferItem>> RaptorDownloadingSuite::invokeItemsA
     return qMakePair(QString(), items);
 }
 
-void RaptorDownloadingSuite::invokeItemDownload(const RaptorTransferItem& item)
+void RaptorDownloadingSuite::invokeItemDownload(const RaptorTransferItem &item)
 {
-    const auto qWorker = new RaptorDownloadingWorker{item};
+    const auto qWorker = new RaptorDownloadingWorker(item);
     connect(qWorker,
             &RaptorDownloadingWorker::itemStatusChanged,
             this,
@@ -467,21 +472,38 @@ void RaptorDownloadingSuite::onItemsLoading() const
         item._Size = qSQLQuery.value("Size").toString();
         item._Path = qSQLQuery.value("Path").toString();
         item._Byte = qSQLQuery.value("Byte").toULongLong();
-        item._Transferred = qSQLQuery.value("Transferred").toULongLong();
+        auto Transferred = static_cast<qint64>(0);
+        const auto qPartial = QJsonDocument::fromJson(qSQLQuery.value("Partial").toString().toUtf8()).array();
+        for (const auto &iten: qPartial)
+        {
+            const auto iteo = iten.toObject();
+            auto itep = RaptorPartial();
+            itep._LeafId = iteo["LeafId"].toString();
+            itep._Name = iteo["Name"].toString();
+            itep._Offset = iteo["Offset"].toVariant().toLongLong();
+            itep._End = iteo["End"].toVariant().toLongLong();
+            itep._Transferred = iteo["Transferred"].toVariant().toLongLong();
+            itep._Path = iteo["Path"].toString();
+            item._Partials.enqueue(itep);
+            Transferred += itep._Transferred;
+        }
+
+        item._Transferred = Transferred;
         item._SHA1 = qSQLQuery.value("SHA1").toString();
         item._Icon = RaptorUtil::invokeIconMatch(item._Name);
         item._Status = item._Transferred == 0 ? QStringLiteral("队列中") : QStringLiteral("已暂停");
         item._Limit = qSQLQuery.value("Limit").toLongLong();
+        item._Parallel = qSQLQuery.value("Parallel").toUInt();
         items << item;
     }
 
     auto output = RaptorOutput();
     output._State = true;
-    output._Data = QVariant::fromValue<QVector<RaptorTransferItem>>(items);
+    output._Data = QVariant::fromValue<QVector<RaptorTransferItem> >(items);
     Q_EMIT itemsLoaded(QVariant::fromValue<RaptorOutput>(output));
 }
 
-void RaptorDownloadingSuite::onItemsDownloading(const QVariant& qVariant)
+void RaptorDownloadingSuite::onItemsDownloading(const QVariant &qVariant)
 {
     const auto input = qVariant.value<RaptorInput>();
     auto output = RaptorOutput();
@@ -495,11 +517,12 @@ void RaptorDownloadingSuite::onItemsDownloading(const QVariant& qVariant)
         return;
     }
 
-    for (auto& item : items)
+    for (auto &item: items)
     {
         if (item._Type != "folder")
         {
             item._Limit = input._Speed;
+            item._Parallel = input._Parallel;
             item._Created = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
             continue;
         }
@@ -513,9 +536,9 @@ void RaptorDownloadingSuite::onItemsDownloading(const QVariant& qVariant)
         items.removeOne(item);
     }
 
-    invokeItemsSave(items, input._Speed);
+    invokeItemsSave(items);
     output._State = true;
-    output._Data = QVariant::fromValue<QVector<RaptorTransferItem>>(items);
+    output._Data = QVariant::fromValue<QVector<RaptorTransferItem> >(items);
     Q_EMIT itemsQueuing(QVariant::fromValue<RaptorOutput>(output));
     if (!items.isEmpty() && !_ItemsStatusTimer->isActive())
     {
@@ -534,7 +557,7 @@ void RaptorDownloadingSuite::onItemsDownloading(const QVariant& qVariant)
             return;
         }
 
-        for (auto& iten : itens)
+        for (auto &iten: itens)
         {
             if (_ItemsQueue.contains(iten))
             {
@@ -548,10 +571,10 @@ void RaptorDownloadingSuite::onItemsDownloading(const QVariant& qVariant)
     }
 }
 
-void RaptorDownloadingSuite::onItemsPausing(const QVariant& qVariant) const
+void RaptorDownloadingSuite::onItemsPausing(const QVariant &qVariant) const
 {
     const auto input = qVariant.value<RaptorInput>();
-    for (auto& qIndex : qAsConst(input._Indexes))
+    for (const auto &qIndex: input._Indexes)
     {
         auto item = qIndex.data(Qt::UserRole).value<RaptorTransferItem>();
         if (_ItemsQueue.contains(item))
@@ -569,7 +592,7 @@ void RaptorDownloadingSuite::onItemsPausing(const QVariant& qVariant) const
     }
 }
 
-void RaptorDownloadingSuite::onItemsResuming(const QVariant& qVariant)
+void RaptorDownloadingSuite::onItemsResuming(const QVariant &qVariant)
 {
     const auto input = qVariant.value<RaptorInput>();
     if (!_ItemsStatusTimer->isActive() && !input._Indexes.isEmpty())
@@ -577,7 +600,7 @@ void RaptorDownloadingSuite::onItemsResuming(const QVariant& qVariant)
         _ItemsStatusTimer->start();
     }
 
-    for (auto& qIndex : qAsConst(input._Indexes))
+    for (const auto &qIndex: input._Indexes)
     {
         const auto item = qIndex.data(Qt::UserRole).value<RaptorTransferItem>();
         invokeItemUpdate(item, 0);
@@ -598,21 +621,27 @@ void RaptorDownloadingSuite::onItemsResuming(const QVariant& qVariant)
     }
 }
 
-void RaptorDownloadingSuite::onItemCancelling(const QVariant& qVariant) const
+void RaptorDownloadingSuite::onItemCancelling(const QVariant &qVariant) const
 {
     const auto input = qVariant.value<RaptorInput>();
     const auto item = input._Variant.value<RaptorTransferItem>();
     if (_ItemsQueue.contains(item))
     {
         Q_EMIT itemCancelling(QVariant::fromValue<RaptorTransferItem>(item));
+        invokeItemDelete(item);
         return;
     }
 
     invokeItemDelete(item);
     QFile::remove(QStringLiteral("%1/%2").arg(item._Path, item._Name));
+    if (auto qDir = QDir(QStringLiteral("%1/%2").arg(item._Path, item._LeafId));
+        qDir.exists())
+    {
+        qDir.removeRecursively();
+    }
 }
 
-void RaptorDownloadingSuite::onItemStatusChanged(const QVariant& qVariant)
+void RaptorDownloadingSuite::onItemStatusChanged(const QVariant &qVariant)
 {
     const auto item = qVariant.value<RaptorTransferItem>();
     for (auto i = 0; i < _ItemsQueue.length(); ++i)
@@ -625,7 +654,7 @@ void RaptorDownloadingSuite::onItemStatusChanged(const QVariant& qVariant)
     }
 }
 
-void RaptorDownloadingSuite::onItemPaused(const QVariant& qVariant)
+void RaptorDownloadingSuite::onItemPaused(const QVariant &qVariant)
 {
     const auto item = qVariant.value<RaptorTransferItem>();
     _ItemsQueue.removeOne(item);
@@ -651,7 +680,7 @@ void RaptorDownloadingSuite::onItemPaused(const QVariant& qVariant)
             return;
         }
 
-        for (auto& iten : items)
+        for (auto &iten: items)
         {
             if (_ItemsQueue.contains(iten))
             {
@@ -665,12 +694,17 @@ void RaptorDownloadingSuite::onItemPaused(const QVariant& qVariant)
     }
 }
 
-void RaptorDownloadingSuite::onItemCancelled(const QVariant& qVariant)
+void RaptorDownloadingSuite::onItemCancelled(const QVariant &qVariant)
 {
     const auto item = qVariant.value<RaptorTransferItem>();
     _ItemsQueue.removeOne(item);
-    invokeItemDelete(item);
     QFile::remove(QStringLiteral("%1/%2").arg(item._Path, item._Name));
+    if (auto qDir = QDir(QStringLiteral("%1/%2").arg(item._Path, item._LeafId));
+        qDir.exists())
+    {
+        qDir.removeRecursively();
+    }
+
     if (!RaptorStoreSuite::invokeEngineStateGet())
     {
         return;
@@ -688,7 +722,7 @@ void RaptorDownloadingSuite::onItemCancelled(const QVariant& qVariant)
             return;
         }
 
-        for (auto& iten : items)
+        for (auto &iten: items)
         {
             if (_ItemsQueue.contains(iten))
             {
@@ -702,7 +736,7 @@ void RaptorDownloadingSuite::onItemCancelled(const QVariant& qVariant)
     }
 }
 
-void RaptorDownloadingSuite::onItemCompleted(const QVariant& qVariant)
+void RaptorDownloadingSuite::onItemCompleted(const QVariant &qVariant)
 {
     const auto item = qVariant.value<RaptorTransferItem>();
     _ItemsQueue.removeOne(item);
@@ -728,7 +762,7 @@ void RaptorDownloadingSuite::onItemCompleted(const QVariant& qVariant)
             return;
         }
 
-        for (auto& iten : items)
+        for (auto &iten: items)
         {
             if (_ItemsQueue.contains(iten))
             {
@@ -742,7 +776,7 @@ void RaptorDownloadingSuite::onItemCompleted(const QVariant& qVariant)
     }
 }
 
-void RaptorDownloadingSuite::onItemErrored(const QVariant& qVariant)
+void RaptorDownloadingSuite::onItemErrored(const QVariant &qVariant)
 {
     Q_EMIT itemErrored(qVariant);
     const auto [_State, _Message, _Data] = qVariant.value<RaptorOutput>();
@@ -765,7 +799,7 @@ void RaptorDownloadingSuite::onItemErrored(const QVariant& qVariant)
             return;
         }
 
-        for (auto& iten : items)
+        for (auto &iten: items)
         {
             if (_ItemsQueue.contains(iten))
             {
@@ -783,6 +817,6 @@ void RaptorDownloadingSuite::onItemStatusTimerTimeout() const
 {
     auto output = RaptorOutput();
     output._State = true;
-    output._Data = QVariant::fromValue<QQueue<RaptorTransferItem>>(_ItemsQueue);
+    output._Data = QVariant::fromValue<QQueue<RaptorTransferItem> >(_ItemsQueue);
     Q_EMIT itemsStatusChanged(QVariant::fromValue<RaptorOutput>(output));
 }

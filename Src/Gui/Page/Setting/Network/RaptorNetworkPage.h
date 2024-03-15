@@ -94,9 +94,16 @@ private Q_SLOTS:
 
     Q_SLOT void onProxyTestClicked() const;
 
+    Q_SLOT void onIPResolveAutoClicked(const bool& qChecked) const;
+
+    Q_SLOT void onIPResolveV4Clicked(const bool& qChecked) const;
+
+    Q_SLOT void onIPResolveV6Clicked(const bool& qChecked) const;
+
 private:
     Ui::RaptorNetworkPage* _Ui = Q_NULLPTR;
     QButtonGroup* _ProxyGroup = Q_NULLPTR;
+    QButtonGroup* _IPResolveGroup = Q_NULLPTR;
     QTimer* _DebounceTimer = Q_NULLPTR;
 };
 

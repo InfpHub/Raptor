@@ -24,7 +24,7 @@
 #include "RaptorNetworkPage.h"
 #include "ui_RaptorNetworkPage.h"
 
-RaptorNetworkPage::RaptorNetworkPage(QWidget* qParent) : QWidget(qParent),
+RaptorNetworkPage::RaptorNetworkPage(QWidget *qParent) : QWidget(qParent),
                                                          _Ui(new Ui::RaptorNetworkPage)
 {
     _Ui->setupUi(this);
@@ -38,7 +38,7 @@ RaptorNetworkPage::~RaptorNetworkPage()
     FREE(_Ui)
 }
 
-bool RaptorNetworkPage::eventFilter(QObject* qObject, QEvent* qEvent)
+bool RaptorNetworkPage::eventFilter(QObject *qObject, QEvent *qEvent)
 {
     if (qObject == _Ui->_Proxy)
     {
@@ -67,6 +67,12 @@ void RaptorNetworkPage::invokeInstanceInit()
     _ProxyGroup->addButton(_Ui->_ProxySOCKS5);
     _ProxyGroup->setExclusive(true);
 
+    _IPResolveGroup = new QButtonGroup(this);
+    _IPResolveGroup->addButton(_Ui->_IPResolveAuto);
+    _IPResolveGroup->addButton(_Ui->_IPResolveV4);
+    _IPResolveGroup->addButton(_Ui->_IPResolveV6);
+    _IPResolveGroup->setExclusive(true);
+
     _DebounceTimer = new QTimer(this);
     _DebounceTimer->setSingleShot(true);
     _DebounceTimer->setInterval(1350);
@@ -94,10 +100,11 @@ void RaptorNetworkPage::invokeUiInit()
     _Ui->_ProxyHostTip->setText(QStringLiteral("主机:"));
     _Ui->_ProxyHost->setText(RaptorSettingSuite::invokeItemFind(Setting::Section::Network,
                                                                 Setting::Network::ProxyHost).toString());
+    _Ui->_ProxyHost->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_ProxyPortTip->setText(QStringLiteral("端口:"));
     _Ui->_ProxyPort->setText(RaptorSettingSuite::invokeItemFind(Setting::Section::Network,
                                                                 Setting::Network::ProxyPort).toString());
-    _Ui->_ProxyPort->setValidator(new QRegExpValidator{QRegExp{"[0-9]+$"}, this});
+    _Ui->_ProxyPort->setValidator(new QRegularExpressionValidator(QRegularExpression{"[0-9]+$"}, this));
     _Ui->_ProxyPort->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_ProxyUserNameTip->setText(QStringLiteral("账号:"));
     _Ui->_ProxyUserName->setText(RaptorSettingSuite::invokeItemFind(Setting::Section::Network,
@@ -113,6 +120,16 @@ void RaptorNetworkPage::invokeUiInit()
                                                                Setting::Network::Proxy).toBool());
     _Ui->_Proxy->setText(QStringLiteral("启用代理"));
     _Ui->_ProxyTest->setText(QStringLiteral("测试"));
+
+    _Ui->_IPResolveTip->setText(QStringLiteral("IP 解析:"));
+    const auto qIPResolve = RaptorSettingSuite::invokeItemFind(Setting::Section::Network,
+                                                               Setting::Network::IPResolve).toString();
+    _Ui->_IPResolveAuto->setChecked(qIPResolve == Setting::Network::Auto);
+    _Ui->_IPResolveAuto->setText(QStringLiteral("自动"));
+    _Ui->_IPResolveV4->setChecked(qIPResolve == Setting::Network::IPV4);
+    _Ui->_IPResolveV4->setText(QStringLiteral("IPV4"));
+    _Ui->_IPResolveV6->setChecked(qIPResolve == Setting::Network::IPV6);
+    _Ui->_IPResolveV6->setText(QStringLiteral("IPV6"));
 }
 
 void RaptorNetworkPage::invokeSlotInit() const
@@ -186,9 +203,24 @@ void RaptorNetworkPage::invokeSlotInit() const
             &QPushButton::clicked,
             this,
             &RaptorNetworkPage::onProxyTestClicked);
+
+    connect(_Ui->_IPResolveAuto,
+            &QPushButton::clicked,
+            this,
+            &RaptorNetworkPage::onIPResolveAutoClicked);
+
+    connect(_Ui->_IPResolveV4,
+            &QPushButton::clicked,
+            this,
+            &RaptorNetworkPage::onIPResolveV4Clicked);
+
+    connect(_Ui->_IPResolveV6,
+            &QPushButton::clicked,
+            this,
+            &RaptorNetworkPage::onIPResolveV6Clicked);
 }
 
-void RaptorNetworkPage::onItemProxyConnectTested(const QVariant& qVariant) const
+void RaptorNetworkPage::onItemProxyConnectTested(const QVariant &qVariant) const
 {
     _Ui->_ProxyTest->setEnabled(true);
     if (const auto [_State, _Message, _Data] = qVariant.value<RaptorOutput>();
@@ -204,27 +236,29 @@ void RaptorNetworkPage::onItemProxyConnectTested(const QVariant& qVariant) const
 void RaptorNetworkPage::onDebounceTimerTimeout() const
 {
     const auto items = _DebounceTimer->dynamicPropertyNames();
-    for (auto& item : items)
+    for (auto &item: items)
     {
-        const auto qPair = _DebounceTimer->property(item).value<QPair<QString, QVariant>>();
-        RaptorSettingSuite::invokeItemSave(qPair.first, item, qPair.second);
+        const auto [qKey, qValue] = _DebounceTimer->property(item).value<QPair<QString, QVariant> >();
+        RaptorSettingSuite::invokeItemSave(qKey, item, qValue);
     }
 }
 
-void RaptorNetworkPage::onProxyNoneClicked(const bool& qChecked) const
+void RaptorNetworkPage::onProxyNoneClicked(const bool &qChecked) const
 {
     if (!qChecked)
     {
         return;
     }
 
+    _Ui->_Proxy->setText(QStringLiteral("启用代理"));
     _DebounceTimer->setProperty(Setting::Network::ProxyEngine,
-                                QVariant::fromValue<QPair<QString, QVariant>>(
-                                    qMakePair(Setting::Section::Network, QVariant::fromValue<QString>(Setting::Network::None))));
+                                QVariant::fromValue<QPair<QString, QVariant> >(
+                                    qMakePair(Setting::Section::Network,
+                                              QVariant::fromValue<QString>(Setting::Network::None))));
     _DebounceTimer->start();
 }
 
-void RaptorNetworkPage::onProxyHTTPClicked(const bool& qChecked) const
+void RaptorNetworkPage::onProxyHTTPClicked(const bool &qChecked) const
 {
     if (!qChecked)
     {
@@ -233,11 +267,12 @@ void RaptorNetworkPage::onProxyHTTPClicked(const bool& qChecked) const
 
     _Ui->_Proxy->setText(QStringLiteral("启用 HTTP 代理"));
     _DebounceTimer->setProperty(Setting::Network::ProxyEngine,
-                                QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Network, QVariant::fromValue<QString>(Setting::Network::HTTP))));
+                                QVariant::fromValue<QPair<QString, QVariant> >(qMakePair(
+                                    Setting::Section::Network, QVariant::fromValue<QString>(Setting::Network::HTTP))));
     _DebounceTimer->start();
 }
 
-void RaptorNetworkPage::onProxyHTTP1_0Clicked(const bool& qChecked) const
+void RaptorNetworkPage::onProxyHTTP1_0Clicked(const bool &qChecked) const
 {
     if (!qChecked)
     {
@@ -246,11 +281,13 @@ void RaptorNetworkPage::onProxyHTTP1_0Clicked(const bool& qChecked) const
 
     _Ui->_Proxy->setText(QStringLiteral("启用 HTTP1_0 代理"));
     _DebounceTimer->setProperty(Setting::Network::ProxyEngine,
-                                QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Network, QVariant::fromValue<QString>(Setting::Network::HTTP1_0))));
+                                QVariant::fromValue<QPair<QString, QVariant> >(qMakePair(
+                                    Setting::Section::Network,
+                                    QVariant::fromValue<QString>(Setting::Network::HTTP1_0))));
     _DebounceTimer->start();
 }
 
-void RaptorNetworkPage::onProxyHTTPSClicked(const bool& qChecked) const
+void RaptorNetworkPage::onProxyHTTPSClicked(const bool &qChecked) const
 {
     if (!qChecked)
     {
@@ -259,11 +296,12 @@ void RaptorNetworkPage::onProxyHTTPSClicked(const bool& qChecked) const
 
     _Ui->_Proxy->setText(QStringLiteral("启用 HTTPS 代理"));
     _DebounceTimer->setProperty(Setting::Network::ProxyEngine,
-                                QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Network, QVariant::fromValue<QString>(Setting::Network::HTTPS))));
+                                QVariant::fromValue<QPair<QString, QVariant> >(qMakePair(
+                                    Setting::Section::Network, QVariant::fromValue<QString>(Setting::Network::HTTPS))));
     _DebounceTimer->start();
 }
 
-void RaptorNetworkPage::onProxyHTTPS2Clicked(const bool& qChecked) const
+void RaptorNetworkPage::onProxyHTTPS2Clicked(const bool &qChecked) const
 {
     if (!qChecked)
     {
@@ -272,11 +310,13 @@ void RaptorNetworkPage::onProxyHTTPS2Clicked(const bool& qChecked) const
 
     _Ui->_Proxy->setText(QStringLiteral("启用 HTTPS2 代理"));
     _DebounceTimer->setProperty(Setting::Network::ProxyEngine,
-                                QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Network, QVariant::fromValue<QString>(Setting::Network::HTTPS2))));
+                                QVariant::fromValue<QPair<QString, QVariant> >(qMakePair(
+                                    Setting::Section::Network,
+                                    QVariant::fromValue<QString>(Setting::Network::HTTPS2))));
     _DebounceTimer->start();
 }
 
-void RaptorNetworkPage::onProxySOCKS4Clicked(const bool& qChecked) const
+void RaptorNetworkPage::onProxySOCKS4Clicked(const bool &qChecked) const
 {
     if (!qChecked)
     {
@@ -285,11 +325,13 @@ void RaptorNetworkPage::onProxySOCKS4Clicked(const bool& qChecked) const
 
     _Ui->_Proxy->setText(QStringLiteral("启用 SOCKS4 代理"));
     _DebounceTimer->setProperty(Setting::Network::ProxyEngine,
-                                QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Network, QVariant::fromValue<QString>(Setting::Network::SOCKS4))));
+                                QVariant::fromValue<QPair<QString, QVariant> >(qMakePair(
+                                    Setting::Section::Network,
+                                    QVariant::fromValue<QString>(Setting::Network::SOCKS4))));
     _DebounceTimer->start();
 }
 
-void RaptorNetworkPage::onProxySOCKS5Clicked(const bool& qChecked) const
+void RaptorNetworkPage::onProxySOCKS5Clicked(const bool &qChecked) const
 {
     if (!qChecked)
     {
@@ -298,49 +340,57 @@ void RaptorNetworkPage::onProxySOCKS5Clicked(const bool& qChecked) const
 
     _Ui->_Proxy->setText(QStringLiteral("启用 SOCKS5 代理"));
     _DebounceTimer->setProperty(Setting::Network::ProxyEngine,
-                                QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Network, QVariant::fromValue<QString>(Setting::Network::SOCKS5))));
+                                QVariant::fromValue<QPair<QString, QVariant> >(qMakePair(
+                                    Setting::Section::Network,
+                                    QVariant::fromValue<QString>(Setting::Network::SOCKS5))));
     _DebounceTimer->start();
 }
 
-void RaptorNetworkPage::onProxyHostTextChanged(const QString& qValue) const
+void RaptorNetworkPage::onProxyHostTextChanged(const QString &qValue) const
 {
     _DebounceTimer->setProperty(Setting::Network::ProxyHost,
-                                QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Network, QVariant::fromValue<QString>(qValue))));
+                                QVariant::fromValue<QPair<QString, QVariant> >(
+                                    qMakePair(Setting::Section::Network, QVariant::fromValue<QString>(qValue))));
     _DebounceTimer->start();
 }
 
-void RaptorNetworkPage::onProxyPortTextChanged(const QString& qValue) const
+void RaptorNetworkPage::onProxyPortTextChanged(const QString &qValue) const
 {
     _DebounceTimer->setProperty(Setting::Network::ProxyPort,
-                                QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Network, QVariant::fromValue<quint32>(qValue.toUInt()))));
+                                QVariant::fromValue<QPair<QString, QVariant> >(
+                                    qMakePair(Setting::Section::Network,
+                                              QVariant::fromValue<quint32>(qValue.toUInt()))));
     _DebounceTimer->start();
 }
 
-void RaptorNetworkPage::onProxyUserNameTextChanged(const QString& qValue) const
+void RaptorNetworkPage::onProxyUserNameTextChanged(const QString &qValue) const
 {
     _DebounceTimer->setProperty(Setting::Network::ProxyUserName,
-                                QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Network, QVariant::fromValue<QString>(qValue))));
+                                QVariant::fromValue<QPair<QString, QVariant> >(
+                                    qMakePair(Setting::Section::Network, QVariant::fromValue<QString>(qValue))));
     _DebounceTimer->start();
 }
 
-void RaptorNetworkPage::onProxyPasswordTextChanged(const QString& qValue) const
+void RaptorNetworkPage::onProxyPasswordTextChanged(const QString &qValue) const
 {
     _DebounceTimer->setProperty(Setting::Network::ProxyPassword,
-                                QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Network, QVariant::fromValue<QString>(qValue))));
+                                QVariant::fromValue<QPair<QString, QVariant> >(
+                                    qMakePair(Setting::Section::Network, QVariant::fromValue<QString>(qValue))));
     _DebounceTimer->start();
 }
 
-void RaptorNetworkPage::onProxyStateChanged(const int& qState) const
+void RaptorNetworkPage::onProxyStateChanged(const int &qState) const
 {
     if (qState == Qt::Checked)
     {
         _DebounceTimer->setProperty(Setting::Network::Proxy,
-                                    QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Network, QVariant::fromValue<bool>(true))));
-    }
-    else if (qState == Qt::Unchecked)
+                                    QVariant::fromValue<QPair<QString, QVariant> >(
+                                        qMakePair(Setting::Section::Network, QVariant::fromValue<bool>(true))));
+    } else if (qState == Qt::Unchecked)
     {
         _DebounceTimer->setProperty(Setting::Network::Proxy,
-                                    QVariant::fromValue<QPair<QString, QVariant>>(qMakePair(Setting::Section::Network, QVariant::fromValue<bool>(false))));
+                                    QVariant::fromValue<QPair<QString, QVariant> >(
+                                        qMakePair(Setting::Section::Network, QVariant::fromValue<bool>(false))));
     }
 
     _DebounceTimer->start();
@@ -366,31 +416,69 @@ void RaptorNetworkPage::onProxyTestClicked() const
     if (_Ui->_ProxyHTTP->isChecked())
     {
         input._Type = Setting::Network::HTTP;
-    }
-    else if (_Ui->_ProxyHTTP1_0->isChecked())
+    } else if (_Ui->_ProxyHTTP1_0->isChecked())
     {
         input._Type = Setting::Network::HTTP1_0;
-    }
-    else if (_Ui->_ProxyHTTPS->isChecked())
+    } else if (_Ui->_ProxyHTTPS->isChecked())
     {
         input._Type = Setting::Network::HTTPS;
-    }
-    else if (_Ui->_ProxyHTTPS2->isChecked())
+    } else if (_Ui->_ProxyHTTPS2->isChecked())
     {
         input._Type = Setting::Network::HTTPS2;
-    }
-    else if (_Ui->_ProxySOCKS4->isChecked())
+    } else if (_Ui->_ProxySOCKS4->isChecked())
     {
         input._Type = Setting::Network::SOCKS4;
-    }
-    else if (_Ui->_ProxySOCKS5->isChecked())
+    } else if (_Ui->_ProxySOCKS5->isChecked())
     {
         input._Type = Setting::Network::SOCKS5;
     }
 
     input._Name = _Ui->_ProxyUserName->text();
     input._Password = _Ui->_ProxyPassword->text();
-    input._Variant = QVariant::fromValue<QPair<QString, QString>>(qMakePair(qHost, qPort));
+    input._Variant = QVariant::fromValue<QPair<QString, QString> >(qMakePair(qHost, qPort));
     _Ui->_ProxyTest->setEnabled(false);
     Q_EMIT itemProxyConnectTesting(QVariant::fromValue<RaptorInput>(input));
+}
+
+void RaptorNetworkPage::onIPResolveAutoClicked(const bool &qChecked) const
+{
+    if (!qChecked)
+    {
+        return;
+    }
+
+
+    _DebounceTimer->setProperty(Setting::Network::IPResolve,
+                                QVariant::fromValue<QPair<QString, QVariant> >(
+                                    qMakePair(Setting::Section::Network,
+                                              QVariant::fromValue<QString>(Setting::Network::Auto))));
+    _DebounceTimer->start();
+}
+
+void RaptorNetworkPage::onIPResolveV4Clicked(const bool &qChecked) const
+{
+    if (!qChecked)
+    {
+        return;
+    }
+
+    _DebounceTimer->setProperty(Setting::Network::IPResolve,
+                                QVariant::fromValue<QPair<QString, QVariant> >(
+                                    qMakePair(Setting::Section::Network,
+                                              QVariant::fromValue<QString>(Setting::Network::IPV4))));
+    _DebounceTimer->start();
+}
+
+void RaptorNetworkPage::onIPResolveV6Clicked(const bool &qChecked) const
+{
+    if (!qChecked)
+    {
+        return;
+    }
+
+    _DebounceTimer->setProperty(Setting::Network::IPResolve,
+                                QVariant::fromValue<QPair<QString, QVariant> >(
+                                    qMakePair(Setting::Section::Network,
+                                              QVariant::fromValue<QString>(Setting::Network::IPV6))));
+    _DebounceTimer->start();
 }

@@ -118,7 +118,7 @@ bool RaptorShareViewModel::setData(const QModelIndex& qIndex, const QVariant& qV
     const auto item = qVariant.value<RaptorShareItem>();
     _Items.replace(qIndex.row(), item);
     Q_EMIT dataChanged(qIndex, qIndex);
-    return true;
+        return QAbstractTableModel::setData(qIndex, qVariant, qRole);
 }
 
 bool RaptorShareViewModel::removeRow(int qRow, const QModelIndex& qIndex)

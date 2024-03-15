@@ -54,6 +54,7 @@ public:
 
     ~RaptorSettingPage() Q_DECL_OVERRIDE;
 
+    [[nodiscard]]
     RaptorNetworkPage* invokeNetworkPageGet() const;
 
 private:
@@ -75,7 +76,9 @@ private Q_SLOTS:
 
     Q_SLOT void onTabUploadToggled(const bool& qChecked) const;
 
-    Q_SLOT void onTabPlayToggled(const bool& qChecked) const;
+    Q_SLOT void onTabVideoToggled(const bool& qChecked) const;
+
+    Q_SLOT void onTabOfficeToggled(const bool& qChecked) const;
 
     Q_SLOT void onTabNetworkToggled(const bool& qChecked) const;
 

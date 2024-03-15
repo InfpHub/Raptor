@@ -25,9 +25,8 @@
 
 #include "Engine/RaptorEngine.h"
 
-int main(int argc, char* argv[], char* envp[])
+int main(int argc, char* argv[])
 {
-    Q_UNUSED(envp)
     const auto _App = QApplication(argc, argv);
     auto _Memory = QSharedMemory(APPLICATION_NAME);
     if (_Memory.attach())

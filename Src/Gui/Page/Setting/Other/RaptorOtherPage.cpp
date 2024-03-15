@@ -162,8 +162,8 @@ void RaptorOtherPage::onDebounceTimerTimeout() const
     const auto items = _DebounceTimer->dynamicPropertyNames();
     for (auto& item : items)
     {
-        const auto qPair = _DebounceTimer->property(item).value<QPair<QString, QVariant>>();
-        RaptorSettingSuite::invokeItemSave(qPair.first, item, qPair.second);
+        const auto [qKey, qValue] = _DebounceTimer->property(item).value<QPair<QString, QVariant>>();
+        RaptorSettingSuite::invokeItemSave(qKey, item, qValue);
     }
 }
 

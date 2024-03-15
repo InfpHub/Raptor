@@ -26,6 +26,7 @@
 
 #include <QCloseEvent>
 #include <QMetaEnum>
+#include <QPainter>
 #include <QStyle>
 #include <QSvgRenderer>
 #include <QTimer>

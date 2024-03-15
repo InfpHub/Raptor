@@ -31,7 +31,7 @@ RaptorCopilotSuite::RaptorCopilotSuite()
     invokeSlotInit();
 }
 
-RaptorCopilotSuite* RaptorCopilotSuite::invokeSingletonGet()
+RaptorCopilotSuite *RaptorCopilotSuite::invokeSingletonGet()
 {
     return _CopilotSuite();
 }
@@ -89,33 +89,112 @@ void RaptorCopilotSuite::onItemCopyWriterFinding() const
 
     auto output = RaptorOutput();
     output._State = true;
-    output._Data = QVariant::fromValue<QVector<RaptorCopyWriter>>(itens);
+    output._Data = QVariant::fromValue<QVector<RaptorCopyWriter> >(itens);
     Q_EMIT itemCopyWriterHaveFound(QVariant::fromValue<RaptorOutput>(output));
 }
 
-void RaptorCopilotSuite::onItemQrCodeEncoding(const QVariant& qVariant) const
+void RaptorCopilotSuite::onItemNoticeFetching() const
+{
+    auto qHttpPayload = RaptorHttpPayload();
+    qHttpPayload._Url = QStringLiteral("%1/NOTICE").arg(GITHUB);
+    const auto [qError, qStatus, qBody] = RaptorHttpSuite::invokeGet(qHttpPayload);
+    if (!qError.isEmpty())
+    {
+        qWarning() << qError;
+        return;
+    }
+
+    if (qStatus != RaptorHttpStatus::OK)
+    {
+        qWarning() << qError;
+        return;
+    }
+
+    auto qYaml = YAML::Load(qBody.toStdString().c_str());
+    const auto qNotice = qYaml["Notice"];
+    const auto qId = qNotice["Id"].as<std::string>();
+    const auto qType = qNotice["Type"].as<std::string>();
+    auto qSQLQuery = RaptorPersistenceSuite::invokeQueryGenerate();
+    auto qSQL = R"(SELECT State FROM Notice WHERE LeafId = :LeafId)";
+    qSQLQuery.prepare(qSQL);
+    qSQLQuery.bindValue(":LeafId", QString::fromStdString(qId));
+    qSQLQuery.exec(qSQL);
+    if (qSQLQuery.lastError().isValid())
+    {
+        const auto qErros = qSQLQuery.lastError().text();
+        qCritical() << qErros;
+        QMetaObject::invokeMethod(RaptorStoreSuite::invokeWorldGet(),
+                                  "invokeCriticalEject",
+                                  Qt::AutoConnection,
+                                  Q_ARG(QString, qErros));
+        return;
+    }
+
+    if (qSQLQuery.next())
+    {
+        if (const auto qState = qSQLQuery.value("State").toInt();
+            qState == 1)
+        {
+            // 该通知已读
+            return;
+        } else if (qState == -1 && qType == "NewVersion")
+        {
+            // 该通知已跳过
+            return;
+        }
+    }
+
+    const auto qContent = qNotice["Content"].as<std::string>();
+    if (qType == "Notice")
+    {
+        QMetaObject::invokeMethod(RaptorStoreSuite::invokeWorldGet(),
+                                  "invokeNoticeEject",
+                                  Qt::AutoConnection,
+                                  Q_ARG(bool, false),
+                                  Q_ARG(QString, QString::fromStdString(qId)),
+                                  Q_ARG(QString, QStringLiteral("通知")),
+                                  Q_ARG(QString, QString::fromStdString(qContent)));
+    } else if (qType == "NewVersion")
+    {
+        const auto qVersion = qYaml["Version"];
+        const auto qMajor = qVersion["Major"].as<int>();
+        const auto qMinor = qVersion["Minor"].as<int>();
+        const auto qPatch = qVersion["Patch"].as<int>();
+        if (qMajor != MAJOR_VERSION && qMinor != MINOR_VERSION && qPatch != PATCH_VERSION)
+        {
+            QMetaObject::invokeMethod(RaptorStoreSuite::invokeWorldGet(),
+                                      "invokeNoticeEject",
+                                      Qt::AutoConnection,
+                                      Q_ARG(bool, true),
+                                      Q_ARG(QString, QString::fromStdString(qId)),
+                                      Q_ARG(QString, QString(CREATIVE_TEMPLATE).arg(QStringLiteral("Hi %1。新版本 %2.%3.%4 可用").arg(RaptorStoreSuite::invokeUserGet()._Nickname, QString::number(qMajor), QString::number(qMinor)), QString::number(qPatch))),
+                                      Q_ARG(QString, QString::fromStdString(qContent)));
+        }
+    }
+}
+
+void RaptorCopilotSuite::onItemQrCodeEncoding(const QVariant &qVariant) const
 {
     const auto input = qVariant.value<RaptorInput>();
-    auto qSize = input._Variant.value<QSize>();
-    auto qSymbol = ZBarcode_Create();
+    const auto qSize = input._Variant.value<QSize>();
+    const auto qSymbol = ZBarcode_Create();
     qSymbol->symbology = BARCODE_QRCODE;
-    ZBarcode_Encode_and_Buffer_Vector(qSymbol, reinterpret_cast<unsigned char*>(input._Url.toUtf8().data()), input._Url.toUtf8().length(), 0);
+    ZBarcode_Encode_and_Buffer_Vector(qSymbol, reinterpret_cast<unsigned char *>(input._Url.toUtf8().data()), input._Url.toUtf8().length(), 0);
     auto qImage = QImage(qSize, QImage::Format_RGB888);
     auto qPainter = QPainter(&qImage);
-    auto qRect = QRect(2, 2, qSize.width() - 4, qSize.height() - 4);
+    const auto qRect = QRect(4, 4, qSize.width() - 8, qSize.height() - 8);
     qPainter.save();
     qPainter.fillRect(qImage.rect(), Qt::white);
     qPainter.setClipRect(qRect, Qt::IntersectClip);
     auto qTranslateX = qRect.x();
     auto qTranslateY = qRect.y();
     auto qScale = 0.;
-    auto qGlobalWidth = qSymbol->vector->width;
-    auto qGlobalHeight = qSymbol->vector->height;
+    const auto qGlobalWidth = qSymbol->vector->width;
+    const auto qGlobalHeight = qSymbol->vector->height;
     if (qRect.width() / qGlobalWidth < qRect.height() / qGlobalHeight)
     {
         qScale = qRect.width() / qGlobalWidth;
-    }
-    else
+    } else
     {
         qScale = qRect.height() / qGlobalHeight;
     }
@@ -165,10 +244,10 @@ void RaptorCopilotSuite::onItemQrCodeEncoding(const QVariant& qVariant) const
     Q_EMIT itemQrCodeEncoded(QVariant::fromValue<RaptorOutput>(output));
 }
 
-void RaptorCopilotSuite::onItemProxyConnectTesting(const QVariant& qVariant) const
+void RaptorCopilotSuite::onItemProxyConnectTesting(const QVariant &qVariant) const
 {
     const auto input = qVariant.value<RaptorInput>();
-    const auto [qHost, qPort] = input._Variant.value<QPair<QString, QString>>();
+    const auto [qHost, qPort] = input._Variant.value<QPair<QString, QString> >();
     auto output = RaptorOutput();
     if (const auto [qError, qStatus] = RaptorHttpSuite::invokeItemProxyConnectTest(input._Type,
                                                                                    input._Name,
@@ -188,13 +267,13 @@ void RaptorCopilotSuite::onItemProxyConnectTesting(const QVariant& qVariant) con
     Q_EMIT itemProxyConnectTested(QVariant::fromValue<RaptorOutput>(output));
 }
 
-void RaptorCopilotSuite::invokeHeartbeatExplore(const QHostInfo& qHostInfo)
+void RaptorCopilotSuite::invokeHeartbeatExplore(const QHostInfo &qHostInfo)
 {
     if (qHostInfo.error() != QHostInfo::NoError)
     {
         qCritical() << QStringLiteral("通讯阵列损毁!");
         QMetaObject::invokeMethod(RaptorStoreSuite::invokeWorldGet(),
-                                  "invokeToastCriticalEject",
+                                  "invokeCriticalEject",
                                   Qt::AutoConnection,
                                   Q_ARG(QString, QStringLiteral("通讯阵列损毁!")));
     }

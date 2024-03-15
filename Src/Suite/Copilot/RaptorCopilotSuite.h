@@ -44,7 +44,7 @@ class RaptorCopilotSuite Q_DECL_FINAL : public QObject
 public:
     explicit RaptorCopilotSuite();
 
-    static RaptorCopilotSuite* invokeSingletonGet();
+    static RaptorCopilotSuite *invokeSingletonGet();
 
     Q_INVOKABLE void invokeStop() const;
 
@@ -53,29 +53,31 @@ private:
 
     void invokeSlotInit() const;
 
-    static void invokeHeartbeatExplore(const QHostInfo& qHostInfo);
+    static void invokeHeartbeatExplore(const QHostInfo &qHostInfo);
 
 Q_SIGNALS:
-    Q_SIGNAL void itemCopyWriterHaveFound(const QVariant& qVariant) const;
+    Q_SIGNAL void itemCopyWriterHaveFound(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemQrCodeEncoded(const QVariant& qVariant) const;
+    Q_SIGNAL void itemQrCodeEncoded(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemWebSocketConnectTested(const QVariant& qVariant) const;
+    Q_SIGNAL void itemWebSocketConnectTested(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemProxyConnectTested(const QVariant& qVariant) const;
+    Q_SIGNAL void itemProxyConnectTested(const QVariant &qVariant) const;
 
 public Q_SLOT:
     Q_SLOT void onItemCopyWriterFinding() const;
 
-    Q_SLOT void onItemQrCodeEncoding(const QVariant& qVariant) const;
+    Q_SLOT void onItemNoticeFetching() const;
 
-    Q_SLOT void onItemProxyConnectTesting(const QVariant& qVariant) const;
+    Q_SLOT void onItemQrCodeEncoding(const QVariant &qVariant) const;
+
+    Q_SLOT void onItemProxyConnectTesting(const QVariant &qVariant) const;
 
 private Q_SLOTS:
     Q_SLOT void onHeartbeatTimerTimeout();
 
 private:
-    QTimer* _HeartbeatTimer = Q_NULLPTR;
+    QTimer *_HeartbeatTimer = Q_NULLPTR;
 };
 
 #endif // RAPTORCOPILOTSUITE_H

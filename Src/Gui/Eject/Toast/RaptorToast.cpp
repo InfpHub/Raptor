@@ -121,7 +121,7 @@ void RaptorToast::invokeInstanceInit()
 
 void RaptorToast::invokeUiInit()
 {
-    setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint | Qt::MSWindowsFixedSizeDialogHint);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
     _Ui->_Icon->installEventFilter(this);
 }

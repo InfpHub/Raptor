@@ -28,6 +28,7 @@
 #include <QWidget>
 
 #include "./Copy/RaptorCopyPage.h"
+#include "./Clean/RaptorCleanPage.h"
 #include "../../Eject/Toast/RaptorToast.h"
 #include "../../../Suite/Store/RaptorStoreSuite.h"
 
@@ -51,7 +52,11 @@ public:
 
     bool eventFilter(QObject* qObject, QEvent* qEvent) Q_DECL_OVERRIDE;
 
+    [[nodiscard]]
     RaptorCopyPage* invokeCopyPageGet() const;
+
+    [[nodiscard]]
+    RaptorCleanPage* invokeCleanPageGet() const;
 
 private:
     void invokeInstanceInit();
@@ -73,13 +78,19 @@ private Q_SLOTS:
 
     Q_SLOT void onTabCopyToggled() const;
 
+    Q_SLOT void onTabCleanToggled() const;
+
     Q_SLOT void onTabNextClicked() const;
 
     Q_SLOT void onSearchClicked() const;
 
     Q_SLOT void onExecuteClicked() const;
 
+    Q_SLOT void onRefreshClicked() const;
+
     Q_SLOT void onCancelClicked() const;
+
+    Q_SLOT void onBodyChanged(const int& qIndex) const;
 
 private:
     QButtonGroup* _TabGroup = Q_NULLPTR;

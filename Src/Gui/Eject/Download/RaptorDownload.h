@@ -25,7 +25,7 @@
 #define RAPTORDOWNLOAD_H
 
 #include <QButtonGroup>
-#include <QRegExpValidator>
+#include <QPainter>
 #include <QStandardPaths>
 
 #include "../Toast/RaptorToast.h"
@@ -71,6 +71,8 @@ private Q_SLOTS:
     Q_SLOT void onCloseClicked();
 
     Q_SLOT void onSpeedNoLimitStateChanged(const int& qState) const;
+
+    Q_SLOT void onParallelSliderValueChanged(const int& qValue) const;
 
     Q_SLOT void onDirSelectClicked();
 

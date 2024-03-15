@@ -40,10 +40,13 @@ public:
                         Qt::Orientation qOrientation,
                         int qRole = Qt::DisplayRole) const Q_DECL_OVERRIDE;
 
+    [[nodiscard]]
     int rowCount(const QModelIndex& qIndex = QModelIndex()) const Q_DECL_OVERRIDE;
 
+    [[nodiscard]]
     int columnCount(const QModelIndex& qIndex = QModelIndex()) const Q_DECL_OVERRIDE;
 
+    [[nodiscard]]
     QVariant data(const QModelIndex& qIndex, int qRole = Qt::DisplayRole) const Q_DECL_OVERRIDE;
 
     bool setData(const QModelIndex& qIndex,

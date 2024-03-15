@@ -24,7 +24,7 @@
 #include "RaptorDownload.h"
 #include "ui_RaptorDownload.h"
 
-RaptorDownload::RaptorDownload(QWidget* qParent) : RaptorEject(qParent),
+RaptorDownload::RaptorDownload(QWidget *qParent) : RaptorEject(qParent),
                                                    _Ui(new Ui::RaptorDownload)
 {
     _Ui->setupUi(this);
@@ -38,13 +38,13 @@ RaptorDownload::~RaptorDownload()
     FREE(_Ui)
 }
 
-bool RaptorDownload::eventFilter(QObject* qObject, QEvent* qEvent)
+bool RaptorDownload::eventFilter(QObject *qObject, QEvent *qEvent)
 {
     if (qObject == this)
     {
         if (qEvent->type() == QEvent::KeyPress)
         {
-            if (const auto qKeyEvent = static_cast<QKeyEvent*>(qEvent);
+            if (const auto qKeyEvent = static_cast<QKeyEvent *>(qEvent);
                 qKeyEvent->key() == Qt::Key_Escape)
             {
                 onCloseClicked();
@@ -65,7 +65,7 @@ bool RaptorDownload::eventFilter(QObject* qObject, QEvent* qEvent)
     return RaptorEject::eventFilter(qObject, qEvent);
 }
 
-void RaptorDownload::invokeEject(const QVariant& qVariant)
+void RaptorDownload::invokeEject(const QVariant &qVariant)
 {
     _Variant = qVariant;
     if (const auto qIndexList = _Variant.value<QModelIndexList>();
@@ -82,8 +82,7 @@ void RaptorDownload::invokeEject(const QVariant& qVariant)
         }
 
         _Icon = item._Icon;
-    }
-    else if (qIndexList.length() > 1)
+    } else if (qIndexList.length() > 1)
     {
         const auto item = _Variant.value<QModelIndexList>()[0].data(Qt::UserRole).value<RaptorFileItem>();
         const auto qTitle = _Ui->_Title->fontMetrics().elidedText(QStringLiteral("下载 %1 等 %2 个文件").arg(item._Name, QString::number(qIndexList.length())),
@@ -93,6 +92,15 @@ void RaptorDownload::invokeEject(const QVariant& qVariant)
         _Ui->_Name->setEnabled(false);
     }
 
+    _Ui->_ParallelSlider->setRange(1, 32);
+    if (RaptorStoreSuite::invokeUserGet()._VIP)
+    {
+        _Ui->_ParallelSlider->setValue(1);
+        _Ui->_ParallelSlider->setEnabled(false);
+        _Ui->_Parallel->setEnabled(false);
+    }
+
+    _Ui->_ParallelSlider->setValue(10);
     if (RaptorSettingSuite::invokeItemFind(Setting::Section::Download,
                                            Setting::Download::DefaultPath).toBool())
     {
@@ -100,6 +108,7 @@ void RaptorDownload::invokeEject(const QVariant& qVariant)
                                                               Setting::Download::Path).toString());
     }
 
+    _Ui->_Tip->clear();
     RaptorEject::invokeEject(qVariant);
 }
 
@@ -119,6 +128,7 @@ void RaptorDownload::invokeUiInit()
     _Ui->_Close->setIcon(QIcon(RaptorUtil::invokeIconMatch("Close", false, true)));
     _Ui->_Close->setIconSize(QSize(10, 10));
     _Ui->_NameTip->setText(QStringLiteral("名称:"));
+    _Ui->_Name->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_SpeedTip->setText(QStringLiteral("限速:"));
     _Ui->_Speed->setEnabled(!_Ui->_SpeedNoLimit->isChecked());
     _Ui->_Speed->setButtonSymbols(QAbstractSpinBox::NoButtons);
@@ -126,8 +136,12 @@ void RaptorDownload::invokeUiInit()
     _Ui->_KB->setText(QStringLiteral("MB/S"));
     _Ui->_KB->setChecked(true);
     _Ui->_SpeedNoLimit->setText(QStringLiteral("不限速"));
+    _Ui->_ParallelTip->setText(QStringLiteral("并行:"));
+    _Ui->_ParallelSlider->setRange(1, 32);
+    _Ui->_Parallel->setText(QString::number(_Ui->_ParallelSlider->value()));
     _Ui->_DirTip->setText(QStringLiteral("目录"));
     _Ui->_Dir->setText(QStandardPaths::writableLocation(QStandardPaths::DownloadLocation));
+    _Ui->_Dir->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_DirSelect->setText(QStringLiteral("选择"));
     _Ui->_Icon->installEventFilter(this);
     _Ui->_3rdPartyEvoke->setText(QStringLiteral("唤起 %1").arg(RaptorSettingSuite::invokeItemFind(Setting::Section::Download,
@@ -148,6 +162,11 @@ void RaptorDownload::invokeSlotInit()
             &QCheckBox::stateChanged,
             this,
             &RaptorDownload::onSpeedNoLimitStateChanged);
+
+    connect(_Ui->_ParallelSlider,
+            &QSlider::valueChanged,
+            this,
+            &RaptorDownload::onParallelSliderValueChanged);
 
     connect(_Ui->_DirSelect,
             &QPushButton::clicked,
@@ -190,16 +209,28 @@ void RaptorDownload::onCloseClicked()
     close();
 }
 
-void RaptorDownload::onSpeedNoLimitStateChanged(const int& qState) const
+void RaptorDownload::onSpeedNoLimitStateChanged(const int &qState) const
 {
     if (qState == Qt::Checked)
     {
         _Ui->_Speed->setEnabled(false);
-    }
-    else if (qState == Qt::Unchecked)
+    } else if (qState == Qt::Unchecked)
     {
         _Ui->_Speed->setEnabled(true);
     }
+}
+
+void RaptorDownload::onParallelSliderValueChanged(const int &qValue) const
+{
+    if (qValue > 10)
+    {
+        _Ui->_Tip->setText(QString(CRITICAL_TEMPLATE).arg(QStringLiteral("温馨提示：%1 并发可能会触发风控检测处罚!").arg(qValue)));
+    } else
+    {
+        _Ui->_Tip->clear();
+    }
+
+    _Ui->_Parallel->setText(QString::number(qValue));
 }
 
 void RaptorDownload::onDirSelectClicked()
@@ -217,7 +248,7 @@ void RaptorDownload::onDirSelectClicked()
 void RaptorDownload::on3rdPartyEvokeClicked()
 {
     const auto indexes = _Variant.value<QModelIndexList>();
-    for (auto& index : indexes)
+    for (auto &index: indexes)
     {
         const auto item = index.data(Qt::UserRole).value<RaptorFileItem>();
         if (item._Type == "folder")
@@ -247,6 +278,7 @@ void RaptorDownload::onDownloadClicked()
     input._Dir = _Ui->_Dir->text();
     input._Indexes = _Variant.value<QModelIndexList>();
     input._Speed = _Ui->_SpeedNoLimit->isChecked() ? (_Ui->_KB->isChecked() ? _Ui->_Speed->value() : _Ui->_Speed->value() / 1024) : 0;
+    input._Parallel = _Ui->_ParallelSlider->value();
     Q_EMIT itemsDownloading(QVariant::fromValue<RaptorInput>(input));
     onCloseClicked();
 }

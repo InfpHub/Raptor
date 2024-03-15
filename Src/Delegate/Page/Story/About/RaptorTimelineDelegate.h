@@ -42,6 +42,7 @@ public:
                const QStyleOptionViewItem& qStyleOption,
                const QModelIndex& qIndex) const Q_DECL_OVERRIDE;
 
+    [[nodiscard]]
     QSize sizeHint(const QStyleOptionViewItem& qStyleOption,
                    const QModelIndex& qIndex) const Q_DECL_OVERRIDE;
 

@@ -24,7 +24,7 @@
 #include "RaptorUser.h"
 #include "ui_RaptorUser.h"
 
-RaptorUser::RaptorUser(QWidget* qParent) : QDialog(qParent),
+RaptorUser::RaptorUser(QWidget *qParent) : QDialog(qParent),
                                            _Ui(new Ui::RaptorUser)
 {
     _Ui->setupUi(this);
@@ -38,13 +38,13 @@ RaptorUser::~RaptorUser()
     FREE(_Ui)
 }
 
-bool RaptorUser::eventFilter(QObject* qObject, QEvent* qEvent)
+bool RaptorUser::eventFilter(QObject *qObject, QEvent *qEvent)
 {
     if (qObject == this)
     {
         if (qEvent->type() == QEvent::KeyPress)
         {
-            if (const auto qKeyEvent = static_cast<QKeyEvent*>(qEvent);
+            if (const auto qKeyEvent = static_cast<QKeyEvent *>(qEvent);
                 qKeyEvent->key() == Qt::Key_Escape)
             {
                 _StartAnimation->setStartValue(1);
@@ -57,12 +57,11 @@ bool RaptorUser::eventFilter(QObject* qObject, QEvent* qEvent)
 
         if (qEvent->type() == QEvent::Close)
         {
-            if (const auto qCloseEvent = static_cast<QCloseEvent*>(qEvent);
+            if (const auto qCloseEvent = static_cast<QCloseEvent *>(qEvent);
                 windowOpacity() == 0.)
             {
                 qCloseEvent->accept();
-            }
-            else
+            } else
             {
                 _StartAnimation->setStartValue(1);
                 _StartAnimation->setEndValue(0);
@@ -91,7 +90,7 @@ int RaptorUser::exec()
     return QDialog::exec();
 }
 
-QPair<RaptorUser::Operate, RaptorAuthenticationItem> RaptorUser::invokeEject(const QPoint& qPoint)
+QPair<RaptorUser::Operate, RaptorAuthenticationItem> RaptorUser::invokeEject(const QPoint &qPoint)
 {
     _ItemViewModel->invokeItemsClear();
     Q_EMIT itemsLoading();
@@ -120,15 +119,15 @@ void RaptorUser::invokeInstanceInit()
 void RaptorUser::invokeUiInit()
 {
     setWindowFlags(Qt::FramelessWindowHint |
-        Qt::Popup |
-        Qt::MSWindowsFixedSizeDialogHint |
-        Qt::NoDropShadowWindowHint);
+                   Qt::Popup |
+                   Qt::NoDropShadowWindowHint);
     setWindowModality(Qt::NonModal);
     setAttribute(Qt::WA_TranslucentBackground);
     installEventFilter(this);
     _Ui->_NickName->setText(QStringLiteral("Hi，别来无恙~"));
     _Ui->_Refresh->setText(QStringLiteral("刷新"));
     _Ui->_Sign->setText(QStringLiteral("签到"));
+    _Ui->_Device->setText(QStringLiteral("设备"));
     _Ui->_Logout->setText(QStringLiteral("注销"));
     _Ui->_Login->setText(QStringLiteral("登录新用户"));
     _Ui->_ItemView->setModel(_ItemViewModel);
@@ -136,7 +135,8 @@ void RaptorUser::invokeUiInit()
     _Ui->_ItemView->setItemDelegate(_ItemViewDelegate);
     _Ui->_ItemView->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_ItemView->horizontalHeader()->setFixedHeight(26);
-    _Ui->_ItemView->horizontalHeader()->setMinimumSectionSize(26);
+    _Ui->_ItemView->horizontalHeader()->setMinimumSectionSize(30);
+    _Ui->_ItemView->horizontalHeader()->setDefaultSectionSize(30);
     _Ui->_ItemView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
     _Ui->_ItemView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
     _Ui->_ItemView->verticalHeader()->setDefaultSectionSize(26);
@@ -160,6 +160,11 @@ void RaptorUser::invokeSlotInit() const
             this,
             &RaptorUser::onSignInClicked);
 
+    connect(_Ui->_Device,
+            &QPushButton::clicked,
+            this,
+            &RaptorUser::onDeviceClicked);
+
     connect(_Ui->_Logout,
             &QPushButton::clicked,
             this,
@@ -181,7 +186,7 @@ void RaptorUser::invokeSlotInit() const
             &RaptorUser::onItemViewDoubleClicked);
 }
 
-void RaptorUser::onItemsLoaded(const QVariant& qVariant) const
+void RaptorUser::onItemsLoaded(const QVariant &qVariant) const
 {
     const auto [_State, _Message, _Data] = qVariant.value<RaptorOutput>();
     if (!_State)
@@ -190,11 +195,11 @@ void RaptorUser::onItemsLoaded(const QVariant& qVariant) const
         return;
     }
 
-    const auto items = _Data.value<QVector<RaptorAuthenticationItem>>();
+    const auto items = _Data.value<QVector<RaptorAuthenticationItem> >();
     _ItemViewModel->invokeItemsAppend(items);
 }
 
-void RaptorUser::onItemLogoutd(const QVariant& qVariant) const
+void RaptorUser::onItemLogoutd(const QVariant &qVariant) const
 {
     const auto [_State, _Message, _Data] = qVariant.value<RaptorOutput>();
     if (!_State)
@@ -227,7 +232,7 @@ void RaptorUser::onItemLogoutd(const QVariant& qVariant) const
     }
 }
 
-void RaptorUser::onItemAccessTokenRefreshed(const QVariant& qVariant) const
+void RaptorUser::onItemAccessTokenRefreshed(const QVariant &qVariant) const
 {
     if (const auto [_State, _Message, _Data] = qVariant.value<RaptorOutput>(); !_State)
     {
@@ -241,34 +246,17 @@ void RaptorUser::onItemAccessTokenRefreshed(const QVariant& qVariant) const
     if (RaptorSettingSuite::invokeItemFind(Setting::Section::Ui,
                                            Setting::Ui::Sign).toBool())
     {
-        Q_EMIT itemSignInConfirming();
+        Q_EMIT itemSigningIn();
     }
 }
 
-void RaptorUser::onItemSwitching(const QVariant& qVariant) const
+void RaptorUser::onItemSwitching(const QVariant &qVariant) const
 {
     Q_UNUSED(qVariant)
     _ItemViewModel->invokeItemsClear();
 }
 
-void RaptorUser::onItemSignInConfirmed(const QVariant& qVariant) const
-{
-    const auto [_State, _Message, _Data] = qVariant.value<RaptorOutput>();
-    if (!_State)
-    {
-        RaptorToast::invokeWarningEject(_Message);
-        return;
-    }
-
-    if (_Data.value<bool>())
-    {
-        return;
-    }
-
-    Q_EMIT itemSigningIn();
-}
-
-void RaptorUser::onItemSignedIn(const QVariant& qVariant) const
+void RaptorUser::onItemSignedIn(const QVariant &qVariant) const
 {
     const auto [_State, _Message, _Data] = qVariant.value<RaptorOutput>();
     if (!_State)
@@ -280,7 +268,7 @@ void RaptorUser::onItemSignedIn(const QVariant& qVariant) const
     RaptorToast::invokeSuccessEject(_Message);
 }
 
-void RaptorUser::onItemCapacityRefreshed(const QVariant& qVariant) const
+void RaptorUser::onItemCapacityRefreshed(const QVariant &qVariant) const
 {
     const auto [_State, _Message, _Data] = qVariant.value<RaptorOutput>();
     if (!_State)
@@ -289,8 +277,8 @@ void RaptorUser::onItemCapacityRefreshed(const QVariant& qVariant) const
         return;
     }
 
-    const auto [qTotal, qUsed, qRadio, rAlbum, qNote] = _Data.value<RaptorCapacity>();
-    _Ui->_Capacity->setText(QStringLiteral("%1 / %2").arg(qUsed, qTotal));
+    const auto [_Total, _Used, _Radio, _Album, _Note] = _Data.value<RaptorCapacity>();
+    _Ui->_Capacity->setText(QStringLiteral("%1 / %2").arg(_Used, _Total));
     RaptorToast::invokeSuccessEject(QStringLiteral("容量信息已刷新!"));
 }
 
@@ -312,6 +300,17 @@ void RaptorUser::onSignInClicked() const
     }
 
     Q_EMIT itemSigningIn();
+}
+
+void RaptorUser::onDeviceClicked()
+{
+    if (!RaptorStoreSuite::invokeUserIsValidConfirm())
+    {
+        return;
+    }
+
+    _Operate = Device;
+    close();
 }
 
 void RaptorUser::onLogoutClicked()
@@ -343,8 +342,13 @@ void RaptorUser::onStartAnimationFinished()
     }
 }
 
-void RaptorUser::onItemViewDoubleClicked(const QModelIndex& qIndex)
+void RaptorUser::onItemViewDoubleClicked(const QModelIndex &qIndex)
 {
+    if (!qIndex.isValid())
+    {
+        return;
+    }
+
     if (const auto item = qIndex.data(Qt::UserRole).value<RaptorAuthenticationItem>();
         item._Active)
     {

@@ -132,7 +132,7 @@
                                     <item>
                                         <spacer name="_HeaderSpacer">
                                             <property name="orientation">
-                                                <enum>Qt::Horizontal</enum>
+                                                <enum>Qt::Orientation::Horizontal</enum>
                                             </property>
                                             <property name="sizeHint" stdset="0">
                                                 <size>
@@ -205,7 +205,7 @@
                                                 </property>
                                                 <layout class="QGridLayout" name="_LinkAttributePanelLayout">
                                                     <property name="sizeConstraint">
-                                                        <enum>QLayout::SetDefaultConstraint</enum>
+                                                        <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
                                                     </property>
                                                     <property name="leftMargin">
                                                         <number>12</number>
@@ -243,7 +243,7 @@
                                                                 <string/>
                                                             </property>
                                                             <property name="alignment">
-                                                                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                                                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                                                             </property>
                                                         </widget>
                                                     </item>
@@ -262,7 +262,7 @@
                                                                 <string/>
                                                             </property>
                                                             <property name="alignment">
-                                                                <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+                                                                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTop|Qt::AlignmentFlag::AlignTrailing</set>
                                                             </property>
                                                         </widget>
                                                     </item>
@@ -290,7 +290,7 @@
                                                                 <string notr="true"/>
                                                             </property>
                                                             <property name="horizontalScrollBarPolicy">
-                                                                <enum>Qt::ScrollBarAlwaysOff</enum>
+                                                                <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
                                                             </property>
                                                             <property name="acceptRichText">
                                                                 <bool>false</bool>
@@ -309,7 +309,7 @@
                                                                 <string/>
                                                             </property>
                                                             <property name="alignment">
-                                                                <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+                                                                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTop|Qt::AlignmentFlag::AlignTrailing</set>
                                                             </property>
                                                         </widget>
                                                     </item>
@@ -338,7 +338,7 @@
                                                                     <number>0</number>
                                                                 </property>
                                                                 <item>
-                                                                    <widget class="QCheckBox" name="_Share">
+                                                                    <widget class="QCheckBox" name="_Many">
                                                                         <property name="minimumSize">
                                                                             <size>
                                                                                 <width>0</width>
@@ -357,7 +357,7 @@
                                                                     </widget>
                                                                 </item>
                                                                 <item>
-                                                                    <widget class="QCheckBox" name="_Rapid">
+                                                                    <widget class="QCheckBox" name="_One">
                                                                         <property name="minimumSize">
                                                                             <size>
                                                                                 <width>0</width>
@@ -633,7 +633,7 @@
                                                     <item>
                                                         <spacer name="_ItemViewControlPanelSpacer">
                                                             <property name="orientation">
-                                                                <enum>Qt::Horizontal</enum>
+                                                                <enum>Qt::Orientation::Horizontal</enum>
                                                             </property>
                                                             <property name="sizeHint" stdset="0">
                                                                 <size>
@@ -668,7 +668,7 @@
                                                     <item>
                                                         <spacer name="_ItemViewControlPanelSpaces">
                                                             <property name="orientation">
-                                                                <enum>Qt::Horizontal</enum>
+                                                                <enum>Qt::Orientation::Horizontal</enum>
                                                             </property>
                                                             <property name="sizeHint" stdset="0">
                                                                 <size>
@@ -827,7 +827,7 @@
                                                                 <string/>
                                                             </property>
                                                             <property name="alignment">
-                                                                <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
+                                                                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTop|Qt::AlignmentFlag::AlignTrailing</set>
                                                             </property>
                                                         </widget>
                                                     </item>

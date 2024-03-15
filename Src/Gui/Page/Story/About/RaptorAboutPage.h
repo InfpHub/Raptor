@@ -68,6 +68,8 @@ private:
 public Q_SLOTS:
     Q_SLOT void onItemAccessTokenRefreshed(const QVariant& qVariant);
 
+    Q_SLOT void onItemSignInInfoFetched(const QVariant& qVariant) const;
+
     Q_SLOT void onItemLogouting(const QVariant& qVariant);
 
 private Q_SLOTS:
@@ -79,7 +81,9 @@ private Q_SLOTS:
 
     Q_SLOT void onThanksSECP256K1Clicked() const;
 
-    Q_SLOT void onThanksCryptoPPClicked() const;
+    Q_SLOT void onThanksUVClicked() const;
+
+    Q_SLOT void onThanksYamlClicked() const;
 
     Q_SLOT void onThanksZIntClicked() const;
 

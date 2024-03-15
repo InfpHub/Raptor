@@ -19,13 +19,13 @@
         <property name="minimumSize">
             <size>
                 <width>520</width>
-                <height>0</height>
+                <height>304</height>
             </size>
         </property>
         <property name="maximumSize">
             <size>
                 <width>520</width>
-                <height>16777215</height>
+                <height>304</height>
             </size>
         </property>
         <property name="windowTitle">
@@ -58,13 +58,13 @@
                     <property name="minimumSize">
                         <size>
                             <width>520</width>
-                            <height>0</height>
+                            <height>304</height>
                         </size>
                     </property>
                     <property name="maximumSize">
                         <size>
                             <width>520</width>
-                            <height>9999999</height>
+                            <height>304</height>
                         </size>
                     </property>
                     <property name="styleSheet">

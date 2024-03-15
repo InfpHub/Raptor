@@ -24,7 +24,7 @@
 #include "RaptorAboutQtPage.h"
 #include "ui_RaptorAboutQtPage.h"
 
-RaptorAboutQtPage::RaptorAboutQtPage(QWidget* qParent) : QWidget(qParent),
+RaptorAboutQtPage::RaptorAboutQtPage(QWidget *qParent) : QWidget(qParent),
                                                          _Ui(new Ui::RaptorAboutQtPage)
 {
     _Ui->setupUi(this);
@@ -38,6 +38,11 @@ RaptorAboutQtPage::~RaptorAboutQtPage()
 
 void RaptorAboutQtPage::invokeUiInit() const
 {
+    if (!_Ui->_Qt->text().isEmpty())
+    {
+        return;
+    }
+
     if (auto qFile = QFile("./Store/Story/AboutQt.html");
         qFile.open(QIODevice::ReadOnly))
     {

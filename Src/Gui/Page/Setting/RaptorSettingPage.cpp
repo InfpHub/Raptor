@@ -24,7 +24,7 @@
 #include "RaptorSettingPage.h"
 #include "ui_RaptorSettingPage.h"
 
-RaptorSettingPage::RaptorSettingPage(QWidget* qParent) : QWidget(qParent),
+RaptorSettingPage::RaptorSettingPage(QWidget *qParent) : QWidget(qParent),
                                                          _Ui(new Ui::RaptorSettingPage)
 {
     _Ui->setupUi(this);
@@ -38,7 +38,7 @@ RaptorSettingPage::~RaptorSettingPage()
     FREE(_Ui)
 }
 
-RaptorNetworkPage* RaptorSettingPage::invokeNetworkPageGet() const
+RaptorNetworkPage *RaptorSettingPage::invokeNetworkPageGet() const
 {
     return _Ui->_NetworkPage;
 }
@@ -49,7 +49,10 @@ void RaptorSettingPage::invokeInstanceInit()
     _TabGroup->addButton(_Ui->_TabUi);
     _TabGroup->addButton(_Ui->_TabUpload);
     _TabGroup->addButton(_Ui->_TabDownload);
-    _TabGroup->addButton(_Ui->_TabPlay);
+    _TabGroup->addButton(_Ui->_TabVideo);
+#ifdef Q_OS_WIN
+    _TabGroup->addButton(_Ui->_TabOffice);
+#endif
     _TabGroup->addButton(_Ui->_TabNetwork);
     _TabGroup->addButton(_Ui->_TabOther);
     _TabGroup->setExclusive(true);
@@ -64,7 +67,12 @@ void RaptorSettingPage::invokeUiInit() const
     _Ui->_TabUi->setChecked(true);
     _Ui->_TabDownload->setText(QStringLiteral("下载"));
     _Ui->_TabUpload->setText(QStringLiteral("上传"));
-    _Ui->_TabPlay->setText(QStringLiteral("播放"));
+    _Ui->_TabOffice->setText(QStringLiteral("办公"));
+#ifndef Q_OS_WIN
+    _Ui->_TabOffice->setVisible(false);
+    _Ui->_TabOffice->setEnabled(false);
+#endif
+    _Ui->_TabVideo->setText(QStringLiteral("视频"));
     _Ui->_TabNetwork->setText(QStringLiteral("网络"));
     _Ui->_TabOther->setText(QStringLiteral("其他"));
     _Ui->_TabNext->setIcon(QIcon(RaptorUtil::invokeIconMatch("Right", false, true)));
@@ -94,10 +102,15 @@ void RaptorSettingPage::invokeSlotInit() const
             this,
             &RaptorSettingPage::onTabUploadToggled);
 
-    connect(_Ui->_TabPlay,
+    connect(_Ui->_TabVideo,
             &QPushButton::toggled,
             this,
-            &RaptorSettingPage::onTabPlayToggled);
+            &RaptorSettingPage::onTabVideoToggled);
+
+    connect(_Ui->_TabOffice,
+            &QPushButton::toggled,
+            this,
+            &RaptorSettingPage::onTabOfficeToggled);
 
     connect(_Ui->_TabNetwork,
             &QPushButton::toggled,
@@ -115,7 +128,7 @@ void RaptorSettingPage::invokeSlotInit() const
             &RaptorSettingPage::onTabNextClicked);
 }
 
-void RaptorSettingPage::onItemCopyWriterHaveFound(const QVariant& qVariant) const
+void RaptorSettingPage::onItemCopyWriterHaveFound(const QVariant &qVariant) const
 {
     const auto [_State, _Message, _Data] = qVariant.value<RaptorOutput>();
     if (!_State)
@@ -123,8 +136,8 @@ void RaptorSettingPage::onItemCopyWriterHaveFound(const QVariant& qVariant) cons
         return;
     }
 
-    const auto items = _Data.value<QVector<RaptorCopyWriter>>();
-    for (auto& [_Page, _Content] : items)
+    const auto items = _Data.value<QVector<RaptorCopyWriter> >();
+    for (auto &[_Page, _Content]: items)
     {
         if (_Page == metaObject()->className())
         {
@@ -136,18 +149,17 @@ void RaptorSettingPage::onItemCopyWriterHaveFound(const QVariant& qVariant) cons
 
 void RaptorSettingPage::onTabPrevClicked() const
 {
-    auto qPushButtonList = _Ui->_TabPanel->findChildren<QPushButton*>();
+    auto qPushButtonList = _Ui->_TabPanel->findChildren<QPushButton *>();
     qPushButtonList.pop_front();
     qPushButtonList.pop_back();
     for (auto i = 0; i < qPushButtonList.length(); ++i)
     {
         if (qPushButtonList[i]->isChecked())
         {
-            if (i == 1)
+            if (i == 0)
             {
                 qPushButtonList[qPushButtonList.length() - 1]->setChecked(true);
-            }
-            else
+            } else
             {
                 qPushButtonList[i - 1]->setChecked(true);
             }
@@ -157,7 +169,7 @@ void RaptorSettingPage::onTabPrevClicked() const
     }
 }
 
-void RaptorSettingPage::onTabUiToggled(const bool& qChecked) const
+void RaptorSettingPage::onTabUiToggled(const bool &qChecked) const
 {
     if (!qChecked)
     {
@@ -172,7 +184,7 @@ void RaptorSettingPage::onTabUiToggled(const bool& qChecked) const
     _Ui->_Body->setCurrentWidget(_Ui->_UiPage);
 }
 
-void RaptorSettingPage::onTabDownloadToggled(const bool& qChecked) const
+void RaptorSettingPage::onTabDownloadToggled(const bool &qChecked) const
 {
     if (!qChecked)
     {
@@ -187,7 +199,7 @@ void RaptorSettingPage::onTabDownloadToggled(const bool& qChecked) const
     _Ui->_Body->setCurrentWidget(_Ui->_DownloadPage);
 }
 
-void RaptorSettingPage::onTabUploadToggled(const bool& qChecked) const
+void RaptorSettingPage::onTabUploadToggled(const bool &qChecked) const
 {
     if (!qChecked)
     {
@@ -202,22 +214,37 @@ void RaptorSettingPage::onTabUploadToggled(const bool& qChecked) const
     _Ui->_Body->setCurrentWidget(_Ui->_UploadPage);
 }
 
-void RaptorSettingPage::onTabPlayToggled(const bool& qChecked) const
+void RaptorSettingPage::onTabVideoToggled(const bool &qChecked) const
 {
     if (!qChecked)
     {
         return;
     }
 
-    if (_Ui->_Body->currentWidget() == _Ui->_PlayPage)
+    if (_Ui->_Body->currentWidget() == _Ui->_VideoPage)
     {
         return;
     }
 
-    _Ui->_Body->setCurrentWidget(_Ui->_PlayPage);
+    _Ui->_Body->setCurrentWidget(_Ui->_VideoPage);
 }
 
-void RaptorSettingPage::onTabNetworkToggled(const bool& qChecked) const
+void RaptorSettingPage::onTabOfficeToggled(const bool &qChecked) const
+{
+    if (!qChecked)
+    {
+        return;
+    }
+
+    if (_Ui->_Body->currentWidget() == _Ui->_OfficePage)
+    {
+        return;
+    }
+
+    _Ui->_Body->setCurrentWidget(_Ui->_OfficePage);
+}
+
+void RaptorSettingPage::onTabNetworkToggled(const bool &qChecked) const
 {
     if (!qChecked)
     {
@@ -232,7 +259,7 @@ void RaptorSettingPage::onTabNetworkToggled(const bool& qChecked) const
     _Ui->_Body->setCurrentWidget(_Ui->_NetworkPage);
 }
 
-void RaptorSettingPage::onTabOtherToggled(const bool& qChecked) const
+void RaptorSettingPage::onTabOtherToggled(const bool &qChecked) const
 {
     if (!qChecked)
     {
@@ -249,7 +276,7 @@ void RaptorSettingPage::onTabOtherToggled(const bool& qChecked) const
 
 void RaptorSettingPage::onTabNextClicked() const
 {
-    auto qPushButtonList = _Ui->_TabPanel->findChildren<QPushButton*>();
+    auto qPushButtonList = _Ui->_TabPanel->findChildren<QPushButton *>();
     qPushButtonList.pop_front();
     qPushButtonList.pop_back();
     if (qPushButtonList.length() < 2)
@@ -264,8 +291,7 @@ void RaptorSettingPage::onTabNextClicked() const
             if (i == qPushButtonList.length() - 1)
             {
                 qPushButtonList[0]->setChecked(true);
-            }
-            else
+            } else
             {
                 qPushButtonList[i + 1]->setChecked(true);
             }

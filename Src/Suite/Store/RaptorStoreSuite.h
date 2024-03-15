@@ -56,6 +56,10 @@ public:
 
     static QObject* invokeEngineGet();
 
+    static void invokeSpacePageSet(QWidget* qWidget);
+
+    static QWidget* invokeSpacePageGet();
+
     static void invokeViewPaintableSet(const bool& qValue);
 
     static bool invokeViewPaintableGet();
@@ -66,6 +70,7 @@ private:
     static inline bool _Switching = false;
     static inline bool _EngineState = false;
     static inline QWidget* _World = Q_NULLPTR;
+    static inline QWidget* _SpacePage = Q_NULLPTR;
     static inline QObject* _Engine = Q_NULLPTR;
     static inline bool _ViewPaintable = true;
 };

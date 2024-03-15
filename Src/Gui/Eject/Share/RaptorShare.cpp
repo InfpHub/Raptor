@@ -24,7 +24,7 @@
 #include "RaptorShare.h"
 #include "ui_RaptorShare.h"
 
-RaptorShare::RaptorShare(QWidget* qParent) : RaptorEject(qParent),
+RaptorShare::RaptorShare(QWidget *qParent) : RaptorEject(qParent),
                                              _Ui(new Ui::RaptorShare)
 {
     _Ui->setupUi(this);
@@ -37,13 +37,13 @@ RaptorShare::~RaptorShare()
     FREE(_Ui)
 }
 
-bool RaptorShare::eventFilter(QObject* qObject, QEvent* qEvent)
+bool RaptorShare::eventFilter(QObject *qObject, QEvent *qEvent)
 {
     if (qObject == this)
     {
         if (qEvent->type() == QEvent::KeyPress)
         {
-            if (const auto qKeyEvent = static_cast<QKeyEvent*>(qEvent);
+            if (const auto qKeyEvent = static_cast<QKeyEvent *>(qEvent);
                 qKeyEvent->key() == Qt::Key_Escape)
             {
                 onCloseClicked();
@@ -82,7 +82,7 @@ bool RaptorShare::eventFilter(QObject* qObject, QEvent* qEvent)
     return RaptorEject::eventFilter(qObject, qEvent);
 }
 
-void RaptorShare::invokeEject(const QVariant& qVariant)
+void RaptorShare::invokeEject(const QVariant &qVariant)
 {
     _Variant = qVariant;
     if (const auto qIndexList = _Variant.value<QModelIndexList>();
@@ -94,8 +94,8 @@ void RaptorShare::invokeEject(const QVariant& qVariant)
                                                                   _Ui->_Title->width());
         _Ui->_Title->setText(qTitle);
         _Ui->_Name->setText(item._Name);
-    }
-    else if (qIndexList.length() > 1)
+        _Ui->_Description->setText(QStringLiteral("%1 的分享").arg(RaptorStoreSuite::invokeUserGet()._Nickname));
+    } else if (qIndexList.length() > 1)
     {
         const auto item = qIndexList[0].data(Qt::UserRole).value<RaptorFileItem>();
         const auto qTitle = _Ui->_Title->fontMetrics().elidedText(QStringLiteral("分享 %1 等 %2 个文件").arg(item._Name, QString::number(qIndexList.length())),
@@ -109,33 +109,32 @@ void RaptorShare::invokeEject(const QVariant& qVariant)
         qRule == Setting::Other::None)
     {
         _Ui->_Password->clear();
-    }
-    else if (qRule == Setting::Other::Random)
+    } else if (qRule == Setting::Other::Random)
     {
         _Ui->_Password->setText(RaptorUtil::invokePasswordGenerate());
-    }
-    else if (qRule == Setting::Other::Custom)
+    } else if (qRule == Setting::Other::Custom)
     {
         _Ui->_Password->setText(RaptorSettingSuite::invokeItemFind(Setting::Section::Other,
                                                                    Setting::Other::CustomPassword).toString());
     }
 
     if (const auto qExpired = RaptorSettingSuite::invokeItemFind(Setting::Section::Other,
-                                                                 Setting::Other::ShareExpire).toString(); qExpired == Setting::Other::Week)
+                                                                 Setting::Other::ShareExpire).toString();
+        qExpired == Setting::Other::Week)
     {
         _Ui->_Expired->setMinimumDateTime(QDateTime::currentDateTime().addDays(7));
-    }
-    else if (qExpired == Setting::Other::Month)
+    } else if (qExpired == Setting::Other::Month)
     {
         _Ui->_Expired->setMinimumDateTime(QDateTime::currentDateTime().addMonths(1));
-    }
-    else if (qExpired == Setting::Other::Year)
+    } else if (qExpired == Setting::Other::Year)
     {
         _Ui->_Expired->setMinimumDateTime(QDateTime::currentDateTime().addYears(1));
+    } else if (qExpired == Setting::Other::Never)
+    {
+        _Ui->_Expired->setEnabled(false);
+        _Ui->_NeverExpire->setChecked(true);
     }
 
-    _Ui->_Name->clear();
-    _Ui->_Description->clear();
     _Ui->_Link->clear();
     _Ui->_Body->setCurrentWidget(_Ui->_AttributeWrapper);
     RaptorEject::invokeEject(qVariant);
@@ -148,18 +147,25 @@ void RaptorShare::invokeUiInit()
     _Ui->_Close->setIcon(QIcon(RaptorUtil::invokeIconMatch("Close", false, true)));
     _Ui->_Close->setIconSize(QSize(10, 10));
     _Ui->_NameTip->setText(QStringLiteral("名称:"));
+    _Ui->_Name->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_DescriptionTip->setText(QStringLiteral("描述:"));
+    _Ui->_Description->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_LimitTip->setText(QStringLiteral("限制:"));
     _Ui->_PreviewTip->setText(QStringLiteral("预览:"));
-    _Ui->_Preview->setValidator(new QRegExpValidator{QRegExp{"[0-9]+$"}, this});
+    _Ui->_Preview->setContextMenuPolicy(Qt::NoContextMenu);
+    _Ui->_Preview->setValidator(new QRegularExpressionValidator(QRegularExpression{"[0-9]+$"}, this));
     _Ui->_SaveTip->setText(QStringLiteral("转存:"));
     _Ui->_Save->setValidator(_Ui->_Preview->validator());
+    _Ui->_Save->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_DownloadTip->setText(QStringLiteral("下载:"));
     _Ui->_Download->setValidator(_Ui->_Preview->validator());
+    _Ui->_Download->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_PasswordTip->setText(QStringLiteral("提取码:"));
+    _Ui->_Password->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_Generate->setText(QStringLiteral("生成"));
     _Ui->_ExpiredTip->setText(QStringLiteral("过期:"));
     _Ui->_Expired->setButtonSymbols(QAbstractSpinBox::NoButtons);
+    _Ui->_Expired->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_NeverExpire->setText(QStringLiteral("永不过期"));
     _Ui->_AttributeIcon->installEventFilter(this);
     _Ui->_Create->setText(QStringLiteral("创建"));
@@ -206,14 +212,13 @@ void RaptorShare::invokeSlotInit()
             &RaptorShare::onCopyClicked);
 }
 
-void RaptorShare::invokeIconDrawing(QWidget* qWidget, const bool& qTip) const
+void RaptorShare::invokeIconDrawing(QWidget *qWidget, const bool &qTip) const
 {
     auto qPainter = QPainter(qWidget);
     if (qTip)
     {
         _SvgRender->load(RaptorUtil::invokeIconMatch("Success", false, true));
-    }
-    else
+    } else
     {
         _SvgRender->load(RaptorUtil::invokeIconMatch("Share", false, true));
     }
@@ -224,7 +229,7 @@ void RaptorShare::invokeIconDrawing(QWidget* qWidget, const bool& qTip) const
     }
 }
 
-void RaptorShare::onItemCreated(const QVariant& qVariant) const
+void RaptorShare::onItemCreated(const QVariant &qVariant) const
 {
     const auto [_State, _Message, _Data] = qVariant.value<RaptorOutput>();
     if (!_State)
@@ -249,13 +254,12 @@ void RaptorShare::onGenerateClicked() const
     _Ui->_Password->setText(RaptorUtil::invokePasswordGenerate());
 }
 
-void RaptorShare::onNeverExpireStateChanged(const int& qChecked) const
+void RaptorShare::onNeverExpireStateChanged(const int &qChecked) const
 {
     if (qChecked == Qt::Checked)
     {
         _Ui->_Expired->setEnabled(false);
-    }
-    else if (qChecked == Qt::Unchecked)
+    } else if (qChecked == Qt::Unchecked)
     {
         _Ui->_Expired->setEnabled(true);
     }

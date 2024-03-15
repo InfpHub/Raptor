@@ -101,6 +101,8 @@ void RaptorTransferPage::invokeUiInit() const
     _Ui->_Body->setCurrentWidget(_Ui->_DownloadingPage);
     _Ui->_Resume->setText(QStringLiteral("继续"));
     _Ui->_Pause->setText(QStringLiteral("暂停"));
+    _Ui->_Locate->setVisible(false);
+    _Ui->_Locate->setEnabled(false);
     _Ui->_Locate->setText(QStringLiteral("定位"));
     _Ui->_Cancel->setText(QStringLiteral("取消"));
     _Ui->_Cancel->setVisible(true);
@@ -218,8 +220,9 @@ void RaptorTransferPage::invokeItemsLocate(const QModelIndexList& qIndexList)
 
     if (qIndexList.length() > 1)
     {
-        if (!RaptorMessageBox::invokeInformationEject(QStringLiteral("定位多个文件"),
-                                                      QStringLiteral("即将定位多个文件在文件资源管理器中。是否继续?")))
+        if (const auto qOperate = RaptorMessageBox::invokeInformationEject(QStringLiteral("定位多个文件"),
+                                                      QStringLiteral("即将定位多个文件在文件资源管理器中。是否继续?"));
+                                                      qOperate == RaptorMessageBox::No)
         {
             return;
         }
@@ -476,6 +479,8 @@ void RaptorTransferPage::onBodyChanged(const int& qIndex) const
         _Ui->_Resume->setEnabled(true);
         _Ui->_Cancel->setVisible(true);
         _Ui->_Cancel->setEnabled(true);
+        _Ui->_Locate->setVisible(false);
+        _Ui->_Locate->setEnabled(false);
         _Ui->_Clear->setVisible(false);
         _Ui->_Clear->setEnabled(false);
         _Ui->_Delete->setVisible(false);
@@ -489,6 +494,8 @@ void RaptorTransferPage::onBodyChanged(const int& qIndex) const
         _Ui->_Resume->setEnabled(false);
         _Ui->_Cancel->setVisible(false);
         _Ui->_Cancel->setEnabled(false);
+        _Ui->_Locate->setVisible(true);
+        _Ui->_Locate->setEnabled(true);
         _Ui->_Clear->setVisible(true);
         _Ui->_Clear->setEnabled(true);
         _Ui->_Delete->setVisible(true);

@@ -24,17 +24,15 @@
 #ifndef RAPTORDEFINE_H
 #define RAPTORDEFINE_H
 
-#include <QColor>
-
 #define APPLICATION_NAME "Raptor"
 
 #define APPLICATION_ID "25dzX3vbYqktVxyX"
 
 #define MAJOR_VERSION 2024
-#define MINOR_VERSION 1
+#define MINOR_VERSION 2
 #define PATCH_VERSION 0
 
-#define GITHUB "https://github.com/InfpPointPlus/Raptor"
+#define GITHUB "https://github.com/InfpHub/Raptor"
 
 #define INFORMATION_TEMPLATE R"(<span style="font-size: 12px; color: rgba(112, 192, 232, 1);">%1</span>)"
 #define SUCCESS_TEMPLATE R"(<span style="font-size: 12px; color: rgba(99, 226, 183, 1);">%1</span>)"
@@ -58,7 +56,7 @@
 #define USE_HEADER_REFERER(qHttpPayload) \
         do \
         { \
-            qHttpPayload._Header.insert(RaptorHttpHeader::Referer, "https://www.aliyundrive.com"); \
+            qHttpPayload._Header.insert(RaptorHttpHeader::Referer, "https://www.alipan.com/"); \
         } while(0);
 
 #define USE_HEADER_X_SHARE_TOKEN(qHttpPayload, qValue) \

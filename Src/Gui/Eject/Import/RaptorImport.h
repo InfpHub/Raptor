@@ -50,21 +50,21 @@ class RaptorImport Q_DECL_FINAL : public RaptorEject
     Q_OBJECT
 
 public:
-    explicit RaptorImport(QWidget* qParent = Q_NULLPTR);
+    explicit RaptorImport(QWidget *qParent = Q_NULLPTR);
 
     ~RaptorImport() override;
 
-    bool eventFilter(QObject* qObject, QEvent* qEvent) Q_DECL_OVERRIDE;
+    bool eventFilter(QObject *qObject, QEvent *qEvent) Q_DECL_OVERRIDE;
 
-    void invokeEject(const QVariant& qVariant = QVariant()) Q_DECL_OVERRIDE;
+    void invokeEject(const QVariant &qVariant = QVariant()) Q_DECL_OVERRIDE;
 
 private:
     struct Payload
     {
-        QString rParent = "root";
-        QStack<RaptorFileItem> rStack;
-        QString rMarker;
-        QString rToken;
+        QString _Parent = "root";
+        QStack<RaptorFileItem> _Stack;
+        QString _Marker;
+        QString _Token;
     };
 
     void invokeInstanceInit() Q_DECL_OVERRIDE;
@@ -76,34 +76,34 @@ private:
     void invokeIconDrawing() const;
 
 Q_SIGNALS:
-    Q_SIGNAL void itemsByParentIdFetching(const QVariant& qVariant) const;
+    Q_SIGNAL void itemsByParentIdFetching(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemImporting(const QVariant& qVariant) const;
+    Q_SIGNAL void itemImporting(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemParsing(const QVariant& qVariant) const;
+    Q_SIGNAL void itemParsing(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemRapidImporting(const QVariant& qVariant) const;
+    Q_SIGNAL void itemRapidImporting(const QVariant &qVariant) const;
 
 public Q_SLOTS:
-    Q_SLOT void onItemParsed(const QVariant& qVariant);
+    Q_SLOT void onItemParsed(const QVariant &qVariant);
 
 private Q_SLOTS:
-    Q_SLOT void onLoadingStateChanged(const RaptorLoading::State& state) const;
+    Q_SLOT void onLoadingStateChanged(const RaptorLoading::State &state) const;
 
     Q_SLOT void onCloseClicked();
 
-    Q_SLOT void onRapidStateChanged(const int& qState) const;
+    Q_SLOT void onOneStateChanged(const int &qState) const;
 
     Q_SLOT void onParseClicked();
 
     Q_SLOT void onCancelClicked();
 
-    Q_SLOT void onItemViewClicked(const QModelIndex& qIndex) const;
+    Q_SLOT void onItemViewClicked(const QModelIndex &qIndex) const;
 
-    Q_SLOT void onItemViewDoubleClicked(const QModelIndex& qIndex);
+    Q_SLOT void onItemViewDoubleClicked(const QModelIndex &qIndex);
 
-    Q_SLOT void onItemViewSelectionChanged(const QItemSelection& qSelected,
-                                           const QItemSelection& qDeselected) const;
+    Q_SLOT void onItemViewSelectionChanged(const QItemSelection &qSelected,
+                                           const QItemSelection &qDeselected) const;
 
     Q_SLOT void onItemRootClicked();
 
@@ -112,12 +112,12 @@ private Q_SLOTS:
     Q_SLOT void onImportClicked();
 
 private:
-    Ui::RaptorImport* _Ui = Q_NULLPTR;
-    QButtonGroup* _TypeGroup = Q_NULLPTR;
-    RaptorTableViewDelegate* _ItemViewDelegate = Q_NULLPTR;
-    RaptorTableViewHeader* _ItemViewHeader = Q_NULLPTR;
-    RaptorSpaceViewModel* _ItemViewModel = Q_NULLPTR;
-    RaptorLoading* _Loading = Q_NULLPTR;
+    Ui::RaptorImport *_Ui = Q_NULLPTR;
+    QButtonGroup *_TypeGroup = Q_NULLPTR;
+    RaptorTableViewDelegate *_ItemViewDelegate = Q_NULLPTR;
+    RaptorTableViewHeader *_ItemViewHeader = Q_NULLPTR;
+    RaptorSpaceViewModel *_ItemViewModel = Q_NULLPTR;
+    RaptorLoading *_Loading = Q_NULLPTR;
     QScopedPointer<QSvgRenderer> _SvgRender = QScopedPointer(new QSvgRenderer());
     Payload _Payload;
     QVariant _Variant;

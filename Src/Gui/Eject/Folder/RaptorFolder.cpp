@@ -68,7 +68,7 @@ bool RaptorFolder::eventFilter(QObject* qObject, QEvent* qEvent)
 void RaptorFolder::invokeEject(const QVariant& qVariant)
 {
     _Variant = qVariant;
-    _Ui->_Title->setText(QStringLiteral("在 %1 下新建文件夹").arg(QStringLiteral(CREATIVE_TEMPLATE).arg(_Variant.value<QPair<QString, QString>>().second)));
+    _Ui->_Title->setText(QStringLiteral("在 %1 下新建文件夹").arg(QString(CREATIVE_TEMPLATE).arg(_Variant.value<QPair<QString, QString>>().second)));
     const auto qNewFolderTemplate = RaptorSettingSuite::invokeItemFind(Setting::Section::Other,
                                                                        Setting::Other::NewFolderTemplate).toString();
     _Ui->_Name->setText(QDateTime::currentDateTime().toString(qNewFolderTemplate));
@@ -92,13 +92,14 @@ void RaptorFolder::invokeUiInit()
     _Ui->_Close->setIcon(QIcon(RaptorUtil::invokeIconMatch("Close", false, true)));
     _Ui->_Close->setIconSize(QSize(10, 10));
     _Ui->_NameTip->setText(QStringLiteral("名称:"));
+    _Ui->_Name->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_RuleTip->setText(QStringLiteral("规则:"));
     _Ui->_Refuse->setText(QStringLiteral("如果存在则不创建"));
     _Ui->_AutoRename->setText(QStringLiteral("自动重命名"));
     _Ui->_AutoRename->setChecked(true);
     _Ui->_Ignore->setText(QStringLiteral("忽略"));
     _Ui->_Icon->installEventFilter(this);
-    _Ui->_Tip->setText(QStringLiteral(INFORMATION_TEMPLATE).arg(QStringLiteral("温馨提示: 至少 1 个字符。 至多 1024 字符。不可包含 <>:*?\\/\'\" 等字符。")));
+    _Ui->_Tip->setText(QString(INFORMATION_TEMPLATE).arg(QStringLiteral("温馨提示: 至少 1 个字符。 至多 1024 字符。不可包含 <>:*?\\/\'\" 等字符。")));
     _Ui->_Create->setText(QStringLiteral("创建"));
     _Ui->_Cancel->setText(QStringLiteral("取消"));
 }

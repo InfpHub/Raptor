@@ -46,32 +46,55 @@ class RaptorMessageBox Q_DECL_FINAL : public RaptorEject
     Q_OBJECT
 
 public:
-    explicit RaptorMessageBox(QWidget* qParent = Q_NULLPTR);
+    enum Operate
+    {
+        Nothing,
+        Yes,
+        No
+    };
+
+    Q_ENUM(Operate)
+
+    explicit RaptorMessageBox(QWidget *qParent = Q_NULLPTR);
 
     ~RaptorMessageBox() Q_DECL_OVERRIDE;
 
-    bool eventFilter(QObject* qObject, QEvent* qEvent) Q_DECL_OVERRIDE;
+    bool eventFilter(QObject *qObject, QEvent *qEvent) Q_DECL_OVERRIDE;
 
-    static bool invokeInformationEject(const QString& qTitle, const QString& qContent);
+    static Operate invokeInformationEject(const QString &qTitle,
+                                       const QString &qContent,
+                                       const QString &qYesText = QStringLiteral("确定"),
+                                       const QString &qNoText = QStringLiteral("取消"));
 
-    static bool invokeSuccessEject(const QString& qTitle, const QString& qContent);
+    static Operate invokeSuccessEject(const QString &qTitle,
+                                   const QString &qYesText,
+                                   const QString &qOKText = QStringLiteral("确定"),
+                                   const QString &qNoText = QStringLiteral("取消"));
 
-    static bool invokeWarningEject(const QString& qTitle, const QString& qContent);
+    static Operate invokeWarningEject(const QString &qTitle,
+                                   const QString &qContent,
+                                   const QString &qYesText = QStringLiteral("确定"),
+                                   const QString &qNoText = QStringLiteral("取消"));
 
-    static bool invokeCriticalEject(const QString& qTitle, const QString& qContent);
+    static Operate invokeCriticalEject(const QString &qTitle,
+                                    const QString &qContent,
+                                    const QString &qYesText = QStringLiteral("确定"),
+                                    const QString &qNoText = QStringLiteral("取消"));
 
 private:
     void invokeUiInit() Q_DECL_OVERRIDE;
 
     void invokeSlotInit() Q_DECL_OVERRIDE;
 
-    void invokeTitleSet(const QString& qTitle) const;
+    void invokeTitleSet(const QString &qTitle) const;
 
-    void invokeContentSet(const QString& qContent) const;
+    void invokeContentSet(const QString &qContent) const;
 
-    static bool invokeEject(const QString& qTitle,
-                            const QString& qContent,
-                            const QString& qLevel);
+    static Operate invokeEject(const QString &qTitle,
+                            const QString &qContent,
+                            const QString &qYesText,
+                            const QString &qNoText,
+                            const QString &qLevel);
 
 private Q_SLOTS:
     Q_SLOT void onCloseClicked();
@@ -81,8 +104,8 @@ private Q_SLOTS:
     Q_SLOT void onNoClicked();
 
 private:
-    Ui::RaptorMessageBox* _Ui = Q_NULLPTR;
-    bool _State;
+    Ui::RaptorMessageBox *_Ui = Q_NULLPTR;
+    Operate _Operate;
 };
 
 #endif // RAPTORMESSAGEBOX_H

@@ -29,6 +29,7 @@
 
 #include "../Gui/World/RaptorWorld.h"
 #include "../Suite/Authentication/RaptorAuthenticationSuite.h"
+#include "../Suite/Clean/RaptorCleanSuite.h"
 #include "../Suite/Copilot/RaptorCopilotSuite.h"
 #include "../Suite/File/RaptorFileSuite.h"
 #include "../Suite/Downloading/RaptorDownloadingSuite.h"
@@ -83,6 +84,7 @@ private:
     RaptorCopySuite* _CopySuite = Q_NULLPTR;
     RaptorSettingSuite* _SettingSuite = Q_NULLPTR;
     RaptorCopilotSuite* _CopilotSuite = Q_NULLPTR;
+    RaptorCleanSuite* _CleanSuite = Q_NULLPTR;
     RaptorWorld* _World = Q_NULLPTR;
 };
 

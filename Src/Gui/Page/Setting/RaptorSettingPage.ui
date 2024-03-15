@@ -276,7 +276,7 @@
                                         </widget>
                                     </item>
                                     <item>
-                                        <widget class="QPushButton" name="_TabPlay">
+                                        <widget class="QPushButton" name="_TabVideo">
                                             <property name="sizePolicy">
                                                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                                                     <horstretch>0</horstretch>
@@ -285,6 +285,22 @@
                                             </property>
                                             <property name="styleSheet">
                                                 <string notr="true"/>
+                                            </property>
+                                            <property name="text">
+                                                <string/>
+                                            </property>
+                                            <property name="checkable">
+                                                <bool>true</bool>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                    <item>
+                                        <widget class="QPushButton" name="_TabOffice">
+                                            <property name="sizePolicy">
+                                                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                                                    <horstretch>0</horstretch>
+                                                    <verstretch>0</verstretch>
+                                                </sizepolicy>
                                             </property>
                                             <property name="text">
                                                 <string/>
@@ -384,7 +400,8 @@
                     <widget class="RaptorUiPage" name="_UiPage"/>
                     <widget class="RaptorDownloadPage" name="_DownloadPage"/>
                     <widget class="RaptorUploadPage" name="_UploadPage"/>
-                    <widget class="RaptorPlayPage" name="_PlayPage"/>
+                    <widget class="RaptorVideoPage" name="_VideoPage"/>
+                    <widget class="RaptorOfficePage" name="_OfficePage"/>
                     <widget class="RaptorNetworkPage" name="_NetworkPage"/>
                     <widget class="RaptorOtherPage" name="_OtherPage"/>
                 </widget>
@@ -411,9 +428,9 @@
             <container>1</container>
         </customwidget>
         <customwidget>
-            <class>RaptorPlayPage</class>
+            <class>RaptorVideoPage</class>
             <extends>QWidget</extends>
-            <header>../../../Src/Gui/Page/Setting/Play/RaptorPlayPage.h</header>
+            <header>../../../Src/Gui/Page/Setting/Video/RaptorVideoPage.h</header>
             <container>1</container>
         </customwidget>
         <customwidget>
@@ -426,6 +443,12 @@
             <class>RaptorOtherPage</class>
             <extends>QWidget</extends>
             <header>../../../Src/Gui/Page/Setting/Other/RaptorOtherPage.h</header>
+            <container>1</container>
+        </customwidget>
+        <customwidget>
+            <class>RaptorOfficePage</class>
+            <extends>QWidget</extends>
+            <header>../../../Src/Gui/Page/Setting/Office/RaptorOfficePage.h</header>
             <container>1</container>
         </customwidget>
     </customwidgets>

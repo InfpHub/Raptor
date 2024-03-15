@@ -68,14 +68,15 @@ void RaptorStarSuite::onItemsFetching(const QVariant& qVariant) const
     auto items = QVector<RaptorStarItem>();
     const auto itens = qDocument["items"].toArray();
     const auto qMarker = qDocument["next_marker"].toString();
-    for (auto iten : itens)
+    for (const auto& iten : itens)
     {
+        const auto iteo = iten.toObject();
         auto item = RaptorStarItem();
-        item._Id = iten["file_id"].toString();
-        item._Name = iten["name"].toString();
-        if (iten["type"].toString() == "file")
+        item._Id = iteo["file_id"].toString();
+        item._Name = iteo["name"].toString();
+        if (iteo["type"].toString() == "file")
         {
-            item._Size = RaptorUtil::invokeStorageUnitConvert(iten["size"].toVariant().toULongLong());
+            item._Size = RaptorUtil::invokeStorageUnitConvert(iteo["size"].toVariant().toULongLong());
             item._Icon = RaptorUtil::invokeIconMatch(item._Name);
         }
         else
@@ -83,10 +84,10 @@ void RaptorStarSuite::onItemsFetching(const QVariant& qVariant) const
             item._Icon = RaptorUtil::invokeIconMatch(QString{}, true);
         }
 
-        auto qCreated = QDateTime::fromString(iten["created_at"].toString(), "yyyy-MM-ddTHH:mm:ss.zzzZ");
+        auto qCreated = QDateTime::fromString(iteo["created_at"].toString(), "yyyy-MM-ddTHH:mm:ss.zzzZ");
         qCreated.setTimeSpec(Qt::UTC);
         item._Created = qCreated.toLocalTime().toString("yyyy-MM-dd hh:mm:ss");
-        auto qUpdated = QDateTime::fromString(iten["updated_at"].toString(), "yyyy-MM-ddTHH:mm:ss.zzzZ");
+        auto qUpdated = QDateTime::fromString(iteo["updated_at"].toString(), "yyyy-MM-ddTHH:mm:ss.zzzZ");
         qUpdated.setTimeSpec(Qt::UTC);
         item._Updated = qUpdated.toLocalTime().toString("yyyy-MM-dd hh:mm:ss");
         items << item;
@@ -147,14 +148,15 @@ void RaptorStarSuite::onItemsByConditionFetching(const QVariant& qVariant) const
     auto items = QVector<RaptorStarItem>();
     const auto itens = qDocument["items"].toArray();
     const auto qMarker = qDocument["marker"].toString();
-    for (auto iten : itens)
+    for (const auto& iten : itens)
     {
+        const auto iteo = iten.toObject();
         auto item = RaptorStarItem();
-        item._Id = iten["file_id"].toString();
-        item._Name = iten["name"].toString();
-        if (iten["type"].toString() == "file")
+        item._Id = iteo["file_id"].toString();
+        item._Name = iteo["name"].toString();
+        if (iteo["type"].toString() == "file")
         {
-            item._Size = RaptorUtil::invokeStorageUnitConvert(iten["size"].toVariant().toULongLong());
+            item._Size = RaptorUtil::invokeStorageUnitConvert(iteo["size"].toVariant().toULongLong());
             item._Icon = RaptorUtil::invokeIconMatch(item._Name);
         }
         else
@@ -162,10 +164,10 @@ void RaptorStarSuite::onItemsByConditionFetching(const QVariant& qVariant) const
             item._Icon = RaptorUtil::invokeIconMatch(QString{}, true);
         }
 
-        auto qCreated = QDateTime::fromString(iten["created_at"].toString(), "yyyy-MM-ddTHH:mm:ss.zzzZ");
+        auto qCreated = QDateTime::fromString(iteo["created_at"].toString(), "yyyy-MM-ddTHH:mm:ss.zzzZ");
         qCreated.setTimeSpec(Qt::UTC);
         item._Created = qCreated.toLocalTime().toString("yyyy-MM-dd hh:mm:ss");
-        auto qUpdated = QDateTime::fromString(iten["updated_at"].toString(), "yyyy-MM-ddTHH:mm:ss.zzzZ");
+        auto qUpdated = QDateTime::fromString(iteo["updated_at"].toString(), "yyyy-MM-ddTHH:mm:ss.zzzZ");
         qUpdated.setTimeSpec(Qt::UTC);
         item._Updated = qUpdated.toLocalTime().toString("yyyy-MM-dd hh:mm:ss");
         items << item;
@@ -180,7 +182,7 @@ void RaptorStarSuite::onItemsStarring(const QVariant& qVariant) const
 {
     const auto input = qVariant.value<RaptorInput>();
     auto qArray = QJsonArray();
-    for (auto& qIndex : qAsConst(input._Indexes))
+    for (const auto &qIndex: input._Indexes)
     {
         auto qId = QString();
         if (qIndex.data(Qt::UserRole).canConvert<RaptorFileItem>())
@@ -211,7 +213,7 @@ void RaptorStarSuite::onItemsStarring(const QVariant& qVariant) const
     }
 
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/v3/batch";
+    qHttpPayload._Url = "https://api.aliyundrive.com/adrive/v4/batch";
     USE_HEADER_DEFAULT(qHttpPayload)
     auto qRow = QJsonObject();
     qRow["requests"] = qArray;

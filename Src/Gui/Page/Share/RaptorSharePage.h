@@ -63,7 +63,7 @@ public:
 private:
     struct Payload
     {
-        QString rMarker;
+        QString _Marker;
     };
 
     void invokeInstanceInit();
@@ -72,6 +72,7 @@ private:
 
     void invokeSlotInit() const;
 
+    [[nodiscard]]
     QPair<QString, QString> invokeTypeWithCategoryFilter() const;
 
 Q_SIGNALS:

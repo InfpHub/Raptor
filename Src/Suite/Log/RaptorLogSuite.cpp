@@ -35,7 +35,7 @@ RaptorLogSuite::~RaptorLogSuite()
     _Log.close();
 }
 
-RaptorLogSuite* RaptorLogSuite::invokeSingletonGet()
+RaptorLogSuite *RaptorLogSuite::invokeSingletonGet()
 {
     return _LogSuite();
 }
@@ -45,40 +45,39 @@ void RaptorLogSuite::invokeInstanceInit()
     _Log.setFileName(QStringLiteral("%1.log").arg(APPLICATION_NAME));
 }
 
-void RaptorLogSuite::onItemCallback(const QtMsgType& qType,
-                                    const QMessageLogContext& qContext,
-                                    const QString& qMessage)
+void RaptorLogSuite::onItemCallback(const QtMsgType &qType,
+                                    const QMessageLogContext &qContext,
+                                    const QString &qMessage)
 {
     _Mutex.lock();
     const auto qDate = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz");
     auto qLevel = QString();
     switch (qType)
     {
-    case QtDebugMsg:
-        qLevel = Log::Level::Debug;
-        break;
-    case QtInfoMsg:
-        qLevel = Log::Level::Info;
-        break;
-    case QtWarningMsg:
-        qLevel = Log::Level::Warning;
-        break;
-    case QtCriticalMsg:
-        qLevel = Log::Level::Error;
-        break;
-    case QtFatalMsg:
-        qLevel = Log::Level::Fatal;
-        break;
-    default:
-        break;
+        case QtDebugMsg:
+            qLevel = Log::Level::Debug;
+            break;
+        case QtInfoMsg:
+            qLevel = Log::Level::Info;
+            break;
+        case QtWarningMsg:
+            qLevel = Log::Level::Warning;
+            break;
+        case QtCriticalMsg:
+            qLevel = Log::Level::Error;
+            break;
+        case QtFatalMsg:
+            qLevel = Log::Level::Fatal;
+            break;
+        default:
+            break;
     }
 
     auto qPid = QString::number(qApp->applicationPid());
     if (qPid.toULongLong() < 1000)
     {
         qPid = "00" + qPid;
-    }
-    else if (qPid.toULongLong() < 10000)
+    } else if (qPid.toULongLong() < 10000)
     {
         qPid = "0" + qPid;
     }
@@ -87,8 +86,7 @@ void RaptorLogSuite::onItemCallback(const QtMsgType& qType,
     if (qThread.toULongLong() < 1000)
     {
         qThread = QStringLiteral("00%1").arg(reinterpret_cast<quintptr>(QThread::currentThreadId()));
-    }
-    else if (qThread.toULongLong() < 10000)
+    } else if (qThread.toULongLong() < 10000)
     {
         qThread = QStringLiteral("0%1").arg(reinterpret_cast<quintptr>(QThread::currentThreadId()));
     }
@@ -100,36 +98,37 @@ void RaptorLogSuite::onItemCallback(const QtMsgType& qType,
         {
             qFunction.append("-");
         }
-    }
-    else if (qFunction.length() < Log::Pattern::MaxFunctionLength)
+    } else if (qFunction.length() < Log::Pattern::MaxFunctionLength)
     {
         qFunction.append(QString(Log::Pattern::MaxFunctionLength - qFunction.length(), ' '));
-    }
-    else if (qFunction.length() > Log::Pattern::MaxFunctionLength)
+    } else if (qFunction.length() > Log::Pattern::MaxFunctionLength)
     {
         qFunction = qFunction.left(Log::Pattern::MaxFunctionLength - 3).append("...");
     }
 
     auto qLine = QString();
-    if (qContext.line < 1000)
+    if (qContext.line < 10000)
     {
-        if (qContext.line < 100)
+        if (qContext.line < 1000)
         {
-            if (qContext.line < 10)
+            if (qContext.line < 100)
             {
-                qLine = qLine.append(QString::number(qContext.line)).append(' ').append(' ').append(' ');
-            }
-            else
+                if (qContext.line < 10)
+                {
+                    qLine = qLine.append(QString::number(qContext.line)).append(' ').append(' ').append(' ').append(' ');
+                } else
+                {
+                    qLine = qLine.append(QString::number(qContext.line)).append(' ').append(' ').append(' ');
+                }
+            } else
             {
                 qLine = qLine.append(QString::number(qContext.line)).append(' ').append(' ');
             }
-        }
-        else
+        } else
         {
             qLine = qLine.append(QString::number(qContext.line)).append(' ');
         }
-    }
-    else
+    } else
     {
         qLine = QString::number(qContext.line);
     }
@@ -152,8 +151,7 @@ void RaptorLogSuite::onItemCallback(const QtMsgType& qType,
         {
             _Log.open(QIODevice::WriteOnly | QIODevice::Append);
         }
-    }
-    else
+    } else
     {
         if (!_Log.isOpen())
         {
@@ -162,7 +160,6 @@ void RaptorLogSuite::onItemCallback(const QtMsgType& qType,
     }
 
     auto qTextStream = QTextStream(&_Log);
-    qTextStream.setCodec(QTextCodec::codecForName("UTF-8"));
     if (qLevel != Log::Level::Debug)
     {
         qTextStream << qContent << Qt::endl;

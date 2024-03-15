@@ -24,7 +24,7 @@
 #include "RaptorTrashPage.h"
 #include "ui_RaptorTrashPage.h"
 
-RaptorTrashPage::RaptorTrashPage(QWidget* qParent) : QWidget(qParent),
+RaptorTrashPage::RaptorTrashPage(QWidget *qParent) : QWidget(qParent),
                                                      _Ui(new Ui::RaptorTrashPage)
 {
     _Ui->setupUi(this);
@@ -38,13 +38,13 @@ RaptorTrashPage::~RaptorTrashPage()
     FREE(_Ui)
 }
 
-bool RaptorTrashPage::eventFilter(QObject* qObject, QEvent* qEvent)
+bool RaptorTrashPage::eventFilter(QObject *qObject, QEvent *qEvent)
 {
     if (qObject == _Ui->_ItemView)
     {
         if (qEvent->type() == QEvent::KeyPress)
         {
-            if (const auto qKeyEvent = static_cast<QKeyEvent*>(qEvent);
+            if (const auto qKeyEvent = static_cast<QKeyEvent *>(qEvent);
                 qKeyEvent->matches(QKeySequence::Refresh))
             {
                 onRefreshClicked();
@@ -77,6 +77,7 @@ void RaptorTrashPage::invokeNavigate()
 
 void RaptorTrashPage::invokeInstanceInit()
 {
+    _ItemViewContextMenu = new RaptorMenu(_Ui->_ItemView);
     _ItemViewDelegate = new RaptorTableViewDelegate(this);
     _ItemViewHeader = new RaptorTableViewHeader(Qt::Horizontal, _Ui->_ItemView);
     _ItemViewHeader->invokeIconSet(RaptorUtil::invokeIconMatch("Legend", false, true));
@@ -107,9 +108,10 @@ void RaptorTrashPage::invokeUiInit()
     _Ui->_ItemView->setModel(_ItemViewModel);
     _Ui->_ItemView->setHorizontalHeader(_ItemViewHeader);
     _Ui->_ItemView->setItemDelegate(_ItemViewDelegate);
-    _Ui->_ItemView->setContextMenuPolicy(Qt::NoContextMenu);
+    _Ui->_ItemView->setContextMenuPolicy(Qt::CustomContextMenu);
     _Ui->_ItemView->horizontalHeader()->setFixedHeight(26);
-    _Ui->_ItemView->horizontalHeader()->setMinimumSectionSize(26);
+    _Ui->_ItemView->horizontalHeader()->setMinimumSectionSize(30);
+    _Ui->_ItemView->horizontalHeader()->setDefaultSectionSize(30);
     _Ui->_ItemView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
     _Ui->_ItemView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
     _Ui->_ItemView->verticalHeader()->setDefaultSectionSize(26);
@@ -123,6 +125,18 @@ void RaptorTrashPage::invokeUiInit()
     _Ui->_ItemName->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_ItemTrashedTip->setText(QStringLiteral("放入时间:"));
     _Ui->_ItemSizeTip->setText(QStringLiteral("大小:"));
+    _ItemViewContextMenu->invokeItemAdd("还原",
+                                        RaptorUtil::invokeIconMatch("Recover", false, true),
+                                        QKeySequence(),
+                                        std::bind(&RaptorTrashPage::onRecoverClicked, this));
+    _ItemViewContextMenu->invokeItemAdd("永久删除",
+                                        RaptorUtil::invokeIconMatch("Trash", false, true),
+                                        QKeySequence(),
+                                        std::bind(&RaptorTrashPage::onDeleteClicked, this));
+    _ItemViewContextMenu->invokeItemAdd("清空回收站",
+                                        RaptorUtil::invokeIconMatch("Clean", false, true),
+                                        QKeySequence(),
+                                        std::bind(&RaptorTrashPage::onClearClicked, this));
 }
 
 void RaptorTrashPage::invokeSlotInit() const
@@ -135,7 +149,7 @@ void RaptorTrashPage::invokeSlotInit() const
     connect(_Ui->_Restore,
             &QPushButton::clicked,
             this,
-            &RaptorTrashPage::onRestoreClicked);
+            &RaptorTrashPage::onRecoverClicked);
 
     connect(_Ui->_Delete,
             &QPushButton::clicked,
@@ -162,6 +176,11 @@ void RaptorTrashPage::invokeSlotInit() const
             this,
             &RaptorTrashPage::onItemViewClicked);
 
+    connect(_Ui->_ItemView,
+            &RaptorTableView::customContextMenuRequested,
+            this,
+            &RaptorTrashPage::onItemViewCustomContextMenuRequested);
+
     connect(_Ui->_ItemView->selectionModel(),
             &QItemSelectionModel::selectionChanged,
             this,
@@ -173,7 +192,7 @@ void RaptorTrashPage::invokeSlotInit() const
             &RaptorTrashPage::onItemViewVerticalScrollValueChanged);
 }
 
-void RaptorTrashPage::onItemCopyWriterHaveFound(const QVariant& qVariant) const
+void RaptorTrashPage::onItemCopyWriterHaveFound(const QVariant &qVariant) const
 {
     const auto [_State, _Message, _Data] = qVariant.value<RaptorOutput>();
     if (!_State)
@@ -181,8 +200,8 @@ void RaptorTrashPage::onItemCopyWriterHaveFound(const QVariant& qVariant) const
         return;
     }
 
-    const auto items = _Data.value<QVector<RaptorCopyWriter>>();
-    for (auto& [_Page, _Content] : items)
+    const auto items = _Data.value<QVector<RaptorCopyWriter> >();
+    for (auto &[_Page, _Content]: items)
     {
         if (_Page == metaObject()->className())
         {
@@ -192,13 +211,13 @@ void RaptorTrashPage::onItemCopyWriterHaveFound(const QVariant& qVariant) const
     }
 }
 
-void RaptorTrashPage::onItemAccessTokenRefreshed(const QVariant& qVariant)
+void RaptorTrashPage::onItemAccessTokenRefreshed(const QVariant &qVariant)
 {
     Q_UNUSED(qVariant)
     _Payload._Marker.clear();
 }
 
-void RaptorTrashPage::onItemLogouting(const QVariant& qVariant) const
+void RaptorTrashPage::onItemLogouting(const QVariant &qVariant) const
 {
     const auto input = qVariant.value<RaptorInput>();
     const auto item = input._Variant.value<RaptorAuthenticationItem>();
@@ -223,7 +242,7 @@ void RaptorTrashPage::onItemSpaceChanging()
     _Payload._Marker.clear();
 }
 
-void RaptorTrashPage::onItemSwitching(const QVariant& qVariant) const
+void RaptorTrashPage::onItemSwitching(const QVariant &qVariant) const
 {
     Q_UNUSED(qVariant)
     _ItemViewModel->invokeItemsClear();
@@ -232,7 +251,7 @@ void RaptorTrashPage::onItemSwitching(const QVariant& qVariant) const
     _Ui->_ItemSize->clear();
 }
 
-void RaptorTrashPage::onItemsFetched(const QVariant& qVariant)
+void RaptorTrashPage::onItemsFetched(const QVariant &qVariant)
 {
     _Loading->invokeStateSet(RaptorLoading::State::Finished);
     if (!RaptorStoreSuite::invokeUserIsValidConfirm())
@@ -257,7 +276,7 @@ void RaptorTrashPage::onItemsFetched(const QVariant& qVariant)
         return;
     }
 
-    const auto [items, qMarker] = _Data.value<QPair<QVector<RaptorTrashItem>, QString>>();
+    const auto [items, qMarker] = _Data.value<QPair<QVector<RaptorTrashItem>, QString> >();
     if (items.isEmpty())
     {
         _Ui->_ItemView->invokeServerCodeSet(RaptorTableView::NotFound);
@@ -273,7 +292,7 @@ void RaptorTrashPage::onItemsFetched(const QVariant& qVariant)
     _ItemViewModel->invokeItemsAppend(items);
 }
 
-void RaptorTrashPage::onItemsRestored(const QVariant& qVariant) const
+void RaptorTrashPage::onItemsRecovered(const QVariant &qVariant) const
 {
     const auto [_State, _Message, _Data] = qVariant.value<RaptorOutput>();
     if (!_State)
@@ -305,7 +324,7 @@ void RaptorTrashPage::onItemsRestored(const QVariant& qVariant) const
     RaptorToast::invokeInformationEject(QStringLiteral("所选文件已被还原。"));
 }
 
-void RaptorTrashPage::onItemsDeleted(const QVariant& qVariant) const
+void RaptorTrashPage::onItemsDeleted(const QVariant &qVariant) const
 {
     const auto [_State, _Message, _Data] = qVariant.value<RaptorOutput>();
     if (!_State)
@@ -337,7 +356,7 @@ void RaptorTrashPage::onItemsDeleted(const QVariant& qVariant) const
     RaptorToast::invokeInformationEject(QStringLiteral("所选文件已被永久删除。"));
 }
 
-void RaptorTrashPage::onItemsCleared(const QVariant& qVariant) const
+void RaptorTrashPage::onItemsCleared(const QVariant &qVariant) const
 {
     if (const auto [_State, _Message, _Data] = qVariant.value<RaptorOutput>(); !_State)
     {
@@ -361,7 +380,7 @@ void RaptorTrashPage::onItemsCleared(const QVariant& qVariant) const
     RaptorToast::invokeInformationEject(QStringLiteral("回收站已清空。"));
 }
 
-void RaptorTrashPage::onLoadingStateChanged(const RaptorLoading::State& state) const
+void RaptorTrashPage::onLoadingStateChanged(const RaptorLoading::State &state) const
 {
     _Ui->_Refresh->setEnabled(state == RaptorLoading::State::Finished);
     _Ui->_ItemName->clear();
@@ -369,7 +388,7 @@ void RaptorTrashPage::onLoadingStateChanged(const RaptorLoading::State& state) c
     _Ui->_ItemSize->clear();
 }
 
-void RaptorTrashPage::onRestoreClicked() const
+void RaptorTrashPage::onRecoverClicked() const
 {
     if (!RaptorStoreSuite::invokeUserIsValidConfirm())
     {
@@ -381,7 +400,7 @@ void RaptorTrashPage::onRestoreClicked() const
     {
         auto input = RaptorInput();
         input._Indexes = qIndexList;
-        Q_EMIT itemsRestoring(QVariant::fromValue<RaptorInput>(input));
+        Q_EMIT itemsRecovering(QVariant::fromValue<RaptorInput>(input));
     }
 }
 
@@ -397,8 +416,9 @@ void RaptorTrashPage::onDeleteClicked() const
         return;
     }
 
-    if (!RaptorMessageBox::invokeCriticalEject(QStringLiteral("永久删除"),
-                                               QStringLiteral("即将永久删除所选文件。是否继续?")))
+    if (const auto qOperate = RaptorMessageBox::invokeCriticalEject(QStringLiteral("永久删除"),
+                                                                    QStringLiteral("即将永久删除所选文件。是否继续?"));
+        qOperate == RaptorMessageBox::No)
     {
         return;
     }
@@ -424,11 +444,14 @@ void RaptorTrashPage::onClearClicked() const
         return;
     }
 
-    if (RaptorMessageBox::invokeCriticalEject(QStringLiteral("清空回收站"),
-                                              QStringLiteral("即将永久删除所有文件。是否继续?")))
+    if (const auto qOperate = RaptorMessageBox::invokeCriticalEject(QStringLiteral("清空回收站"),
+                                                                    QStringLiteral("即将永久删除所有文件。是否继续?"));
+        qOperate == RaptorMessageBox::No)
     {
-        Q_EMIT itemsClearing();
+        return;
     }
+
+    Q_EMIT itemsClearing();
 }
 
 void RaptorTrashPage::onRefreshClicked()
@@ -444,7 +467,7 @@ void RaptorTrashPage::onRefreshClicked()
     Q_EMIT itemsFetching(QVariant::fromValue<RaptorInput>(RaptorInput()));
 }
 
-void RaptorTrashPage::onItemViewIndicatorClicked(const RaptorTableView::Code& qCode) const
+void RaptorTrashPage::onItemViewIndicatorClicked(const RaptorTableView::Code &qCode) const
 {
     if (qCode == RaptorTableView::Forbidden)
     {
@@ -454,16 +477,40 @@ void RaptorTrashPage::onItemViewIndicatorClicked(const RaptorTableView::Code& qC
     }
 }
 
-void RaptorTrashPage::onItemViewClicked(const QModelIndex& qIndex) const
+void RaptorTrashPage::onItemViewClicked(const QModelIndex &qIndex) const
 {
+    if (!qIndex.isValid())
+    {
+        return;
+    }
+
     const auto item = qIndex.data(Qt::UserRole).value<RaptorTrashItem>();
     _Ui->_ItemName->setText(item._Name);
     _Ui->_ItemTrashed->setText(item._Trashed);
     _Ui->_ItemSize->setText(item._Size);
 }
 
-void RaptorTrashPage::onItemViewSelectionChanged(const QItemSelection& qSelected,
-                                                 const QItemSelection& qDeselected) const
+void RaptorTrashPage::onItemViewCustomContextMenuRequested(const QPoint &qPoint) const
+{
+    if (!_Ui->_ItemView->indexAt(qPoint).isValid())
+    {
+        return;
+    }
+
+    if (!RaptorSettingSuite::invokeItemFind(Setting::Section::Ui,
+                                            Setting::Ui::ContextMenu).toBool())
+    {
+        return;
+    }
+
+    _ItemViewContextMenu->move(_Ui->_ItemView->mapToGlobal(QPoint(qPoint.x(),
+                                                                  qPoint.y() + _Ui->_ItemView->verticalHeader()->
+                                                                  defaultSectionSize())));
+    _ItemViewContextMenu->invokeEject();
+}
+
+void RaptorTrashPage::onItemViewSelectionChanged(const QItemSelection &qSelected,
+                                                 const QItemSelection &qDeselected) const
 {
     Q_UNUSED(qDeselected)
     if (qSelected.length() == 1)
@@ -480,7 +527,7 @@ void RaptorTrashPage::onItemViewSelectionChanged(const QItemSelection& qSelected
     _Ui->_ItemSize->clear();
 }
 
-void RaptorTrashPage::onItemViewVerticalScrollValueChanged(const int& qValue) const
+void RaptorTrashPage::onItemViewVerticalScrollValueChanged(const int &qValue) const
 {
     if (!RaptorStoreSuite::invokeUserIsValidConfirm())
     {

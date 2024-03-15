@@ -204,8 +204,7 @@ void RaptorEject::invokeUiInit()
 {
     setWindowFlags(Qt::Dialog |
         Qt::FramelessWindowHint |
-        Qt::NoDropShadowWindowHint |
-        Qt::MSWindowsFixedSizeDialogHint);
+        Qt::NoDropShadowWindowHint);
     setWindowModality(Qt::WindowModal);
     setAttribute(Qt::WA_TranslucentBackground);
     installEventFilter(this);

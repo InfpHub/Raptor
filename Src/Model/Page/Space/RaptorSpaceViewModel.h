@@ -36,37 +36,47 @@ class RaptorSpaceViewModel Q_DECL_FINAL : public QAbstractTableModel
 public:
     using QAbstractTableModel::QAbstractTableModel;
 
+    [[nodiscard]]
     QVariant headerData(int qSection,
                         Qt::Orientation qOrientation,
                         int qRole = Qt::DisplayRole) const Q_DECL_OVERRIDE;
 
-    int rowCount(const QModelIndex& qIndex = QModelIndex()) const Q_DECL_OVERRIDE;
+    [[nodiscard]]
+    int rowCount(const QModelIndex &qIndex = QModelIndex()) const Q_DECL_OVERRIDE;
 
-    int columnCount(const QModelIndex& qIndex = QModelIndex()) const Q_DECL_OVERRIDE;
+    [[nodiscard]]
+    int columnCount(const QModelIndex &qIndex = QModelIndex()) const Q_DECL_OVERRIDE;
 
-    QVariant data(const QModelIndex& qIndex, int qRole = Qt::DisplayRole) const Q_DECL_OVERRIDE;
+    [[nodiscard]]
+    QVariant data(const QModelIndex &qIndex, int qRole = Qt::DisplayRole) const Q_DECL_OVERRIDE;
 
-    bool setData(const QModelIndex& qIndex,
-                 const QVariant& qVariant,
+    bool setData(const QModelIndex &qIndex,
+                 const QVariant &qVariant,
                  int qRole = Qt::EditRole) Q_DECL_OVERRIDE;
 
-    bool removeRow(int qRow, const QModelIndex& parent = QModelIndex());
+    bool removeRow(int qRow, const QModelIndex &parent = QModelIndex());
 
     bool removeRows(int qRow,
                     int qCount,
-                    const QModelIndex& qIndex = QModelIndex()) Q_DECL_OVERRIDE;
+                    const QModelIndex &qIndex = QModelIndex()) Q_DECL_OVERRIDE;
 
-    void invokeHeaderSet(const QVector<QString>& qHeader);
+    [[nodiscard]]
+    Qt::ItemFlags flags(const QModelIndex &qIndex) const Q_DECL_OVERRIDE;
 
-    void invokeColumnCountSet(const quint16& qCount);
+    void invokeHeaderSet(const QVector<QString> &qHeader);
 
-    void invokeItemAppend(const RaptorFileItem& item);
+    void invokeColumnCountSet(const quint16 &qCount);
 
-    void invokeItemsAppend(const QVector<RaptorFileItem>& items);
+    void invokeItemAppend(const RaptorFileItem &item);
+
+    void invokeItemsAppend(const QVector<RaptorFileItem> &items);
 
     void invokeItemsClear();
 
     QVector<RaptorFileItem> invokeItemsEject();
+
+Q_SIGNALS:
+    Q_SIGNAL void itemEdited(const QVariant &qVariant);
 
 private:
     QVector<QString> _Headers;

@@ -34,7 +34,6 @@
 #include <QRegularExpression>
 #include <QThread>
 #include <QStandardPaths>
-#include <QTextCodec>
 #include <QTextStream>
 
 #include <iostream>
@@ -56,7 +55,7 @@ namespace Log
 
     namespace Pattern
     {
-        Q_DECL_CONSTEXPR auto Function = "Raptor[a-zA-Z_:]+::~?[a-zA-Z_:]+";
+        Q_DECL_CONSTEXPR auto Function = "Raptor[0-9a-zA-Z_:]+::~?[a-zA-Z_:]+";
         Q_DECL_CONSTEXPR auto MaxFunctionLength = 55;
     }
 }

@@ -56,8 +56,8 @@ bool RaptorCopyUser::eventFilter(QObject* qObject, QEvent* qEvent)
 
 QPair<RaptorAuthenticationItem, RaptorAuthenticationItem> RaptorCopyUser::invokeEject()
 {
-    _SourceModel->invokeItemsClear();
-    _TargetModel->invokeItemsClear();
+    _SourceViewModel->invokeItemsClear();
+    _TargetViewModel->invokeItemsClear();
     RaptorEject::invokeEject();
     return _User;
 }
@@ -65,19 +65,20 @@ QPair<RaptorAuthenticationItem, RaptorAuthenticationItem> RaptorCopyUser::invoke
 void RaptorCopyUser::invokeInstanceInit()
 {
     RaptorEject::invokeInstanceInit();
-    _SourceHeader = new RaptorUserViewHeader(Qt::Horizontal, _Ui->_SourceView);
-    _SourceModel = new RaptorUserViewModel(this);
+    _SourceViewHeader = new RaptorUserViewHeader(Qt::Horizontal, _Ui->_SourceView);
+    _SourceViewModel = new RaptorUserViewModel(this);
     auto qHeader = QVector<QString>();
     qHeader << QStringLiteral("源用户");
-    _SourceModel->invokeHeaderSet(qHeader);
-    _SourceModel->invokeColumnCountSet(2);
-    _TargetHeader = new RaptorUserViewHeader(Qt::Horizontal, _Ui->_TargetView);
-    _TargetModel = new RaptorUserViewModel(this);
+    _SourceViewModel->invokeHeaderSet(qHeader);
+    _SourceViewModel->invokeColumnCountSet(2);
+    _TargetViewHeader = new RaptorUserViewHeader(Qt::Horizontal, _Ui->_TargetView);
+    _TargetViewModel = new RaptorUserViewModel(this);
     qHeader.clear();
     qHeader << QStringLiteral("目标用户");
-    _TargetModel->invokeHeaderSet(qHeader);
-    _TargetModel->invokeColumnCountSet(2);
-    _CommonViewDelegate = new RaptorUserViewDelegate(this);
+    _TargetViewModel->invokeHeaderSet(qHeader);
+    _TargetViewModel->invokeColumnCountSet(2);
+    _SourceViewDelegate = new RaptorUserViewDelegate(this);
+    _TargetViewDelegate = new RaptorUserViewDelegate(this);
 }
 
 void RaptorCopyUser::invokeUiInit()
@@ -87,12 +88,13 @@ void RaptorCopyUser::invokeUiInit()
     _Ui->_Title->setText(QStringLiteral("选择用户"));
     _Ui->_Close->setIcon(QIcon(RaptorUtil::invokeIconMatch("Close", false, true)));
     _Ui->_Close->setIconSize(QSize(10, 10));
-    _Ui->_SourceView->setModel(_SourceModel);
-    _Ui->_SourceView->setHorizontalHeader(_SourceHeader);
-    _Ui->_SourceView->setItemDelegate(_CommonViewDelegate);
+    _Ui->_SourceView->setModel(_SourceViewModel);
+    _Ui->_SourceView->setHorizontalHeader(_SourceViewHeader);
+    _Ui->_SourceView->setItemDelegate(_SourceViewDelegate);
     _Ui->_SourceView->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_SourceView->horizontalHeader()->setFixedHeight(26);
-    _Ui->_SourceView->horizontalHeader()->setMinimumSectionSize(26);
+    _Ui->_SourceView->horizontalHeader()->setMinimumSectionSize(30);
+    _Ui->_SourceView->horizontalHeader()->setDefaultSectionSize(30);
     _Ui->_SourceView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
     _Ui->_SourceView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
     _Ui->_SourceView->verticalHeader()->setDefaultSectionSize(26);
@@ -101,12 +103,13 @@ void RaptorCopyUser::invokeUiInit()
     _Ui->_SourceView->setColumnWidth(0, 30);
     _Ui->_SourceView->setSelectionMode(QAbstractItemView::SingleSelection);
     _Ui->_SourceView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    _Ui->_TargetView->setModel(_TargetModel);
-    _Ui->_TargetView->setHorizontalHeader(_TargetHeader);
-    _Ui->_TargetView->setItemDelegate(_CommonViewDelegate);
+    _Ui->_TargetView->setModel(_TargetViewModel);
+    _Ui->_TargetView->setHorizontalHeader(_TargetViewHeader);
+    _Ui->_TargetView->setItemDelegate(_TargetViewDelegate);
     _Ui->_TargetView->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_TargetView->horizontalHeader()->setFixedHeight(26);
-    _Ui->_TargetView->horizontalHeader()->setMinimumSectionSize(26);
+    _Ui->_TargetView->horizontalHeader()->setMinimumSectionSize(30);
+    _Ui->_TargetView->horizontalHeader()->setDefaultSectionSize(30);
     _Ui->_TargetView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
     _Ui->_TargetView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
     _Ui->_TargetView->verticalHeader()->setDefaultSectionSize(26);
@@ -158,8 +161,8 @@ void RaptorCopyUser::onItemsLoaded(const QVariant& qVariant) const
     }
 
     const auto items = _Data.value<QVector<RaptorAuthenticationItem>>();
-    _SourceModel->invokeItemsAppend(items);
-    _TargetModel->invokeItemsAppend(items);
+    _SourceViewModel->invokeItemsAppend(items);
+    _TargetViewModel->invokeItemsAppend(items);
 }
 
 void RaptorCopyUser::onCloseClicked()

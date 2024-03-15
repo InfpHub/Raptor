@@ -47,7 +47,7 @@ class RaptorUiPage Q_DECL_FINAL : public QWidget
     Q_OBJECT
 
 public:
-    explicit RaptorUiPage(QWidget* qParent = Q_NULLPTR);
+    explicit RaptorUiPage(QWidget *qParent = Q_NULLPTR);
 
     ~RaptorUiPage() Q_DECL_OVERRIDE;
 
@@ -61,21 +61,29 @@ private:
 private Q_SLOTS:
     Q_SLOT void onDebounceTimerTimeout() const;
 
-    Q_SLOT void onThemeSystemClicked(const bool& qChecked) const;
+    Q_SLOT void onThemeAutoClicked(const bool &qChecked) const;
 
-    Q_SLOT void onThemeLightClicked(const bool& qChecked) const;
+    Q_SLOT void onThemeLightClicked(const bool &qChecked) const;
 
-    Q_SLOT void onThemeDarkClicked(const bool& qChecked) const;
+    Q_SLOT void onThemeDarkClicked(const bool &qChecked) const;
 
     Q_SLOT void onFontClicked() const;
 
-    Q_SLOT void onAutoSignStateChanged(const int& qState) const;
+    Q_SLOT void onNoticeStateChanged(const int &qState) const;
+
+    Q_SLOT void onAutoSignStateChanged(const int &qState) const;
+
+    Q_SLOT void onContextMenuStateChanged(const int &qState) const;
+
+    Q_SLOT void onTrayIconStateChanged(const int &qState) const;
+
+    Q_SLOT void onMinimizeToTrayStateChanged(const int &qState) const;
 
 private:
-    Ui::RaptorUiPage* _Ui = Q_NULLPTR;
-    QButtonGroup* _ThemeGroup = Q_NULLPTR;
-    RaptorFont* _Font = Q_NULLPTR;
-    QTimer* _DebounceTimer = Q_NULLPTR;
+    Ui::RaptorUiPage *_Ui = Q_NULLPTR;
+    QButtonGroup *_ThemeGroup = Q_NULLPTR;
+    RaptorFont *_Font = Q_NULLPTR;
+    QTimer *_DebounceTimer = Q_NULLPTR;
 };
 
 #endif // RAPTORUIPAGE_H

@@ -84,7 +84,7 @@ void RaptorSharePage::invokeNavigate()
     _Loading->invokeStateSet(RaptorLoading::State::Loading);
     _Ui->_ItemView->invokeBackgroundPaintableSet(false);
     _ItemViewModel->invokeItemsClear();
-    _Payload.rMarker.clear();
+    _Payload._Marker.clear();
     auto input = RaptorInput();
     const auto [qType, qCatagory] = invokeTypeWithCategoryFilter();
     input._Type = qType;
@@ -143,7 +143,8 @@ void RaptorSharePage::invokeUiInit()
     _Ui->_ItemView->setItemDelegate(_ItemViewDelegate);
     _Ui->_ItemView->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_ItemView->horizontalHeader()->setFixedHeight(26);
-    _Ui->_ItemView->horizontalHeader()->setMinimumSectionSize(26);
+    _Ui->_ItemView->horizontalHeader()->setMinimumSectionSize(30);
+    _Ui->_ItemView->horizontalHeader()->setDefaultSectionSize(30);
     _Ui->_ItemView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
     _Ui->_ItemView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
     _Ui->_ItemView->verticalHeader()->setDefaultSectionSize(26);
@@ -309,7 +310,7 @@ void RaptorSharePage::onItemCopyWriterHaveFound(const QVariant& qVariant) const
 void RaptorSharePage::onItemAccessTokenRefreshed(const QVariant& qVariant)
 {
     Q_UNUSED(qVariant)
-    _Payload.rMarker.clear();
+    _Payload._Marker.clear();
 }
 
 void RaptorSharePage::onItemLogouting(const QVariant& qVariant) const
@@ -340,7 +341,7 @@ void RaptorSharePage::onItemLogouting(const QVariant& qVariant) const
 
 void RaptorSharePage::onItemSpaceChanging()
 {
-    _Payload.rMarker.clear();
+    _Payload._Marker.clear();
 }
 
 void RaptorSharePage::onItemSwitching(const QVariant& qVariant) const
@@ -395,7 +396,7 @@ void RaptorSharePage::onItemsFetched(const QVariant& qVariant)
     }
 
     _Ui->_ItemView->invokeBackgroundPaintableSet(false);
-    _Payload.rMarker = qMarker;
+    _Payload._Marker = qMarker;
     _ItemViewModel->invokeItemsAppend(items);
 }
 
@@ -409,8 +410,9 @@ void RaptorSharePage::onItemsExported(const QVariant& qVariant)
     }
 
     const auto qShare = _Data.value<QString>();
-    if (RaptorMessageBox::invokeInformationEject(QStringLiteral("导出分享"),
-                                                 QStringLiteral("所选分享是否需要保存至文件?如果不，则将拷贝至剪切板。")))
+    if (const auto qOperate = RaptorMessageBox::invokeInformationEject(QStringLiteral("导出分享"),
+                                                 QStringLiteral("所选分享是否需要保存至文件?如果不，则将拷贝至剪切板。"));
+                                                 qOperate == RaptorMessageBox::Yes)
     {
         if (const auto qName = QFileDialog::getSaveFileName(this,
                                                             QStringLiteral("保存分享"),
@@ -421,13 +423,13 @@ void RaptorSharePage::onItemsExported(const QVariant& qVariant)
             auto qFile = QFile(qName);
             if (!qFile.open(QIODevice::WriteOnly))
             {
-                RaptorToast::invokeCriticalEject(QStringLiteral("无法写入文件: %1").arg(QStringLiteral(CRITICAL_TEMPLATE).arg(qName)));
+                RaptorToast::invokeCriticalEject(QStringLiteral("无法写入文件: %1").arg(QString(CRITICAL_TEMPLATE).arg(qName)));
                 return;
             }
 
             qFile.write(qShare.toUtf8());
             qFile.close();
-            RaptorToast::invokeSuccessEject(QStringLiteral("所选分享已保存至 %1").arg(QStringLiteral(CREATIVE_TEMPLATE).arg(qName)));
+            RaptorToast::invokeSuccessEject(QStringLiteral("所选分享已保存至 %1").arg(QString(CREATIVE_TEMPLATE).arg(qName)));
             return;
         }
     }
@@ -532,7 +534,7 @@ void RaptorSharePage::onTabPrevClicked() const
     {
         if (qPushButtonList[i]->isChecked())
         {
-            if (i == 1)
+            if (i == 0)
             {
                 qPushButtonList[qPushButtonList.length() - 1]->setChecked(true);
             }
@@ -555,7 +557,7 @@ void RaptorSharePage::onTabAllToggled(const bool& qChecked)
 
     _Loading->invokeStateSet(RaptorLoading::State::Loading);
     _ItemViewModel->invokeItemsClear();
-    _Payload.rMarker.clear();
+    _Payload._Marker.clear();
     Q_EMIT itemsFetching(QVariant::fromValue<RaptorInput>(RaptorInput()));
 }
 
@@ -573,7 +575,7 @@ void RaptorSharePage::onTabCanceledToggled(const bool& qChecked)
 
     _Loading->invokeStateSet(RaptorLoading::State::Loading);
     _ItemViewModel->invokeItemsClear();
-    _Payload.rMarker.clear();
+    _Payload._Marker.clear();
     auto input = RaptorInput();
     const auto [qType, qCategory] = invokeTypeWithCategoryFilter();
     input._Type = qType;
@@ -595,7 +597,7 @@ void RaptorSharePage::onTabSharingToggled(const bool& qChecked)
 
     _Loading->invokeStateSet(RaptorLoading::State::Loading);
     _ItemViewModel->invokeItemsClear();
-    _Payload.rMarker.clear();
+    _Payload._Marker.clear();
     auto input = RaptorInput();
     const auto [qType, qCategory] = invokeTypeWithCategoryFilter();
     input._Type = qType;
@@ -617,7 +619,7 @@ void RaptorSharePage::onTabExpiredToggled(const bool& qChecked)
 
     _Loading->invokeStateSet(RaptorLoading::State::Loading);
     _ItemViewModel->invokeItemsClear();
-    _Payload.rMarker.clear();
+    _Payload._Marker.clear();
     auto input = RaptorInput();
     const auto [qType, qCategory] = invokeTypeWithCategoryFilter();
     input._Type = qType;
@@ -639,7 +641,7 @@ void RaptorSharePage::onTabNeverExpireToggled(const bool& qChecked)
 
     _Loading->invokeStateSet(RaptorLoading::State::Loading);
     _ItemViewModel->invokeItemsClear();
-    _Payload.rMarker.clear();
+    _Payload._Marker.clear();
     auto input = RaptorInput();
     const auto [qType, qCategory] = invokeTypeWithCategoryFilter();
     input._Type = qType;
@@ -661,7 +663,7 @@ void RaptorSharePage::onTabRapidToggled(const bool& qChecked)
 
     _Loading->invokeStateSet(RaptorLoading::State::Loading);
     _ItemViewModel->invokeItemsClear();
-    _Payload.rMarker.clear();
+    _Payload._Marker.clear();
     Q_EMIT itemsRapidFetching();
 }
 
@@ -702,7 +704,7 @@ void RaptorSharePage::onSearchClicked()
 
     _Loading->invokeStateSet(RaptorLoading::State::Loading);
     _ItemViewModel->invokeItemsClear();
-    _Payload.rMarker.clear();
+    _Payload._Marker.clear();
     const auto qKeyword = _Ui->_SearchEdit->text();
     auto input = RaptorInput();
     const auto [qType, qCategory] = invokeTypeWithCategoryFilter();
@@ -725,7 +727,7 @@ void RaptorSharePage::onRefreshClicked()
 
     _Loading->invokeStateSet(RaptorLoading::State::Loading);
     _ItemViewModel->invokeItemsClear();
-    _Payload.rMarker.clear();
+    _Payload._Marker.clear();
     auto input = RaptorInput();
     const auto [qType, qCategory] = invokeTypeWithCategoryFilter();
     input._Type = qType;
@@ -745,6 +747,11 @@ void RaptorSharePage::onItemViewIndicatorClicked(const RaptorTableView::Code& qC
 
 void RaptorSharePage::onItemViewClicked(const QModelIndex& qIndex) const
 {
+    if (!qIndex.isValid())
+    {
+        return;
+    }
+
     const auto item = qIndex.data(Qt::UserRole).value<RaptorShareItem>();
     _Ui->_ItemName->setText(item._Name);
     _Ui->_ItemCreated->setText(item._Created);
@@ -791,7 +798,7 @@ void RaptorSharePage::onItemViewVerticalScrollValueChanged(const int& qValue) co
         return;
     }
 
-    const auto qMarker = _Payload.rMarker;
+    const auto qMarker = _Payload._Marker;
     if (qMarker.isEmpty())
     {
         return;
