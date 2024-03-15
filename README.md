@@ -3,9 +3,9 @@
 [![Powered by Qt](https://img.shields.io/badge/Powered%20by-Qt-49CF59.svg)](https://changelog.com/jsparty/96)
 [![Discuss on GitHub](https://img.shields.io/badge/Discuss%20on-GitHub-00A4FF)](https://github.com/InfpPointPlus/Raptor/discussions)
 
-使用 Qt 和 C++ 构建的低内存、简洁和美观的第三方阿里云盘桌面应用客户端🚀
+使用 Qt 和 C++ 构建的低内存、小而美的第三方阿里云盘桌面应用客户端🚀
 
-Raptor 由 **Qt5** 💚 驱动，与其他基于 Chromium 的解决方案（如 Electron）相比，这使得其 CPU 和内存使用较低
+Raptor 由 **Qt 6** 💚 驱动，与其他基于 Chromium 的解决方案（如 Electron）相比，这使得其 CPU 和内存使用较低
 
 [//]: # (Visit https://github.com/InfpPointPlus/Raptor for docs.)
 
@@ -27,8 +27,7 @@ Raptor 由 **Qt5** 💚 驱动，与其他基于 Chromium 的解决方案（如 
 
 ## 今后的工作
 
-- 不断迭代，将最好最稳定的客户端献给最需要的你
-- 主流 Linux 桌面系统适配（也许是 Qt，也许是 PyQt，也许是也许...）
+- Linux 和 Mac 适配
 - 在线文档站点搭建
 - ...
 
@@ -47,9 +46,8 @@ Raptor 由 **Qt5** 💚 驱动，与其他基于 Chromium 的解决方案（如 
 
 - [ZInt](https://www.zint.org.uk)
 - [Curl](https://curl.se)
-- [Crypto++](https://www.cryptopp.com)（仅静态编译需要）
 - [Sass](https://sass-lang.com)
-- [SECP256K1](https://github.com/bitcoin-core/secp256k1)（仅动态编译需要）
+- [SECP256K1](https://github.com/bitcoin-core/secp256k1)
 
 编译之后按照 `CMakeList.txt` 中的头文件路径和库路径放置
 
@@ -60,9 +58,8 @@ Raptor 由 **Qt5** 💚 驱动，与其他基于 Chromium 的解决方案（如 
 - 使用 JetBrains CLion 打开 Raptor
 - 根据向导配置 Visual Studio 工具集
 - 修改 `CMakeList.txt` 中的 `CMAKE_PREFIX_PATH` 为您的 Qt 安装目录
-- 修改 `CMakeList.txt` 中的 `Standalone` 为 `ON` （静态编译） 或者 `OFF` （动态编译）
 - 点击右上角编译图标以构建
-- 最后，在 `Target/[x64|x86]/[Debug|Release]/[Static|Share]` 中可查看二进制程序
+- 最后，在 `Target/[Debug|Release]` 中可查看二进制程序
 
 #### Release
 
