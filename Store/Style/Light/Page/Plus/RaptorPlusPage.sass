@@ -30,16 +30,17 @@
 
 #_Description
   color: $Raptor-Font-Color
-  font-size: 12px
+  font-size: $Raptor-Font-Size
 
 #_TabPrev,
 #_TabNext
   color: $Raptor-Font-Color
   background-color: transparent
   border: none
-  font-size: 12px
+  font-size: $Raptor-Font-Size
 
-#_TabCopy
+#_TabCopy,
+#_TabClean
   @include Raptor-Tab
 
 #_Search
@@ -51,7 +52,7 @@
   border-bottom: 1px solid $Raptor-Primary-Line-Color
   border-top-right-radius: 2px
   border-bottom-right-radius: 2px
-  font-size: 12px
+  font-size: $Raptor-Font-Size
 
 #_SearchEdit
   color: $Raptor-Font-Color
@@ -62,11 +63,14 @@
   border-bottom: 1px solid $Raptor-Primary-Line-Color
   border-top-left-radius: 2px
   border-bottom-left-radius: 2px
-  font-size: 12px
+  font-size: $Raptor-Font-Size
   padding-left: 2px
 
 #_Execute
   @include Raptor-Creative-Button
+
+#_Refresh
+  @include Raptor-Information-Button
 
 #_Cancel
   @include Raptor-Critical-Button
@@ -74,3 +78,7 @@
 // RaptorCopyPage
 #_CopyPage
   @import "Copy/RaptorCopyPage"
+
+// RaptorCleanPage
+#_CleanPage
+  @import "Clean/RaptorCleanPage"

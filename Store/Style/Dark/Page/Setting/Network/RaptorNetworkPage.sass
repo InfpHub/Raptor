@@ -36,11 +36,13 @@
 #_ProxyHostTip,
 #_ProxyPortTip,
 #_ProxyUserNameTip,
-#_ProxyPasswordTip
+#_ProxyPasswordTip,
+#_IPResolveTip
   color: $Raptor-Font-Color
-  font-size: 12px
+  font-size: $Raptor-Font-Size
 
-#_ProxyTypePanel
+#_ProxyTypePanel,
+#_IPResolvePanel
   background-color: rgba(255, 255, 255, 0.09)
   border: none
   border-radius: 2px
@@ -51,12 +53,15 @@
 #_ProxyHTTPS2,
 #_ProxyHTTP1_0,
 #_ProxySOCKS4,
-#_ProxySOCKS5
+#_ProxySOCKS5,
+#_IPResolveAuto,
+#_IPResolveV4,
+#_IPResolveV6
   color: $Raptor-Font-Color
   background-color: transparent
   border: none
   border-radius: 2px
-  font-size: 12px
+  font-size: $Raptor-Font-Size
   padding-left: 8px
   padding-right: 8px
 
@@ -66,8 +71,7 @@
   &:checked
     background-color: rgba(255, 255, 255, 0.09)
 
-#_Proxy,
-#_WebSocket
+#_Proxy
   @include Raptor-Checkbox
 
 #_ProxyHost,

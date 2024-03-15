@@ -38,14 +38,14 @@
 #_ItemUpdated,
 #_ItemUrlTip
   color: $Raptor-Font-Color
-  font-size: 12px
+  font-size: $Raptor-Font-Size
 
 #_TabPrev,
 #_TabNext
   color: $Raptor-Font-Color
   background-color: transparent
   border: none
-  font-size: 12px
+  font-size: $Raptor-Font-Size
 
 #_TabAll,
 #_TabFolder,
@@ -64,7 +64,7 @@
   border-bottom: 1px solid $Raptor-Primary-Line-Color
   border-top-right-radius: 2px
   border-bottom-right-radius: 2px
-  font-size: 12px
+  font-size: $Raptor-Font-Size
 
 #_SearchEdit
   color: $Raptor-Font-Color
@@ -75,7 +75,7 @@
   border-bottom: 1px solid $Raptor-Primary-Line-Color
   border-top-left-radius: 2px
   border-bottom-left-radius: 2px
-  font-size: 12px
+  font-size: $Raptor-Font-Size
   padding-left: 2px
 
 #_NewFolder,
@@ -108,3 +108,6 @@
 
 #_ItemDelete
   @include Raptor-Critical-Button
+
+#RaptorMenu
+  @import "../../Component/Menu/RaptorMenu"

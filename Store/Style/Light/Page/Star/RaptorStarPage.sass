@@ -35,7 +35,7 @@
 #_ItemSizeTip,
 #_ItemSize
   color: $Raptor-Font-Color
-  font-size: 12px
+  font-size: $Raptor-Font-Size
 
 #_UnStarred
   @include Raptor-Critical-Button
@@ -45,7 +45,7 @@
   color: $Raptor-Font-Color
   background-color: transparent
   border: none
-  font-size: 12px
+  font-size: $Raptor-Font-Size
 
 #_TabAll,
 #_TabFolder,
@@ -64,7 +64,7 @@
   border-bottom: 1px solid $Raptor-Primary-Line-Color
   border-top-right-radius: 2px
   border-bottom-right-radius: 2px
-  font-size: 12px
+  font-size: $Raptor-Font-Size
 
 #_SearchEdit
   color: $Raptor-Font-Color
@@ -75,7 +75,7 @@
   border-bottom: 1px solid $Raptor-Primary-Line-Color
   border-top-left-radius: 2px
   border-bottom-left-radius: 2px
-  font-size: 12px
+  font-size: $Raptor-Font-Size
   padding-left: 2px
 
 #_Refresh
@@ -92,3 +92,6 @@
 
 #_ItemUnStarred
   @include Raptor-Warning-Button
+
+#RaptorMenu
+  @import "../../Component/Menu/RaptorMenu"

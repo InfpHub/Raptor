@@ -33,9 +33,12 @@
 #_Title,
 #_NameTip,
 #_DirTip,
-#_SpeedTip
+#_SpeedTip,
+#_ParallelTip,
+#_Tip,
+#_Parallel
   color: $Raptor-Font-Color
-  font-size: 12px
+  font-size: $Raptor-Font-Size
 
 #_Name,
 #_Speed,
@@ -46,7 +49,7 @@
   @include Raptor-Checkbox
 
 #_UnitPanel
-  background-color: rgba(255, 255, 255, 0.09)
+  background-color: rgba(46, 51, 56, 0.09)
   border: none
   border-radius: 2px
 
@@ -56,15 +59,21 @@
   background-color: transparent
   border: none
   border-radius: 2px
-  font-size: 12px
+  font-size: $Raptor-Font-Size
   padding-left: 8px
   padding-right: 8px
 
   &:hover
-    background-color: rgba(255, 255, 255, 0.09)
+    background-color: rgba(46, 51, 56, 0.09)
 
   &:checked
-    background-color: rgba(255, 255, 255, 0.09)
+    background-color: rgba(46, 51, 56, 0.09)
+
+    &:hover
+      background-color: rgba(46, 51, 56, 0.09)
+
+#_ParallelSlider
+  @include Raptor-Slider
 
 #_DirSelect
   @include Raptor-Information-Button

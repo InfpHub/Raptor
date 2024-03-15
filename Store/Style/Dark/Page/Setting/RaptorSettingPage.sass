@@ -30,19 +30,20 @@
 
 #_Description
   color: $Raptor-Font-Color
-  font-size: 12px
+  font-size: $Raptor-Font-Size
 
 #_TabPrev,
 #_TabNext
   color: $Raptor-Font-Color
   background-color: transparent
   border: none
-  font-size: 12px
+  font-size: $Raptor-Font-Size
 
 #_TabUi,
 #_TabDownload,
 #_TabUpload,
-#_TabPlay,
+#_TabVideo,
+#_TabOffice,
 #_TabNetwork,
 #_TabOther
   @include Raptor-Tab
@@ -59,9 +60,13 @@
 #_UploadPage
   @import "Upload/RaptorUploadPage"
 
-// RaptorPlayPage
-#_PlayPage
-  @import "Play/RaptorPlayPage"
+// RaptorVideoPage
+#_VideoPage
+  @import "Video/RaptorVideoPage"
+
+// RaptorOfficePage
+#_OfficePage
+  @import "Office/RaptorOfficePage"
 
 // RaptorNetworkPage
 #_NetworkPage

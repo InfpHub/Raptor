@@ -34,24 +34,27 @@
 
 #_ThemeTip,
 #_FontTip,
-#_AutoUpdateTip,
-#_AutoSignTip
+#_NoticeTip,
+#_AutoSignTip,
+#_ContextMenuTip,
+#_TrayIconTip,
+#_MinimizeToTrayTip
   color: $Raptor-Font-Color
-  font-size: 12px
+  font-size: $Raptor-Font-Size
 
 #_ThemePanel
   background-color: rgba(46, 51, 56, 0.09)
   border: none
   border-radius: 2px
 
-#_ThemeSystem,
+#_ThemeAuto,
 #_ThemeLight,
 #_ThemeDark
   color: $Raptor-Font-Color
   background-color: transparent
   border: none
   border-radius: 2px
-  font-size: 12px
+  font-size: $Raptor-Font-Size
   padding-left: 8px
   padding-right: 8px
 
@@ -61,7 +64,11 @@
   &:checked
     background-color: rgba(46, 51, 56, 0.09)
 
-#_AutoSign
+#_Notice,
+#_AutoSign,
+#_ContextMenu,
+#_TrayIcon,
+#_MinimizeToTray
   @include Raptor-Checkbox
 
 #_Font

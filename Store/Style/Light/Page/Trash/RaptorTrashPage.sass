@@ -35,7 +35,7 @@
 #_ItemSizeTip,
 #_ItemSize
   color: $Raptor-Font-Color
-  font-size: 12px
+  font-size: $Raptor-Font-Size
 
 #_Restore
   @include Raptor-Success-Button
@@ -49,7 +49,7 @@
   color: $Raptor-Font-Color
   background-color: transparent
   border: none
-  font-size: 12px
+  font-size: $Raptor-Font-Size
 
 #_TabAll
   @include Raptor-Tab
@@ -71,3 +71,6 @@
 
 #_ItemRestore
   @include Raptor-Success-Button
+
+#RaptorMenu
+  @import "../../Component/Menu/RaptorMenu"

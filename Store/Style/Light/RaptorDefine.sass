@@ -24,6 +24,7 @@
 $Raptor-Primary-Background-Color: rgba(249, 249, 249, 1)
 $Raptor-Eject-Background-Color: rgba(255, 255, 255, 1)
 $Raptor-Font-Color: rgba(136, 136, 136, 1)
+$Raptor-Font-Size: 12px
 $Raptor-Primary-Line-Color: rgba(239, 239, 245, 1)
 $Raptor-Eject-Line-Color: rgba(46, 51, 56, 0.09)
 
@@ -75,7 +76,7 @@ $Raptor-Eject-Line-Color: rgba(46, 51, 56, 0.09)
 @mixin Raptor-List-View
   @include Raptor-Vertical-Scrollbar
 
-  font-size: 12px
+  font-size: $Raptor-Font-Size
   background-color: transparent
   border: none
   outline: none
@@ -93,7 +94,7 @@ $Raptor-Eject-Line-Color: rgba(46, 51, 56, 0.09)
 @mixin Raptor-Table-View($header-line-color: transparent, $background-color: transparent, $item-selected-color: $Raptor-Font-Color, $item-selected-background-color: rgba(243, 243, 245, 0.7))
   @include Raptor-Vertical-Scrollbar
 
-  font-size: 12px
+  font-size: $Raptor-Font-Size
   background-color: $background-color
   border: none
   outline: none
@@ -111,7 +112,7 @@ $Raptor-Eject-Line-Color: rgba(46, 51, 56, 0.09)
     outline: none
 
   QHeaderView
-    font-size: 12px
+    font-size: $Raptor-Font-Size
     background-color: transparent
     border-bottom: 1px solid $header-line-color
 
@@ -124,7 +125,7 @@ $Raptor-Eject-Line-Color: rgba(46, 51, 56, 0.09)
   border: none
   border-radius: 2px
   color: $Raptor-Font-Color
-  font-size: 12px
+  font-size: $Raptor-Font-Size
 
   QScrollBar
     background-color: transparent
@@ -157,7 +158,7 @@ $Raptor-Eject-Line-Color: rgba(46, 51, 56, 0.09)
 @mixin Raptor-Tab
   color: $Raptor-Font-Color
   background-color: transparent
-  font-size: 12px
+  font-size: $Raptor-Font-Size
   border: none
   border-bottom-width: 1px
   border-bottom-style: solid
@@ -185,7 +186,7 @@ $Raptor-Eject-Line-Color: rgba(46, 51, 56, 0.09)
 
   &::add-page
     &:horizontal
-      background-color: rgba(255, 255, 255, 0.2)
+      background-color: rgba(46, 51, 56, 0.09)
       border-radius: 2px
       margin-top: 11px
       margin-bottom: 11px
@@ -208,7 +209,7 @@ $Raptor-Eject-Line-Color: rgba(46, 51, 56, 0.09)
 
 @mixin Raptor-Checkbox
   color: $Raptor-Font-Color
-  font-size: 12px
+  font-size: $Raptor-Font-Size
 
   &::indicator:checked
     border-image: url(./Store/icon/Ui/Raptor[CHECKED].png)
@@ -221,7 +222,7 @@ $Raptor-Eject-Line-Color: rgba(46, 51, 56, 0.09)
   background-color: rgba(46, 51, 56, 0.09)
   border: none
   border-radius: 2px
-  font-size: 12px
+  font-size: $Raptor-Font-Size
   padding-left: 8px
   padding-right: 8px
 
@@ -233,7 +234,7 @@ $Raptor-Eject-Line-Color: rgba(46, 51, 56, 0.09)
   background-color: rgba(99, 226, 183, 0.16)
   border: none
   border-radius: 2px
-  font-size: 12px
+  font-size: $Raptor-Font-Size
   padding-left: 8px
   padding-right: 8px
 
@@ -245,7 +246,7 @@ $Raptor-Eject-Line-Color: rgba(46, 51, 56, 0.09)
   background-color: rgba(242, 201, 125, 0.16)
   border: none
   border-radius: 2px
-  font-size: 12px
+  font-size: $Raptor-Font-Size
   padding-left: 8px
   padding-right: 8px
 
@@ -257,7 +258,7 @@ $Raptor-Eject-Line-Color: rgba(46, 51, 56, 0.09)
   background-color: rgba(112, 192, 232, 0.16)
   border: none
   border-radius: 2px
-  font-size: 12px
+  font-size: $Raptor-Font-Size
   padding-left: 8px
   padding-right: 8px
 
@@ -269,7 +270,7 @@ $Raptor-Eject-Line-Color: rgba(46, 51, 56, 0.09)
   background-color: rgba(232, 128, 128, 0.16)
   border: none
   border-radius: 2px
-  font-size: 12px
+  font-size: $Raptor-Font-Size
   padding-left: 8px
   padding-right: 8px
 
@@ -281,7 +282,7 @@ $Raptor-Eject-Line-Color: rgba(46, 51, 56, 0.09)
   background-color: rgba(184, 112, 232, 0.16)
   border: none
   border-radius: 2px
-  font-size: 12px
+  font-size: $Raptor-Font-Size
   padding-left: 8px
   padding-right: 8px
 
