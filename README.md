@@ -68,6 +68,14 @@ Raptor 由 **Qt 6** 💚 驱动，与其他基于 Chromium 的解决方案（如
 
 PS：如果您选择静态编译则对应的 Qt 工具集也必须是静态的，动态编译则需要动态编译的 Qt 工具集
 
+## 特别鸣谢
+
+<table>
+  <tr>
+    <td><a href="https://github.com/HenryWu01"><img src="https://avatars.githubusercontent.com/u/99880210?s=460&v=4" width="100px;" alt="Yuriy Yazlovytskyy"/><br /><sub><b>HenryWu01</b></sub></a></td>
+  </tr>
+</table>
+
 ## 声明
 
 Raptor 是自由软件，依据 [GNU General Public License V3.0](https://www.gnu.org/licenses) 授权发布。你可以再分发之和/或依照由自由软件基金会发布的 GNU 通用公共许可证修改之，无论是版本 3 许可证，还是（按你的决定）任何以后版都可以。发布 Raptor 是希望它能有用，但是并无保障；甚至连可销售和符合某个特定的目的都不保证。请参看 GNU 通用公共许可证，了解详情。你应该随程序获得一份 GNU 通用公共许可证的复本。如果没有，请看 [在线许可证](https://www.gnu.org/licenses)
