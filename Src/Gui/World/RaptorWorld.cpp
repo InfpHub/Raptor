@@ -766,11 +766,11 @@ void RaptorWorld::invokeAvatarPaint() const
 
     auto qPainter = QPainter(_Ui->_Avatar);
     qPainter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
-    static_cast<void>(_Avatar.scaled(_Ui->_Avatar->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    Q_UNUSED(_Avatar.scaled(_Ui->_Avatar->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation))
     auto qAvatarPath = QPainterPath();
-    qAvatarPath.addEllipse(0, 0, _Ui->_Avatar->width(), _Ui->_Avatar->height());
+    qAvatarPath.addEllipse(1, 1, _Ui->_Avatar->width() - 1, _Ui->_Avatar->height() - 1);
     qPainter.setClipPath(qAvatarPath);
-    qPainter.drawPixmap(0, 0, _Ui->_Avatar->width(), _Ui->_Avatar->height(), _Avatar);
+    qPainter.drawPixmap(1, 1, _Ui->_Avatar->width() - 1, _Ui->_Avatar->height() - 1, _Avatar);
 }
 
 void RaptorWorld::onAvatarClicked() const
