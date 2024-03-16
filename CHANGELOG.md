@@ -1,3 +1,17 @@
+# Raptor 2024.2.1
+
+发行日期：2024.03.16
+
+发行宣言：
+
+发行说明：
+
+- [修复] - [URL using bad/illegal format or missing URL](https://github.com/InfpHub/Raptor/issues/22)
+
+特别鸣谢：
+
+- [HenryWu01](https://github.com/HenryWu01)
+
 # Raptor 2024.2.0
 
 发行日期：2024.03.15
