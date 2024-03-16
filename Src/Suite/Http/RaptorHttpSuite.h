@@ -32,23 +32,23 @@
 class RaptorHttpSuite Q_DECL_FINAL
 {
 public:
-    static RaptorHttpSuite* invokeSingletonGet();
+    static RaptorHttpSuite *invokeSingletonGet();
 
-    static std::tuple<QString, quint32, QByteArray> invokeGet(const RaptorHttpPayload& qHttpPayload);
+    static std::tuple<QString, long, QByteArray> invokeGet(const RaptorHttpPayload &qHttpPayload);
 
-    static std::tuple<QString, quint32, QByteArray> invokePost(const RaptorHttpPayload& qHttpPayload);
+    static std::tuple<QString, long, QByteArray> invokePost(const RaptorHttpPayload &qHttpPayload);
 
-    static std::pair<QString, quint32> invokeItemProxyConnectTest(const QString& qType,
-                                                              const QString& qUsername,
-                                                              const QString& qPassword,
-                                                              const QString& qHost,
-                                                              const quint32& qPort);
+    static std::pair<QString, long> invokeItemProxyConnectTest(const QString &qType,
+                                                               const QString &qUsername,
+                                                               const QString &qPassword,
+                                                               const QString &qHost,
+                                                               const quint32 &qPort);
 
 private:
-    static size_t invokeCommonWriteCallback(char* qTarget,
+    static size_t invokeCommonWriteCallback(char *qTarget,
                                             size_t qSize,
                                             size_t nmemb,
-                                            void* qData);
+                                            void *qData);
 };
 
 #endif // RAPTORHTTPSUITE_H

@@ -30,7 +30,7 @@ RaptorHttpSuite *RaptorHttpSuite::invokeSingletonGet()
     return _HttpSuite();
 }
 
-std::tuple<QString, quint32, QByteArray> RaptorHttpSuite::invokeGet(const RaptorHttpPayload &qHttpPayload)
+std::tuple<QString, long, QByteArray> RaptorHttpSuite::invokeGet(const RaptorHttpPayload &qHttpPayload)
 {
     const auto qCurl = curl_easy_init();
     curl_easy_setopt(qCurl, CURLOPT_SSL_VERIFYPEER, 0L);
@@ -129,7 +129,7 @@ std::tuple<QString, quint32, QByteArray> RaptorHttpSuite::invokeGet(const Raptor
     auto qBody = QByteArray();
     curl_easy_setopt(qCurl, CURLOPT_WRITEDATA, &qBody);
     curl_easy_setopt(qCurl, CURLOPT_WRITEFUNCTION, invokeCommonWriteCallback);
-    auto qStatus = quint32();
+    auto qStatus = long();
     if (const auto qCode = curl_easy_perform(qCurl);
         qCode != CURLE_OK)
     {
@@ -149,7 +149,7 @@ std::tuple<QString, quint32, QByteArray> RaptorHttpSuite::invokeGet(const Raptor
     return std::make_tuple(QString(), qStatus, qBody);
 }
 
-std::tuple<QString, quint32, QByteArray> RaptorHttpSuite::invokePost(const RaptorHttpPayload &qHttpPayload)
+std::tuple<QString, long, QByteArray> RaptorHttpSuite::invokePost(const RaptorHttpPayload &qHttpPayload)
 {
     const auto qCurl = curl_easy_init();
     curl_easy_setopt(qCurl, CURLOPT_SSL_VERIFYPEER, 0L);
@@ -250,7 +250,7 @@ std::tuple<QString, quint32, QByteArray> RaptorHttpSuite::invokePost(const Rapto
     curl_easy_setopt(qCurl, CURLOPT_WRITEFUNCTION, invokeCommonWriteCallback);
     auto qBody = QByteArray();
     curl_easy_setopt(qCurl, CURLOPT_WRITEDATA, &qBody);
-    auto qStatus = quint32();
+    auto qStatus = long();
     if (const auto qCode = curl_easy_perform(qCurl);
         qCode != CURLE_OK)
     {
@@ -270,11 +270,11 @@ std::tuple<QString, quint32, QByteArray> RaptorHttpSuite::invokePost(const Rapto
     return std::make_tuple(QString(), qStatus, qBody);
 }
 
-std::pair<QString, quint32> RaptorHttpSuite::invokeItemProxyConnectTest(const QString &qType,
-                                                                        const QString &qUsername,
-                                                                        const QString &qPassword,
-                                                                        const QString &qHost,
-                                                                        const quint32 &qPort)
+std::pair<QString, long> RaptorHttpSuite::invokeItemProxyConnectTest(const QString &qType,
+                                                                     const QString &qUsername,
+                                                                     const QString &qPassword,
+                                                                     const QString &qHost,
+                                                                     const quint32 &qPort)
 {
     const auto qCurl = curl_easy_init();
     curl_easy_setopt(qCurl, CURLOPT_SSL_VERIFYPEER, 0L);
@@ -325,7 +325,7 @@ std::pair<QString, quint32> RaptorHttpSuite::invokeItemProxyConnectTest(const QS
         curl_easy_setopt(qCurl, CURLOPT_PROXYPASSWORD, qPassword.toStdString().c_str());
     }
 
-    auto qStatus = quint32();
+    auto qStatus = long();
     if (const auto qCode = curl_easy_perform(qCurl);
         qCode != CURLE_OK)
     {
