@@ -134,4 +134,8 @@ INSERT INTO CopyWriter (LeafId, Content)
 VALUES (21, '只要你肯吃苦，就有吃不完的苦。');
 
 INSERT INTO Timeline (LeafId, Date, Summary, Active, Initial)
-VALUES (1, '2024-02-14', '无人问津', 1, 1)
+VALUES (1, '2024-02-14', '无人问津', 0, 1);
+INSERT INTO Timeline (LeafId, Date, Summary, Active, Initial)
+VALUES (1, '2024-03-15', '所向无前', 0, 0);
+INSERT INTO Timeline (LeafId, Date, Summary, Active, Initial)
+VALUES (1, '2024-03-16', '风，指引我', 1, 1);
