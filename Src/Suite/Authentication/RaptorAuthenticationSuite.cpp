@@ -262,26 +262,39 @@ QPair<QString, RaptorSession> RaptorAuthenticationSuite::invokeSessionInit(const
 
 QString RaptorAuthenticationSuite::invokeItemDetailFetch(RaptorAuthenticationItem &item, const QString &qUrl)
 {
-    auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = qUrl;
-    const auto [qError, qStatus, qBody] = RaptorHttpSuite::invokeGet(qHttpPayload);
-    if (!qError.isEmpty())
+    if (!qUrl.isEmpty())
     {
-        qCritical() << qError;
-        return qError;
+        if (auto qFile = QFile(RaptorUtil::invokeIconMatch("aDrive", false, true));
+            qFile.open(QIODevice::ReadOnly))
+        {
+            item._Avatar = qFile.readAll();
+            qFile.close();
+        }
+    }else
+    {
+        auto qHttpPayload = RaptorHttpPayload();
+        qHttpPayload._Url = qUrl;
+        const auto [qError, qStatus, qBody] = RaptorHttpSuite::invokeGet(qHttpPayload);
+        if (!qError.isEmpty())
+        {
+            qCritical() << qError;
+            return qError;
+        }
+
+        if (qStatus != RaptorHttpStatus::OK)
+        {
+            qCritical() << qError;
+            return qError;
+        }
+
+        item._Avatar = qBody;
     }
 
-    if (qStatus != RaptorHttpStatus::OK)
-    {
-        qCritical() << qError;
-        return qError;
-    }
 
-    item._Avatar = qBody;
     auto qHttpPayloae = RaptorHttpPayload();
     qHttpPayloae._Url = "https://user.aliyundrive.com/v2/user/get";
     USE_HEADER_X_CANARY(qHttpPayloae)
-    USE_HEADER_REFERER(qHttpPayload)
+    USE_HEADER_REFERER(qHttpPayloae)
     USE_HEADER_CUSTOM_AUTHORIZATION(qHttpPayloae, item._AccessToken)
     USE_HEADER_CUSTOM_X_DEVICE_ID(qHttpPayloae, item._Session._Device)
     USE_HEADER_CUSTOM_X_SIGNATURE(qHttpPayloae, item._Session._Signature)
