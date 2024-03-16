@@ -68,6 +68,8 @@ if (CMAKE_SYSTEM_NAME MATCHES "Windows")
             ${PROJECT_SOURCE_DIR}/Src/Raptor.rc
     )
 elseif (CMAKE_SYSTEM_NAME MATCHES "Linux")
+    set(CMAKE_BUILD_RPATH ".")
+    set(CMAKE_INSTALL_RPATH ".")
     add_executable(
             ${CMAKE_PROJECT_NAME}
             ${PROJECT_SOURCES}
