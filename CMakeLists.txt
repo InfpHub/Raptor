@@ -1,7 +1,12 @@
 ﻿cmake_minimum_required(VERSION 3.5)
 project(Raptor VERSION 2024.2.0 HOMEPAGE_URL "https://github.com/InfpHub/Raptor" LANGUAGES CXX)
 
-set(CMAKE_PREFIX_PATH "C:/Qt/6.8.0/mingw_64" CACHE PATH "Qt Installation Path")
+if (CMAKE_SYSTEM_NAME MATCHES "Windows")
+    set(CMAKE_PREFIX_PATH "C:/Qt/6.8.0/mingw_64" CACHE PATH "Qt Installation Path")
+elseif (CMAKE_SYSTEM_NAME MATCHES "Linux")
+    set(CMAKE_PREFIX_PATH "/opt/Qt/6.8.0/gcc_64" CACHE PATH "Qt Installation Path")
+endif ()
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
@@ -33,34 +38,41 @@ configure_file(
 )
 
 include_directories(
-        ${PROJECT_SOURCE_DIR}/3rd-Party/Curl/include
-        ${PROJECT_SOURCE_DIR}/3rd-Party/Sass/include
-        ${PROJECT_SOURCE_DIR}/3rd-Party/SECP256K1/include
-        ${PROJECT_SOURCE_DIR}/3rd-Party/UV/include
-        ${PROJECT_SOURCE_DIR}/3rd-Party/Yaml/include
-        ${PROJECT_SOURCE_DIR}/3rd-Party/ZInt/include
+        ${PROJECT_SOURCE_DIR}/3rd-Party/${CMAKE_SYSTEM_NAME}/Curl/include
+        ${PROJECT_SOURCE_DIR}/3rd-Party/${CMAKE_SYSTEM_NAME}/Sass/include
+        ${PROJECT_SOURCE_DIR}/3rd-Party/${CMAKE_SYSTEM_NAME}/SECP256K1/include
+        ${PROJECT_SOURCE_DIR}/3rd-Party/${CMAKE_SYSTEM_NAME}/UV/include
+        ${PROJECT_SOURCE_DIR}/3rd-Party/${CMAKE_SYSTEM_NAME}/Yaml/include
+        ${PROJECT_SOURCE_DIR}/3rd-Party/${CMAKE_SYSTEM_NAME}/ZInt/include
 )
 
 link_directories(
-        ${PROJECT_SOURCE_DIR}/3rd-Party/Curl/lib
-        ${PROJECT_SOURCE_DIR}/3rd-Party/OpenSSL/lib
-        ${PROJECT_SOURCE_DIR}/3rd-Party/Sass/lib
-        ${PROJECT_SOURCE_DIR}/3rd-Party/SECP256K1/lib
-        ${PROJECT_SOURCE_DIR}/3rd-Party/UV/lib
-        ${PROJECT_SOURCE_DIR}/3rd-Party/Yaml/lib
-        ${PROJECT_SOURCE_DIR}/3rd-Party/ZInt/lib
+        ${PROJECT_SOURCE_DIR}/3rd-Party/${CMAKE_SYSTEM_NAME}/Curl/lib
+        ${PROJECT_SOURCE_DIR}/3rd-Party/${CMAKE_SYSTEM_NAME}/OpenSSL/lib
+        ${PROJECT_SOURCE_DIR}/3rd-Party/${CMAKE_SYSTEM_NAME}/Sass/lib
+        ${PROJECT_SOURCE_DIR}/3rd-Party/${CMAKE_SYSTEM_NAME}/SECP256K1/lib
+        ${PROJECT_SOURCE_DIR}/3rd-Party/${CMAKE_SYSTEM_NAME}/UV/lib
+        ${PROJECT_SOURCE_DIR}/3rd-Party/${CMAKE_SYSTEM_NAME}/Yaml/lib
+        ${PROJECT_SOURCE_DIR}/3rd-Party/${CMAKE_SYSTEM_NAME}/ZInt/lib
 )
 
-configure_file(
-        ${PROJECT_SOURCE_DIR}/Src/Raptor.rc.in
-        ${PROJECT_SOURCE_DIR}/Src/Raptor.rc
-)
+if (CMAKE_SYSTEM_NAME MATCHES "Windows")
+    configure_file(
+            ${PROJECT_SOURCE_DIR}/Src/Raptor.rc.in
+            ${PROJECT_SOURCE_DIR}/Src/Raptor.rc
+    )
 
-add_executable(
-        ${CMAKE_PROJECT_NAME}
-        ${PROJECT_SOURCES}
-        ${PROJECT_SOURCE_DIR}/Src/Raptor.rc
-)
+    add_executable(
+            ${CMAKE_PROJECT_NAME}
+            ${PROJECT_SOURCES}
+            ${PROJECT_SOURCE_DIR}/Src/Raptor.rc
+    )
+elseif (CMAKE_SYSTEM_NAME MATCHES "Linux")
+    add_executable(
+            ${CMAKE_PROJECT_NAME}
+            ${PROJECT_SOURCES}
+    )
+endif ()
 
 target_link_libraries(
         ${CMAKE_PROJECT_NAME}
@@ -123,15 +135,17 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
         )
     endif ()
 
-    set(Players "MPV" "VLC" "PotPlayer")
-    foreach (Player ${Players})
-        add_custom_command(
-                TARGET ${CMAKE_PROJECT_NAME}
-                POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_SOURCE_DIR}/Store/${Player}"
-                COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/Resource/Player/${Player}" "${PROJECT_SOURCE_DIR}/Target/${CMAKE_BUILD_TYPE}/Store/${Player}"
-        )
-    endforeach ()
+    if (CMAKE_SYSTEM_NAME MATCHES "Windows")
+        set(Players "MPV" "VLC" "PotPlayer")
+        foreach (Player ${Players})
+            add_custom_command(
+                    TARGET ${CMAKE_PROJECT_NAME}
+                    POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_SOURCE_DIR}/Store/${Player}"
+                    COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/Resource/Player/${Player}" "${PROJECT_SOURCE_DIR}/Target/${CMAKE_BUILD_TYPE}/Store/${Player}"
+            )
+        endforeach ()
+    endif ()
 elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
     add_custom_command(
             TARGET ${CMAKE_PROJECT_NAME}
