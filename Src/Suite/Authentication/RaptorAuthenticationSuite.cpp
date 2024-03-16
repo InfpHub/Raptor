@@ -262,7 +262,7 @@ QPair<QString, RaptorSession> RaptorAuthenticationSuite::invokeSessionInit(const
 
 QString RaptorAuthenticationSuite::invokeItemDetailFetch(RaptorAuthenticationItem &item, const QString &qUrl)
 {
-    if (!qUrl.isEmpty())
+    if (qUrl.isEmpty())
     {
         if (auto qFile = QFile(RaptorUtil::invokeIconMatch("aDrive", false, true));
             qFile.open(QIODevice::ReadOnly))
