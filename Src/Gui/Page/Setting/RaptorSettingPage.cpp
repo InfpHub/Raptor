@@ -137,7 +137,7 @@ void RaptorSettingPage::onItemCopyWriterHaveFound(const QVariant &qVariant) cons
     }
 
     const auto items = _Data.value<QVector<RaptorCopyWriter> >();
-    for (auto &[_Page, _Content]: items)
+    for (const auto &[_Page, _Content]: items)
     {
         if (_Page == metaObject()->className())
         {
@@ -152,6 +152,20 @@ void RaptorSettingPage::onTabPrevClicked() const
     auto qPushButtonList = _Ui->_TabPanel->findChildren<QPushButton *>();
     qPushButtonList.pop_front();
     qPushButtonList.pop_back();
+    for (auto i = 0; i < qPushButtonList.length(); ++i)
+    {
+        if (qPushButtonList[i]->objectName() == "_TabOffice")
+        {
+            qPushButtonList.removeAt(i);
+            break;
+        }
+    }
+
+    if (qPushButtonList.length() < 2)
+    {
+        return;
+    }
+
     for (auto i = 0; i < qPushButtonList.length(); ++i)
     {
         if (qPushButtonList[i]->isChecked())

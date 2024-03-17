@@ -201,7 +201,7 @@ void RaptorTrashPage::onItemCopyWriterHaveFound(const QVariant &qVariant) const
     }
 
     const auto items = _Data.value<QVector<RaptorCopyWriter> >();
-    for (auto &[_Page, _Content]: items)
+    for (const auto &[_Page, _Content]: items)
     {
         if (_Page == metaObject()->className())
         {
