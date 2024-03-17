@@ -357,12 +357,13 @@ QPair<QString, QVector<RaptorTransferItem> > RaptorDownloadingSuite::invokeItems
                 return qMakePair(qError, items);
             }
 
+#ifdef Q_OS_WIN
             if (input._Dir.length() == 3)
             {
                 // Windows 磁盘根目录特殊处理
                 input._Dir = input._Dir.left(2);
             }
-
+#endif
             const auto [qErros, iteos] = invokeItemsBuild(item._Id, QStringLiteral("%1/%2").arg(input._Dir, item._Name), itens);
             if (!qErros.isEmpty())
             {

@@ -636,13 +636,14 @@ QPair<quint16, QByteArray> RaptorUploadingWorker::invokeItemPartialUpload(const 
     auto qUrl = static_cast<char *>(Q_NULLPTR);
     curl_url_get(qCurlUrl, CURLUPART_URL, &qUrl, 0L);
     curl_easy_setopt(_Curl, CURLOPT_URL, qUrl);
-    curl_easy_setopt(_Curl, CURLOPT_PUT, 1L);
 
     auto qStream = static_cast<Stream *>(Q_NULLPTR);
     auto qContent = qHttpPayload._Content.toStdString();
     if (!qContent.empty())
     {
-        qStream = new Stream{qContent.data(), qContent.length()};
+        qStream = new Stream();
+        qStream->_Data = qContent.data();
+        qStream->_Length = qContent.length();
         curl_easy_setopt(_Curl, CURLOPT_UPLOAD, 1L);
         curl_easy_setopt(_Curl, CURLOPT_READDATA, qStream);
         curl_easy_setopt(_Curl, CURLOPT_READFUNCTION, invokeItemPartialUploadReadCallback);

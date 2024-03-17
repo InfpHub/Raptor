@@ -45,6 +45,8 @@ RaptorDownloadingWorker::~RaptorDownloadingWorker()
 void RaptorDownloadingWorker::run()
 {
     qInfo() << QStringLiteral("%1 开始下载。").arg(_Item._Name);
+
+#ifdef Q_OS_WIN
     if (_Item._Path.length() != 3)
     {
         // 非 Windows 磁盘根目录
@@ -65,6 +67,7 @@ void RaptorDownloadingWorker::run()
             }
         }
     }
+#endif
 
     if (_Item._Transferred == _Item._Byte)
     {
@@ -231,6 +234,7 @@ void RaptorDownloadingWorker::invokeItemDownload()
             curl_easy_setopt(qCurl, CURLOPT_MAX_RECV_SPEED_LARGE, _Item._Limit / _Item._Partials.length() / 1024);
         }
 
+        curl_easy_setopt(qCurl, CURLOPT_HTTPGET, 1L);
         curl_easy_setopt(qCurl, CURLOPT_RANGE, QStringLiteral("%1-%2").arg(qOffset).arg(item._End).toStdString().c_str());
         curl_easy_setopt(qCurl, CURLOPT_USERAGENT, RaptorHttpHeader::UserAgent);
         const auto qPayload = new Payload();
