@@ -101,19 +101,15 @@ std::tuple<QString, long, QByteArray> RaptorHttpSuite::invokeGet(const RaptorHtt
         curl_url_set(qCurlUrl, CURLUPART_QUERY, query.data(), CURLU_APPENDQUERY);
     }
 
-    auto qBegin = static_cast<curl_httppost *>(Q_NULLPTR);
-    auto qEnd = static_cast<curl_httppost *>(Q_NULLPTR);
+    const auto qMime = curl_mime_init(qCurl);
     for (auto qIterator = qHttpPayload._Form.begin(); qIterator != qHttpPayload._Form.end(); ++qIterator)
     {
-        curl_formadd(&qBegin,
-                     &qEnd,
-                     CURLFORM_COPYNAME,
-                     qIterator.key().toStdString().c_str(),
-                     CURLFORM_COPYCONTENTS,
-                     qIterator.value().toString().toStdString().c_str());
+        const auto qPart = curl_mime_addpart(qMime);
+        curl_mime_name(qPart, qIterator.key().toStdString().c_str());
+        curl_mime_data(qPart, qIterator.value().toString().toStdString().c_str(), CURL_ZERO_TERMINATED);
     }
 
-    curl_easy_setopt(qCurl, CURLOPT_HTTPGET, qBegin);
+    curl_easy_setopt(qCurl, CURLOPT_HTTPGET, 1L);
     auto qUrl = static_cast<char *>(Q_NULLPTR);
     curl_url_get(qCurlUrl, CURLUPART_URL, &qUrl, 0L);
     curl_easy_setopt(qCurl, CURLOPT_URL, qUrl);
@@ -121,8 +117,7 @@ std::tuple<QString, long, QByteArray> RaptorHttpSuite::invokeGet(const RaptorHtt
     auto qHeader = static_cast<curl_slist *>(Q_NULLPTR);
     for (auto qIterator = qHttpPayload._Header.begin(); qIterator != qHttpPayload._Header.end(); ++qIterator)
     {
-        qHeader = curl_slist_append(
-            qHeader, (qIterator.key().toStdString() + ": " + qIterator.value().toString().toStdString()).c_str());
+        qHeader = curl_slist_append(qHeader, (qIterator.key().toStdString() + ": " + qIterator.value().toString().toStdString()).c_str());
     }
 
     curl_easy_setopt(qCurl, CURLOPT_HTTPHEADER, qHeader);
@@ -133,6 +128,10 @@ std::tuple<QString, long, QByteArray> RaptorHttpSuite::invokeGet(const RaptorHtt
     if (const auto qCode = curl_easy_perform(qCurl);
         qCode != CURLE_OK)
     {
+        curl_mime_free(qMime);
+        curl_slist_free_all(qHeader);
+        curl_url_cleanup(qCurlUrl);
+        curl_easy_cleanup(qCurl);
         return std::make_tuple(QString::fromStdString(curl_easy_strerror(qCode)), qStatus, qBody);
     }
 
@@ -143,6 +142,9 @@ std::tuple<QString, long, QByteArray> RaptorHttpSuite::invokeGet(const RaptorHtt
     qInfo() << qStatus << " -> " << qHttpPayload._Url;
     if (qStatus == RaptorHttpStatus::TooManyRequests)
     {
+        curl_slist_free_all(qHeader);
+        curl_url_cleanup(qCurlUrl);
+        curl_easy_cleanup(qCurl);
         return invokeGet(qHttpPayload);
     }
 
@@ -220,19 +222,15 @@ std::tuple<QString, long, QByteArray> RaptorHttpSuite::invokePost(const RaptorHt
         curl_url_set(qCurlUrl, CURLUPART_QUERY, qQuery.data(), CURLU_APPENDQUERY);
     }
 
-    auto qBegin = static_cast<curl_httppost *>(Q_NULLPTR);
-    auto qEnd = static_cast<curl_httppost *>(Q_NULLPTR);
+    const auto qMime = curl_mime_init(qCurl);
     for (auto qIterator = qHttpPayload._Form.begin(); qIterator != qHttpPayload._Form.end(); ++qIterator)
     {
-        curl_formadd(&qBegin,
-                     &qEnd,
-                     CURLFORM_COPYNAME,
-                     qIterator.key().toStdString().c_str(),
-                     CURLFORM_COPYCONTENTS,
-                     qIterator.value().toString().toStdString().c_str());
+        const auto qPart = curl_mime_addpart(qMime);
+        curl_mime_name(qPart, qIterator.key().toStdString().c_str());
+        curl_mime_data(qPart, qIterator.value().toString().toStdString().c_str(), CURL_ZERO_TERMINATED);
     }
 
-    curl_easy_setopt(qCurl, CURLOPT_HTTPPOST, qBegin);
+    curl_easy_setopt(qCurl, CURLOPT_MIMEPOST, qMime);
     const auto qRow = qHttpPayload._Body.toJson().toStdString();
     curl_easy_setopt(qCurl, CURLOPT_POSTFIELDS, qRow.c_str());
     auto qUrl = static_cast<char *>(Q_NULLPTR);
@@ -254,16 +252,24 @@ std::tuple<QString, long, QByteArray> RaptorHttpSuite::invokePost(const RaptorHt
     if (const auto qCode = curl_easy_perform(qCurl);
         qCode != CURLE_OK)
     {
+        curl_mime_free(qMime);
+        curl_slist_free_all(qHeader);
+        curl_url_cleanup(qCurlUrl);
+        curl_easy_cleanup(qCurl);
         return std::make_tuple(QString::fromStdString(curl_easy_strerror(qCode)), qStatus, qBody);
     }
 
     curl_easy_getinfo(qCurl, CURLINFO_RESPONSE_CODE, &qStatus);
+    curl_mime_free(qMime);
     curl_slist_free_all(qHeader);
     curl_url_cleanup(qCurlUrl);
     curl_easy_cleanup(qCurl);
     qInfo() << qStatus << " -> " << qHttpPayload._Url;
     if (qStatus == RaptorHttpStatus::TooManyRequests)
     {
+        curl_slist_free_all(qHeader);
+        curl_url_cleanup(qCurlUrl);
+        curl_easy_cleanup(qCurl);
         return invokePost(qHttpPayload);
     }
 
@@ -329,6 +335,7 @@ std::pair<QString, long> RaptorHttpSuite::invokeItemProxyConnectTest(const QStri
     if (const auto qCode = curl_easy_perform(qCurl);
         qCode != CURLE_OK)
     {
+        curl_easy_cleanup(qCurl);
         return std::make_pair(QString::fromStdString(curl_easy_strerror(qCode)), qStatus);
     }
 
