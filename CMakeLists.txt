@@ -1,15 +1,18 @@
 ﻿cmake_minimum_required(VERSION 3.5)
 project(Raptor VERSION 2024.2.0 HOMEPAGE_URL "https://github.com/InfpHub/Raptor" LANGUAGES CXX)
 
-if (CMAKE_SYSTEM_NAME MATCHES "Windows")
+if (CMAKE_HOST_WIN32)
     set(CMAKE_PREFIX_PATH "C:/Qt/6.8.0/mingw_64" CACHE PATH "Qt Installation Path")
-elseif (CMAKE_SYSTEM_NAME MATCHES "Linux")
+elseif (CMAKE_HOST_UNIX)
     set(CMAKE_PREFIX_PATH "/opt/Qt/6.8.0/gcc_64" CACHE PATH "Qt Installation Path")
 endif ()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
+
+if (NOT CMAKE_HOST_APPLE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
+endif ()
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets Sql SvgWidgets Network)
 qt_standard_project_setup()
@@ -56,7 +59,7 @@ link_directories(
         ${PROJECT_SOURCE_DIR}/3rd-Party/${CMAKE_SYSTEM_NAME}/ZInt/lib
 )
 
-if (CMAKE_SYSTEM_NAME MATCHES "Windows")
+if (CMAKE_HOST_WIN32)
     configure_file(
             ${PROJECT_SOURCE_DIR}/Src/Raptor.rc.in
             ${PROJECT_SOURCE_DIR}/Src/Raptor.rc
@@ -67,9 +70,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Windows")
             ${PROJECT_SOURCES}
             ${PROJECT_SOURCE_DIR}/Src/Raptor.rc
     )
-elseif (CMAKE_SYSTEM_NAME MATCHES "Linux")
-    set(CMAKE_BUILD_RPATH ".")
-    set(CMAKE_INSTALL_RPATH ".")
+elseif (CMAKE_HOST_UNIX)
     add_executable(
             ${CMAKE_PROJECT_NAME}
             ${PROJECT_SOURCES}
@@ -137,7 +138,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
         )
     endif ()
 
-    if (CMAKE_SYSTEM_NAME MATCHES "Windows")
+    if (CMAKE_HOST_WIN32)
         set(Players "MPV" "VLC" "PotPlayer")
         foreach (Player ${Players})
             add_custom_command(
