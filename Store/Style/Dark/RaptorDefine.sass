@@ -120,6 +120,20 @@ $Raptor-Eject-Line-Color: rgba(255, 255, 255, 0.09)
     color: $Raptor-Font-Color
     background-color: transparent
 
+  QHeaderView::up-arrow
+    padding-top: 4px
+    padding-right: 10px
+    image: url(./Store/Icon/Ui/Raptor[UP].svg)
+    width: 12px
+    height: 12px
+
+  QHeaderView::down-arrow
+    padding-top: 4px
+    padding-right: 10px
+    image: url(./Store/Icon/Ui/Raptor[DOWN].svg)
+    width: 12px
+    height: 12px
+
 @mixin Raptor-Item-Area
   background-color: rgba(255, 255, 255, 0.09)
   border: none
@@ -212,10 +226,10 @@ $Raptor-Eject-Line-Color: rgba(255, 255, 255, 0.09)
   font-size: $Raptor-Font-Size
 
   &::indicator:checked
-    border-image: url(./Store/icon/Ui/Raptor[CHECKED].png)
+    border-image: url(./Store/Icon/Ui/Raptor[CHECKED].png)
 
   &::indicator:unchecked
-    border-image: url(./Store/icon/Ui/Raptor[UNCHECK].png)
+    border-image: url(./Store/Icon/Ui/Raptor[UNCHECK].png)
 
 @mixin Raptor-Default-Button
   color: $Raptor-Font-Color

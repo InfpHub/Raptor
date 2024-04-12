@@ -1,0 +1,76 @@
+/**
+ *
+ * Copyright (C) 2024 凉州刺史. All rights reserved.
+ *
+ * This file is part of Raptor.
+ *
+ * $RAPTOR_BEGIN_LICENSE$
+ *
+ * GNU General Public License Usage
+ * Alternatively, this file may be used under the terms of the GNU
+ * General Public License version 3.0 as published by the Free Software
+ * Foundation and appearing in the file LICENSE.GPL included in the
+ * packaging of this file.  Please review the following information to
+ * ensure the GNU General Public License version 3.0 requirements will be
+ * met: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * $RAPTOR_END_LICENSE$
+ *
+ * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+ * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ */
+
+@import "../../RaptorDefine"
+
+#_Title
+  color: $Raptor-Font-Color
+  font-size: 20px
+  font-weight: bold
+
+#_Description,
+#_ItemNameTip,
+#_ItemTrashedTip,
+#_ItemTrashed,
+#_ItemSizeTip,
+#_ItemSize
+  color: $Raptor-Font-Color
+  font-size: $Raptor-Font-Size
+
+#_Restore
+  @include Raptor-Success-Button
+
+#_Delete,
+#_Clear
+  @include Raptor-Critical-Button
+
+#_TabPrev,
+#_TabNext
+  color: $Raptor-Font-Color
+  background-color: transparent
+  border: none
+  font-size: $Raptor-Font-Size
+
+#_TabAll
+  @include Raptor-Tab
+
+#_Refresh
+  @include Raptor-Default-Button()
+
+#_ItemView
+  @include Raptor-Table-View()
+
+#_Splitter::handle
+  background-color: $Raptor-Primary-Line-Color
+
+#_ItemName
+  @include Raptor-Item-Area
+
+#_ItemDelete
+  @include Raptor-Critical-Button
+
+#_ItemRestore
+  @include Raptor-Success-Button
+
+#RaptorMenu
+  @import "../../Component/Menu/RaptorMenu"

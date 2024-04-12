@@ -32,18 +32,27 @@
 #_Body
   background-color: transparent
 
-#_EngineTip,
+#_PrimaryEngineTip,
+#_AriaTip,
+#_AriaHostTip,
+#_AriaPortTip,
+#_AriaTokenTip,
+#_AriaRemotePathTip,
+#_ThirdPartyEngineTip,
 #_PathTip,
 #_ConcurrentTip,
 #_Concurrent
   color: $Raptor-Font-Color
   font-size: $Raptor-Font-Size
 
-#_EnginePanel
+#_AriaTest
+  @include Raptor-Success-Button
+
+#_ThirdPartyEnginePanel
   border: 1px solid $Raptor-Primary-Line-Color
   border-radius: 1px
 
-#_EngineView
+#_ThirdPartyEngineView
   @include Raptor-Table-View(transparent, rgba(46, 51, 56, 0.09), $Raptor-Font-Color, rgba(46, 51, 56, 0.09))
   border-radius: 2px
 
@@ -51,12 +60,19 @@
   color: rgba(184, 112, 232, 1)
   border: none
 
+#_Embed,
+#_Aria,
+#_AriaSSL,
 #_DefaultPath,
 #_FullPath,
 #_SkipViolation,
 #_AutoRename
   @include Raptor-Checkbox
 
+#_AriaHost,
+#_AriaPort,
+#_AriaToken,
+#_AriaRemotePath,
 #_Path
   @include Raptor-Item-Area
   padding-left: 2px
