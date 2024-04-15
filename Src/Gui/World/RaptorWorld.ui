@@ -1,1275 +1,1313 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-    <class>RaptorWorld</class>
-    <widget class="QWidget" name="RaptorWorld">
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>1180</width>
-                <height>752</height>
-            </rect>
+ <class>RaptorWorld</class>
+ <widget class="QWidget" name="RaptorWorld">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1180</width>
+    <height>752</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>0</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>16777215</width>
+    <height>16777215</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <layout class="QVBoxLayout" name="_WorldLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>12</number>
+   </property>
+   <property name="topMargin">
+    <number>12</number>
+   </property>
+   <property name="rightMargin">
+    <number>12</number>
+   </property>
+   <property name="bottomMargin">
+    <number>12</number>
+   </property>
+   <item>
+    <widget class="QWidget" name="_Stage" native="true">
+     <property name="minimumSize">
+      <size>
+       <width>1156</width>
+       <height>728</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <layout class="QVBoxLayout" name="_StageLayout">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>22</number>
+      </property>
+      <item>
+       <widget class="QWidget" name="_Header" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
         <property name="minimumSize">
-            <size>
-                <width>0</width>
-                <height>0</height>
-            </size>
+         <size>
+          <width>0</width>
+          <height>74</height>
+         </size>
         </property>
         <property name="maximumSize">
-            <size>
-                <width>16777215</width>
-                <height>16777215</height>
-            </size>
-        </property>
-        <property name="windowTitle">
-            <string>Form</string>
+         <size>
+          <width>16777215</width>
+          <height>74</height>
+         </size>
         </property>
         <property name="styleSheet">
-            <string notr="true"/>
+         <string notr="true"/>
         </property>
-        <layout class="QVBoxLayout" name="_WorldLayout">
+        <layout class="QHBoxLayout" name="_HeaderLayout" stretch="0,0,0,0,0,0">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>22</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QWidget" name="_ApplicationPanel" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>220</width>
+             <height>74</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>220</width>
+             <height>74</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <layout class="QHBoxLayout" name="_ApplicationPanelLayout" stretch="1,8,0">
             <property name="spacing">
-                <number>0</number>
+             <number>6</number>
             </property>
             <property name="leftMargin">
-                <number>12</number>
+             <number>22</number>
             </property>
             <property name="topMargin">
-                <number>12</number>
+             <number>0</number>
             </property>
             <property name="rightMargin">
-                <number>12</number>
+             <number>22</number>
             </property>
             <property name="bottomMargin">
-                <number>12</number>
+             <number>0</number>
             </property>
             <item>
-                <widget class="QWidget" name="_Stage" native="true">
+             <widget class="QPushButton" name="_Logo">
+              <property name="minimumSize">
+               <size>
+                <width>40</width>
+                <height>40</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>40</width>
+                <height>40</height>
+               </size>
+              </property>
+              <property name="styleSheet">
+               <string notr="true"/>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>40</width>
+                <height>40</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="_Name">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>26</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>26</height>
+               </size>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="_Adore">
+              <property name="minimumSize">
+               <size>
+                <width>22</width>
+                <height>22</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>22</width>
+                <height>22</height>
+               </size>
+              </property>
+              <property name="styleSheet">
+               <string notr="true"/>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <spacer name="_Headerr">
+           <property name="orientation">
+            <enum>Qt::Orientation::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QWidget" name="_AvatarPanel" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+           <layout class="QHBoxLayout" name="_AvatarPanelLayout">
+            <property name="spacing">
+             <number>10</number>
+            </property>
+            <property name="leftMargin">
+             <number>10</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>10</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QPushButton" name="_Avatar">
+              <property name="minimumSize">
+               <size>
+                <width>30</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>30</width>
+                <height>30</height>
+               </size>
+              </property>
+              <property name="styleSheet">
+               <string notr="true"/>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="_Minimize">
+           <property name="minimumSize">
+            <size>
+             <width>40</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>40</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="_Maximize">
+           <property name="minimumSize">
+            <size>
+             <width>40</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>40</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="_Close">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>40</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>40</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>16</width>
+             <height>16</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="_Body" native="true">
+        <layout class="QHBoxLayout" name="_BodyLayout">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QWidget" name="_Navigation" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>220</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>220</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <layout class="QVBoxLayout" name="_NavigationLayout">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>22</number>
+            </property>
+            <item>
+             <widget class="QWidget" name="_SpaceWrapper" native="true">
+              <property name="styleSheet">
+               <string notr="true"/>
+              </property>
+              <layout class="QHBoxLayout" name="_SpaceWrapperLayout">
+               <property name="spacing">
+                <number>0</number>
+               </property>
+               <property name="leftMargin">
+                <number>22</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>22</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QWidget" name="_SpacePanel" native="true">
+                 <property name="styleSheet">
+                  <string notr="true"/>
+                 </property>
+                 <layout class="QHBoxLayout" name="_TypePanelHLayout">
+                  <property name="spacing">
+                   <number>3</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>3</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>3</number>
+                  </property>
+                  <item>
+                   <widget class="QPushButton" name="_Private">
                     <property name="minimumSize">
-                        <size>
-                            <width>1156</width>
-                            <height>728</height>
-                        </size>
+                     <size>
+                      <width>0</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>26</height>
+                     </size>
                     </property>
                     <property name="styleSheet">
-                        <string notr="true"/>
+                     <string notr="true"/>
                     </property>
-                    <layout class="QVBoxLayout" name="_StageLayout">
-                        <property name="spacing">
-                            <number>0</number>
-                        </property>
-                        <property name="leftMargin">
-                            <number>0</number>
-                        </property>
-                        <property name="topMargin">
-                            <number>0</number>
-                        </property>
-                        <property name="rightMargin">
-                            <number>0</number>
-                        </property>
-                        <property name="bottomMargin">
-                            <number>22</number>
-                        </property>
-                        <item>
-                            <widget class="QWidget" name="_Header" native="true">
-                                <property name="sizePolicy">
-                                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                                        <horstretch>0</horstretch>
-                                        <verstretch>0</verstretch>
-                                    </sizepolicy>
-                                </property>
-                                <property name="minimumSize">
-                                    <size>
-                                        <width>0</width>
-                                        <height>74</height>
-                                    </size>
-                                </property>
-                                <property name="maximumSize">
-                                    <size>
-                                        <width>16777215</width>
-                                        <height>74</height>
-                                    </size>
-                                </property>
-                                <property name="styleSheet">
-                                    <string notr="true"/>
-                                </property>
-                                <layout class="QHBoxLayout" name="_HeaderLayout" stretch="0,0,0,0,0,0">
-                                    <property name="spacing">
-                                        <number>0</number>
-                                    </property>
-                                    <property name="leftMargin">
-                                        <number>0</number>
-                                    </property>
-                                    <property name="topMargin">
-                                        <number>0</number>
-                                    </property>
-                                    <property name="rightMargin">
-                                        <number>22</number>
-                                    </property>
-                                    <property name="bottomMargin">
-                                        <number>0</number>
-                                    </property>
-                                    <item>
-                                        <widget class="QWidget" name="_ApplicationPanel" native="true">
-                                            <property name="sizePolicy">
-                                                <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-                                                    <horstretch>0</horstretch>
-                                                    <verstretch>0</verstretch>
-                                                </sizepolicy>
-                                            </property>
-                                            <property name="minimumSize">
-                                                <size>
-                                                    <width>220</width>
-                                                    <height>74</height>
-                                                </size>
-                                            </property>
-                                            <property name="maximumSize">
-                                                <size>
-                                                    <width>220</width>
-                                                    <height>74</height>
-                                                </size>
-                                            </property>
-                                            <property name="styleSheet">
-                                                <string notr="true"/>
-                                            </property>
-                                            <layout class="QHBoxLayout" name="_ApplicationPanelLayout" stretch="1,8,0">
-                                                <property name="spacing">
-                                                    <number>6</number>
-                                                </property>
-                                                <property name="leftMargin">
-                                                    <number>22</number>
-                                                </property>
-                                                <property name="topMargin">
-                                                    <number>0</number>
-                                                </property>
-                                                <property name="rightMargin">
-                                                    <number>22</number>
-                                                </property>
-                                                <property name="bottomMargin">
-                                                    <number>0</number>
-                                                </property>
-                                                <item>
-                                                    <widget class="QPushButton" name="_Logo">
-                                                        <property name="minimumSize">
-                                                            <size>
-                                                                <width>40</width>
-                                                                <height>40</height>
-                                                            </size>
-                                                        </property>
-                                                        <property name="maximumSize">
-                                                            <size>
-                                                                <width>40</width>
-                                                                <height>40</height>
-                                                            </size>
-                                                        </property>
-                                                        <property name="styleSheet">
-                                                            <string notr="true"/>
-                                                        </property>
-                                                        <property name="text">
-                                                            <string/>
-                                                        </property>
-                                                        <property name="iconSize">
-                                                            <size>
-                                                                <width>40</width>
-                                                                <height>40</height>
-                                                            </size>
-                                                        </property>
-                                                    </widget>
-                                                </item>
-                                                <item>
-                                                    <widget class="QPushButton" name="_Name">
-                                                        <property name="minimumSize">
-                                                            <size>
-                                                                <width>0</width>
-                                                                <height>26</height>
-                                                            </size>
-                                                        </property>
-                                                        <property name="maximumSize">
-                                                            <size>
-                                                                <width>16777215</width>
-                                                                <height>26</height>
-                                                            </size>
-                                                        </property>
-                                                        <property name="text">
-                                                            <string/>
-                                                        </property>
-                                                    </widget>
-                                                </item>
-                                                <item>
-                                                    <widget class="QPushButton" name="_Adore">
-                                                        <property name="minimumSize">
-                                                            <size>
-                                                                <width>22</width>
-                                                                <height>22</height>
-                                                            </size>
-                                                        </property>
-                                                        <property name="maximumSize">
-                                                            <size>
-                                                                <width>22</width>
-                                                                <height>22</height>
-                                                            </size>
-                                                        </property>
-                                                        <property name="styleSheet">
-                                                            <string notr="true"/>
-                                                        </property>
-                                                        <property name="text">
-                                                            <string/>
-                                                        </property>
-                                                    </widget>
-                                                </item>
-                                            </layout>
-                                        </widget>
-                                    </item>
-                                    <item>
-                                        <spacer name="_Headerr">
-                                            <property name="orientation">
-                                                <enum>Qt::Horizontal</enum>
-                                            </property>
-                                            <property name="sizeHint" stdset="0">
-                                                <size>
-                                                    <width>40</width>
-                                                    <height>20</height>
-                                                </size>
-                                            </property>
-                                        </spacer>
-                                    </item>
-                                    <item>
-                                        <widget class="QWidget" name="_AvatarPanel" native="true">
-                                            <property name="minimumSize">
-                                                <size>
-                                                    <width>0</width>
-                                                    <height>0</height>
-                                                </size>
-                                            </property>
-                                            <layout class="QHBoxLayout" name="_AvatarPanelLayout">
-                                                <property name="spacing">
-                                                    <number>10</number>
-                                                </property>
-                                                <property name="leftMargin">
-                                                    <number>10</number>
-                                                </property>
-                                                <property name="topMargin">
-                                                    <number>0</number>
-                                                </property>
-                                                <property name="rightMargin">
-                                                    <number>10</number>
-                                                </property>
-                                                <property name="bottomMargin">
-                                                    <number>0</number>
-                                                </property>
-                                                <item>
-                                                    <widget class="QPushButton" name="_Avatar">
-                                                        <property name="minimumSize">
-                                                            <size>
-                                                                <width>30</width>
-                                                                <height>30</height>
-                                                            </size>
-                                                        </property>
-                                                        <property name="maximumSize">
-                                                            <size>
-                                                                <width>30</width>
-                                                                <height>30</height>
-                                                            </size>
-                                                        </property>
-                                                        <property name="styleSheet">
-                                                            <string notr="true"/>
-                                                        </property>
-                                                        <property name="text">
-                                                            <string/>
-                                                        </property>
-                                                    </widget>
-                                                </item>
-                                            </layout>
-                                        </widget>
-                                    </item>
-                                    <item>
-                                        <widget class="QPushButton" name="_Minimize">
-                                            <property name="minimumSize">
-                                                <size>
-                                                    <width>40</width>
-                                                    <height>30</height>
-                                                </size>
-                                            </property>
-                                            <property name="maximumSize">
-                                                <size>
-                                                    <width>40</width>
-                                                    <height>30</height>
-                                                </size>
-                                            </property>
-                                            <property name="styleSheet">
-                                                <string notr="true"/>
-                                            </property>
-                                            <property name="text">
-                                                <string/>
-                                            </property>
-                                        </widget>
-                                    </item>
-                                    <item>
-                                        <widget class="QPushButton" name="_Maximize">
-                                            <property name="minimumSize">
-                                                <size>
-                                                    <width>40</width>
-                                                    <height>30</height>
-                                                </size>
-                                            </property>
-                                            <property name="maximumSize">
-                                                <size>
-                                                    <width>40</width>
-                                                    <height>30</height>
-                                                </size>
-                                            </property>
-                                            <property name="styleSheet">
-                                                <string notr="true"/>
-                                            </property>
-                                            <property name="text">
-                                                <string/>
-                                            </property>
-                                        </widget>
-                                    </item>
-                                    <item>
-                                        <widget class="QPushButton" name="_Close">
-                                            <property name="enabled">
-                                                <bool>true</bool>
-                                            </property>
-                                            <property name="minimumSize">
-                                                <size>
-                                                    <width>40</width>
-                                                    <height>30</height>
-                                                </size>
-                                            </property>
-                                            <property name="maximumSize">
-                                                <size>
-                                                    <width>40</width>
-                                                    <height>30</height>
-                                                </size>
-                                            </property>
-                                            <property name="styleSheet">
-                                                <string notr="true"/>
-                                            </property>
-                                            <property name="text">
-                                                <string/>
-                                            </property>
-                                            <property name="iconSize">
-                                                <size>
-                                                    <width>16</width>
-                                                    <height>16</height>
-                                                </size>
-                                            </property>
-                                        </widget>
-                                    </item>
-                                </layout>
-                            </widget>
-                        </item>
-                        <item>
-                            <widget class="QWidget" name="_Body" native="true">
-                                <layout class="QHBoxLayout" name="_BodyLayout">
-                                    <property name="spacing">
-                                        <number>0</number>
-                                    </property>
-                                    <property name="leftMargin">
-                                        <number>0</number>
-                                    </property>
-                                    <property name="topMargin">
-                                        <number>0</number>
-                                    </property>
-                                    <property name="rightMargin">
-                                        <number>0</number>
-                                    </property>
-                                    <property name="bottomMargin">
-                                        <number>0</number>
-                                    </property>
-                                    <item>
-                                        <widget class="QWidget" name="_Navigation" native="true">
-                                            <property name="sizePolicy">
-                                                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                                                    <horstretch>0</horstretch>
-                                                    <verstretch>0</verstretch>
-                                                </sizepolicy>
-                                            </property>
-                                            <property name="minimumSize">
-                                                <size>
-                                                    <width>220</width>
-                                                    <height>0</height>
-                                                </size>
-                                            </property>
-                                            <property name="maximumSize">
-                                                <size>
-                                                    <width>220</width>
-                                                    <height>16777215</height>
-                                                </size>
-                                            </property>
-                                            <property name="styleSheet">
-                                                <string notr="true"/>
-                                            </property>
-                                            <layout class="QVBoxLayout" name="_NavigationLayout">
-                                                <property name="spacing">
-                                                    <number>0</number>
-                                                </property>
-                                                <property name="leftMargin">
-                                                    <number>0</number>
-                                                </property>
-                                                <property name="topMargin">
-                                                    <number>0</number>
-                                                </property>
-                                                <property name="rightMargin">
-                                                    <number>0</number>
-                                                </property>
-                                                <property name="bottomMargin">
-                                                    <number>22</number>
-                                                </property>
-                                                <item>
-                                                    <widget class="QWidget" name="_SpaceWrapper" native="true">
-                                                        <property name="styleSheet">
-                                                            <string notr="true"/>
-                                                        </property>
-                                                        <layout class="QHBoxLayout" name="_SpaceWrapperLayout">
-                                                            <property name="spacing">
-                                                                <number>0</number>
-                                                            </property>
-                                                            <property name="leftMargin">
-                                                                <number>22</number>
-                                                            </property>
-                                                            <property name="topMargin">
-                                                                <number>0</number>
-                                                            </property>
-                                                            <property name="rightMargin">
-                                                                <number>22</number>
-                                                            </property>
-                                                            <property name="bottomMargin">
-                                                                <number>0</number>
-                                                            </property>
-                                                            <item>
-                                                                <widget class="QWidget" name="_SpacePanel"
-                                                                        native="true">
-                                                                    <property name="styleSheet">
-                                                                        <string notr="true"/>
-                                                                    </property>
-                                                                    <layout class="QHBoxLayout"
-                                                                            name="_TypePanelHLayout">
-                                                                        <property name="spacing">
-                                                                            <number>3</number>
-                                                                        </property>
-                                                                        <property name="leftMargin">
-                                                                            <number>3</number>
-                                                                        </property>
-                                                                        <property name="topMargin">
-                                                                            <number>3</number>
-                                                                        </property>
-                                                                        <property name="rightMargin">
-                                                                            <number>3</number>
-                                                                        </property>
-                                                                        <property name="bottomMargin">
-                                                                            <number>3</number>
-                                                                        </property>
-                                                                        <item>
-                                                                            <widget class="QPushButton" name="_Private">
-                                                                                <property name="minimumSize">
-                                                                                    <size>
-                                                                                        <width>0</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="maximumSize">
-                                                                                    <size>
-                                                                                        <width>16777215</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="styleSheet">
-                                                                                    <string notr="true"/>
-                                                                                </property>
-                                                                                <property name="text">
-                                                                                    <string/>
-                                                                                </property>
-                                                                                <property name="checkable">
-                                                                                    <bool>true</bool>
-                                                                                </property>
-                                                                                <property name="checked">
-                                                                                    <bool>true</bool>
-                                                                                </property>
-                                                                            </widget>
-                                                                        </item>
-                                                                        <item>
-                                                                            <widget class="QPushButton" name="_Public">
-                                                                                <property name="minimumSize">
-                                                                                    <size>
-                                                                                        <width>0</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="maximumSize">
-                                                                                    <size>
-                                                                                        <width>16777215</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="styleSheet">
-                                                                                    <string notr="true"/>
-                                                                                </property>
-                                                                                <property name="text">
-                                                                                    <string/>
-                                                                                </property>
-                                                                                <property name="checkable">
-                                                                                    <bool>true</bool>
-                                                                                </property>
-                                                                            </widget>
-                                                                        </item>
-                                                                    </layout>
-                                                                </widget>
-                                                            </item>
-                                                        </layout>
-                                                    </widget>
-                                                </item>
-                                                <item>
-                                                    <spacer name="_NavigationSpacer">
-                                                        <property name="orientation">
-                                                            <enum>Qt::Vertical</enum>
-                                                        </property>
-                                                        <property name="sizeType">
-                                                            <enum>QSizePolicy::Fixed</enum>
-                                                        </property>
-                                                        <property name="sizeHint" stdset="0">
-                                                            <size>
-                                                                <width>20</width>
-                                                                <height>36</height>
-                                                            </size>
-                                                        </property>
-                                                    </spacer>
-                                                </item>
-                                                <item>
-                                                    <widget class="QWidget" name="_NavigationWrapper" native="true">
-                                                        <layout class="QVBoxLayout" name="_NavigationWrapperLayout">
-                                                            <property name="spacing">
-                                                                <number>0</number>
-                                                            </property>
-                                                            <property name="leftMargin">
-                                                                <number>0</number>
-                                                            </property>
-                                                            <property name="topMargin">
-                                                                <number>0</number>
-                                                            </property>
-                                                            <property name="rightMargin">
-                                                                <number>0</number>
-                                                            </property>
-                                                            <property name="bottomMargin">
-                                                                <number>0</number>
-                                                            </property>
-                                                            <item>
-                                                                <widget class="QWidget" name="_CorePanel" native="true">
-                                                                    <property name="styleSheet">
-                                                                        <string notr="true"/>
-                                                                    </property>
-                                                                    <layout class="QVBoxLayout" name="_CorePanelLayout">
-                                                                        <property name="spacing">
-                                                                            <number>6</number>
-                                                                        </property>
-                                                                        <property name="leftMargin">
-                                                                            <number>22</number>
-                                                                        </property>
-                                                                        <property name="topMargin">
-                                                                            <number>0</number>
-                                                                        </property>
-                                                                        <property name="rightMargin">
-                                                                            <number>22</number>
-                                                                        </property>
-                                                                        <property name="bottomMargin">
-                                                                            <number>10</number>
-                                                                        </property>
-                                                                        <item>
-                                                                            <widget class="QLabel" name="_CorePanelTip">
-                                                                                <property name="styleSheet">
-                                                                                    <string notr="true"/>
-                                                                                </property>
-                                                                                <property name="text">
-                                                                                    <string/>
-                                                                                </property>
-                                                                            </widget>
-                                                                        </item>
-                                                                        <item>
-                                                                            <widget class="RaptorIndicatorButton"
-                                                                                    name="_Space">
-                                                                                <property name="minimumSize">
-                                                                                    <size>
-                                                                                        <width>0</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="maximumSize">
-                                                                                    <size>
-                                                                                        <width>16777215</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="styleSheet">
-                                                                                    <string notr="true"/>
-                                                                                </property>
-                                                                                <property name="text">
-                                                                                    <string/>
-                                                                                </property>
-                                                                                <property name="iconSize">
-                                                                                    <size>
-                                                                                        <width>24</width>
-                                                                                        <height>24</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="checkable">
-                                                                                    <bool>true</bool>
-                                                                                </property>
-                                                                                <property name="checked">
-                                                                                    <bool>false</bool>
-                                                                                </property>
-                                                                            </widget>
-                                                                        </item>
-                                                                        <item>
-                                                                            <widget class="RaptorIndicatorButton"
-                                                                                    name="_Transfer">
-                                                                                <property name="minimumSize">
-                                                                                    <size>
-                                                                                        <width>0</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="maximumSize">
-                                                                                    <size>
-                                                                                        <width>16777215</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="styleSheet">
-                                                                                    <string notr="true"/>
-                                                                                </property>
-                                                                                <property name="text">
-                                                                                    <string/>
-                                                                                </property>
-                                                                                <property name="iconSize">
-                                                                                    <size>
-                                                                                        <width>24</width>
-                                                                                        <height>24</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="checkable">
-                                                                                    <bool>true</bool>
-                                                                                </property>
-                                                                                <property name="checked">
-                                                                                    <bool>false</bool>
-                                                                                </property>
-                                                                            </widget>
-                                                                        </item>
-                                                                        <item>
-                                                                            <widget class="RaptorIndicatorButton"
-                                                                                    name="_Share">
-                                                                                <property name="minimumSize">
-                                                                                    <size>
-                                                                                        <width>0</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="maximumSize">
-                                                                                    <size>
-                                                                                        <width>16777215</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="styleSheet">
-                                                                                    <string notr="true"/>
-                                                                                </property>
-                                                                                <property name="text">
-                                                                                    <string/>
-                                                                                </property>
-                                                                                <property name="iconSize">
-                                                                                    <size>
-                                                                                        <width>24</width>
-                                                                                        <height>24</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="checkable">
-                                                                                    <bool>true</bool>
-                                                                                </property>
-                                                                            </widget>
-                                                                        </item>
-                                                                        <item>
-                                                                            <widget class="RaptorIndicatorButton"
-                                                                                    name="_Star">
-                                                                                <property name="minimumSize">
-                                                                                    <size>
-                                                                                        <width>0</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="maximumSize">
-                                                                                    <size>
-                                                                                        <width>16777215</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="styleSheet">
-                                                                                    <string notr="true"/>
-                                                                                </property>
-                                                                                <property name="text">
-                                                                                    <string/>
-                                                                                </property>
-                                                                                <property name="checkable">
-                                                                                    <bool>true</bool>
-                                                                                </property>
-                                                                            </widget>
-                                                                        </item>
-                                                                        <item>
-                                                                            <widget class="RaptorIndicatorButton"
-                                                                                    name="_Trash">
-                                                                                <property name="minimumSize">
-                                                                                    <size>
-                                                                                        <width>0</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="maximumSize">
-                                                                                    <size>
-                                                                                        <width>16777215</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="styleSheet">
-                                                                                    <string notr="true"/>
-                                                                                </property>
-                                                                                <property name="text">
-                                                                                    <string/>
-                                                                                </property>
-                                                                                <property name="iconSize">
-                                                                                    <size>
-                                                                                        <width>24</width>
-                                                                                        <height>24</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="checkable">
-                                                                                    <bool>true</bool>
-                                                                                </property>
-                                                                                <property name="checked">
-                                                                                    <bool>false</bool>
-                                                                                </property>
-                                                                            </widget>
-                                                                        </item>
-                                                                        <item>
-                                                                            <widget class="Line" name="_CorePanelLine">
-                                                                                <property name="styleSheet">
-                                                                                    <string notr="true"/>
-                                                                                </property>
-                                                                                <property name="frameShadow">
-                                                                                    <enum>QFrame::Plain</enum>
-                                                                                </property>
-                                                                                <property name="orientation">
-                                                                                    <enum>Qt::Horizontal</enum>
-                                                                                </property>
-                                                                            </widget>
-                                                                        </item>
-                                                                    </layout>
-                                                                </widget>
-                                                            </item>
-                                                            <item>
-                                                                <widget class="QWidget" name="_ExtraPanel"
-                                                                        native="true">
-                                                                    <property name="styleSheet">
-                                                                        <string notr="true"/>
-                                                                    </property>
-                                                                    <layout class="QVBoxLayout"
-                                                                            name="_ExtraPanelLayout">
-                                                                        <property name="spacing">
-                                                                            <number>6</number>
-                                                                        </property>
-                                                                        <property name="leftMargin">
-                                                                            <number>22</number>
-                                                                        </property>
-                                                                        <property name="topMargin">
-                                                                            <number>0</number>
-                                                                        </property>
-                                                                        <property name="rightMargin">
-                                                                            <number>22</number>
-                                                                        </property>
-                                                                        <property name="bottomMargin">
-                                                                            <number>10</number>
-                                                                        </property>
-                                                                        <item>
-                                                                            <widget class="QLabel"
-                                                                                    name="_ExtraPanelTip">
-                                                                                <property name="styleSheet">
-                                                                                    <string notr="true"/>
-                                                                                </property>
-                                                                                <property name="text">
-                                                                                    <string/>
-                                                                                </property>
-                                                                            </widget>
-                                                                        </item>
-                                                                        <item>
-                                                                            <widget class="RaptorIndicatorButton"
-                                                                                    name="_Plus">
-                                                                                <property name="minimumSize">
-                                                                                    <size>
-                                                                                        <width>0</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="maximumSize">
-                                                                                    <size>
-                                                                                        <width>16777215</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="styleSheet">
-                                                                                    <string notr="true"/>
-                                                                                </property>
-                                                                                <property name="text">
-                                                                                    <string/>
-                                                                                </property>
-                                                                                <property name="iconSize">
-                                                                                    <size>
-                                                                                        <width>24</width>
-                                                                                        <height>24</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="checkable">
-                                                                                    <bool>true</bool>
-                                                                                </property>
-                                                                                <property name="checked">
-                                                                                    <bool>false</bool>
-                                                                                </property>
-                                                                            </widget>
-                                                                        </item>
-                                                                        <item>
-                                                                            <widget class="RaptorIndicatorButton"
-                                                                                    name="_Story">
-                                                                                <property name="minimumSize">
-                                                                                    <size>
-                                                                                        <width>0</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="maximumSize">
-                                                                                    <size>
-                                                                                        <width>16777215</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="styleSheet">
-                                                                                    <string notr="true"/>
-                                                                                </property>
-                                                                                <property name="text">
-                                                                                    <string/>
-                                                                                </property>
-                                                                                <property name="checkable">
-                                                                                    <bool>true</bool>
-                                                                                </property>
-                                                                            </widget>
-                                                                        </item>
-                                                                        <item>
-                                                                            <widget class="RaptorIndicatorButton"
-                                                                                    name="_Setting">
-                                                                                <property name="minimumSize">
-                                                                                    <size>
-                                                                                        <width>0</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="maximumSize">
-                                                                                    <size>
-                                                                                        <width>16777215</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="styleSheet">
-                                                                                    <string notr="true"/>
-                                                                                </property>
-                                                                                <property name="text">
-                                                                                    <string/>
-                                                                                </property>
-                                                                                <property name="iconSize">
-                                                                                    <size>
-                                                                                        <width>24</width>
-                                                                                        <height>24</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="checkable">
-                                                                                    <bool>true</bool>
-                                                                                </property>
-                                                                                <property name="checked">
-                                                                                    <bool>false</bool>
-                                                                                </property>
-                                                                            </widget>
-                                                                        </item>
-                                                                    </layout>
-                                                                </widget>
-                                                            </item>
-                                                        </layout>
-                                                    </widget>
-                                                </item>
-                                                <item>
-                                                    <spacer name="_NavigationSpaces">
-                                                        <property name="orientation">
-                                                            <enum>Qt::Vertical</enum>
-                                                        </property>
-                                                        <property name="sizeHint" stdset="0">
-                                                            <size>
-                                                                <width>20</width>
-                                                                <height>40</height>
-                                                            </size>
-                                                        </property>
-                                                    </spacer>
-                                                </item>
-                                                <item>
-                                                    <widget class="QWidget" name="_ProfileWrapper" native="true">
-                                                        <layout class="QVBoxLayout" name="_ProfileWrapperLayout">
-                                                            <property name="spacing">
-                                                                <number>6</number>
-                                                            </property>
-                                                            <property name="leftMargin">
-                                                                <number>22</number>
-                                                            </property>
-                                                            <property name="topMargin">
-                                                                <number>0</number>
-                                                            </property>
-                                                            <property name="rightMargin">
-                                                                <number>22</number>
-                                                            </property>
-                                                            <property name="bottomMargin">
-                                                                <number>0</number>
-                                                            </property>
-                                                            <item>
-                                                                <widget class="QWidget" name="_ProfilePanel"
-                                                                        native="true">
-                                                                    <property name="minimumSize">
-                                                                        <size>
-                                                                            <width>0</width>
-                                                                            <height>100</height>
-                                                                        </size>
-                                                                    </property>
-                                                                    <layout class="QVBoxLayout"
-                                                                            name="_ProfilePanelVLayout">
-                                                                        <property name="spacing">
-                                                                            <number>6</number>
-                                                                        </property>
-                                                                        <property name="leftMargin">
-                                                                            <number>0</number>
-                                                                        </property>
-                                                                        <property name="topMargin">
-                                                                            <number>6</number>
-                                                                        </property>
-                                                                        <property name="rightMargin">
-                                                                            <number>0</number>
-                                                                        </property>
-                                                                        <property name="bottomMargin">
-                                                                            <number>6</number>
-                                                                        </property>
-                                                                        <item>
-                                                                            <widget class="RaptorIndicatorButton"
-                                                                                    name="_Capacity">
-                                                                                <property name="minimumSize">
-                                                                                    <size>
-                                                                                        <width>0</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="maximumSize">
-                                                                                    <size>
-                                                                                        <width>16777215</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="text">
-                                                                                    <string/>
-                                                                                </property>
-                                                                            </widget>
-                                                                        </item>
-                                                                        <item>
-                                                                            <widget class="RaptorIndicatorButton"
-                                                                                    name="_AlbumCapacity">
-                                                                                <property name="minimumSize">
-                                                                                    <size>
-                                                                                        <width>0</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="maximumSize">
-                                                                                    <size>
-                                                                                        <width>16777215</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="text">
-                                                                                    <string/>
-                                                                                </property>
-                                                                            </widget>
-                                                                        </item>
-                                                                        <item>
-                                                                            <widget class="RaptorIndicatorButton"
-                                                                                    name="_NoteCapacity">
-                                                                                <property name="minimumSize">
-                                                                                    <size>
-                                                                                        <width>0</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="maximumSize">
-                                                                                    <size>
-                                                                                        <width>16777215</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="text">
-                                                                                    <string/>
-                                                                                </property>
-                                                                            </widget>
-                                                                        </item>
-                                                                        <item>
-                                                                            <widget class="RaptorIndicatorButton"
-                                                                                    name="_Meet">
-                                                                                <property name="minimumSize">
-                                                                                    <size>
-                                                                                        <width>0</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="maximumSize">
-                                                                                    <size>
-                                                                                        <width>16777215</width>
-                                                                                        <height>26</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="text">
-                                                                                    <string/>
-                                                                                </property>
-                                                                            </widget>
-                                                                        </item>
-                                                                    </layout>
-                                                                </widget>
-                                                            </item>
-                                                        </layout>
-                                                    </widget>
-                                                </item>
-                                            </layout>
-                                        </widget>
-                                    </item>
-                                    <item>
-                                        <widget class="QWidget" name="_Main" native="true">
-                                            <property name="styleSheet">
-                                                <string notr="true"/>
-                                            </property>
-                                            <layout class="QVBoxLayout" name="_MainLayout" stretch="0,0">
-                                                <property name="spacing">
-                                                    <number>0</number>
-                                                </property>
-                                                <property name="leftMargin">
-                                                    <number>0</number>
-                                                </property>
-                                                <property name="topMargin">
-                                                    <number>0</number>
-                                                </property>
-                                                <property name="rightMargin">
-                                                    <number>22</number>
-                                                </property>
-                                                <property name="bottomMargin">
-                                                    <number>0</number>
-                                                </property>
-                                                <item>
-                                                    <widget class="QStackedWidget" name="_Page">
-                                                        <property name="layoutDirection">
-                                                            <enum>Qt::LeftToRight</enum>
-                                                        </property>
-                                                        <property name="styleSheet">
-                                                            <string notr="true"/>
-                                                        </property>
-                                                        <widget class="RaptorSpacePage" name="_SpacePage"/>
-                                                        <widget class="RaptorTransferPage" name="_TransferPage"/>
-                                                        <widget class="RaptorSharePage" name="_SharePage"/>
-                                                        <widget class="RaptorStarPage" name="_StarPage"/>
-                                                        <widget class="RaptorTrashPage" name="_TrashPage"/>
-                                                        <widget class="RaptorPlusPage" name="_PlusPage"/>
-                                                        <widget class="RaptorStoryPage" name="_StoryPage"/>
-                                                        <widget class="RaptorSettingPage" name="_SettingPage"/>
-                                                    </widget>
-                                                </item>
-                                                <item>
-                                                    <widget class="QWidget" name="_Footer" native="true">
-                                                        <property name="minimumSize">
-                                                            <size>
-                                                                <width>0</width>
-                                                                <height>26</height>
-                                                            </size>
-                                                        </property>
-                                                        <property name="maximumSize">
-                                                            <size>
-                                                                <width>16777215</width>
-                                                                <height>26</height>
-                                                            </size>
-                                                        </property>
-                                                        <property name="styleSheet">
-                                                            <string notr="true"/>
-                                                        </property>
-                                                        <layout class="QHBoxLayout" name="_FooterLayout">
-                                                            <property name="spacing">
-                                                                <number>12</number>
-                                                            </property>
-                                                            <property name="leftMargin">
-                                                                <number>0</number>
-                                                            </property>
-                                                            <property name="topMargin">
-                                                                <number>0</number>
-                                                            </property>
-                                                            <property name="rightMargin">
-                                                                <number>0</number>
-                                                            </property>
-                                                            <property name="bottomMargin">
-                                                                <number>0</number>
-                                                            </property>
-                                                            <item>
-                                                                <spacer name="_FooterSpacer">
-                                                                    <property name="orientation">
-                                                                        <enum>Qt::Horizontal</enum>
-                                                                    </property>
-                                                                    <property name="sizeHint" stdset="0">
-                                                                        <size>
-                                                                            <width>421</width>
-                                                                            <height>20</height>
-                                                                        </size>
-                                                                    </property>
-                                                                </spacer>
-                                                            </item>
-                                                            <item>
-                                                                <widget class="QLabel" name="_Copyright">
-                                                                    <property name="text">
-                                                                        <string/>
-                                                                    </property>
-                                                                </widget>
-                                                            </item>
-                                                            <item>
-                                                                <widget class="QWidget" name="_PoweredPanel"
-                                                                        native="true">
-                                                                    <layout class="QHBoxLayout"
-                                                                            name="_PoweredPanelLayout">
-                                                                        <property name="spacing">
-                                                                            <number>0</number>
-                                                                        </property>
-                                                                        <property name="leftMargin">
-                                                                            <number>0</number>
-                                                                        </property>
-                                                                        <property name="topMargin">
-                                                                            <number>0</number>
-                                                                        </property>
-                                                                        <property name="rightMargin">
-                                                                            <number>0</number>
-                                                                        </property>
-                                                                        <property name="bottomMargin">
-                                                                            <number>0</number>
-                                                                        </property>
-                                                                        <item>
-                                                                            <widget class="QPushButton"
-                                                                                    name="_PoweredTip">
-                                                                                <property name="minimumSize">
-                                                                                    <size>
-                                                                                        <width>0</width>
-                                                                                        <height>22</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="maximumSize">
-                                                                                    <size>
-                                                                                        <width>16777215</width>
-                                                                                        <height>22</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="text">
-                                                                                    <string/>
-                                                                                </property>
-                                                                            </widget>
-                                                                        </item>
-                                                                        <item>
-                                                                            <widget class="QPushButton" name="_Powered">
-                                                                                <property name="minimumSize">
-                                                                                    <size>
-                                                                                        <width>0</width>
-                                                                                        <height>22</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="maximumSize">
-                                                                                    <size>
-                                                                                        <width>16777215</width>
-                                                                                        <height>22</height>
-                                                                                    </size>
-                                                                                </property>
-                                                                                <property name="text">
-                                                                                    <string/>
-                                                                                </property>
-                                                                            </widget>
-                                                                        </item>
-                                                                    </layout>
-                                                                </widget>
-                                                            </item>
-                                                        </layout>
-                                                    </widget>
-                                                </item>
-                                            </layout>
-                                        </widget>
-                                    </item>
-                                </layout>
-                            </widget>
-                        </item>
-                    </layout>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="checkable">
+                     <bool>true</bool>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="_Public">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true"/>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="checkable">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
                 </widget>
+               </item>
+              </layout>
+             </widget>
             </item>
+            <item>
+             <spacer name="_NavigationSpacer">
+              <property name="orientation">
+               <enum>Qt::Orientation::Vertical</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Policy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>36</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QWidget" name="_NavigationWrapper" native="true">
+              <layout class="QVBoxLayout" name="_NavigationWrapperLayout">
+               <property name="spacing">
+                <number>0</number>
+               </property>
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QWidget" name="_CorePanel" native="true">
+                 <property name="styleSheet">
+                  <string notr="true"/>
+                 </property>
+                 <layout class="QVBoxLayout" name="_CorePanelLayout">
+                  <property name="spacing">
+                   <number>6</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>22</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>22</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>10</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="_CorePanelTip">
+                    <property name="styleSheet">
+                     <string notr="true"/>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="RaptorIndicatorButton" name="_Space">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true"/>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="iconSize">
+                     <size>
+                      <width>24</width>
+                      <height>24</height>
+                     </size>
+                    </property>
+                    <property name="checkable">
+                     <bool>true</bool>
+                    </property>
+                    <property name="checked">
+                     <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="RaptorIndicatorButton" name="_Transfer">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true"/>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="iconSize">
+                     <size>
+                      <width>24</width>
+                      <height>24</height>
+                     </size>
+                    </property>
+                    <property name="checkable">
+                     <bool>true</bool>
+                    </property>
+                    <property name="checked">
+                     <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="RaptorIndicatorButton" name="_Share">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true"/>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="iconSize">
+                     <size>
+                      <width>24</width>
+                      <height>24</height>
+                     </size>
+                    </property>
+                    <property name="checkable">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="RaptorIndicatorButton" name="_Star">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true"/>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="checkable">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="RaptorIndicatorButton" name="_Trash">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true"/>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="iconSize">
+                     <size>
+                      <width>24</width>
+                      <height>24</height>
+                     </size>
+                    </property>
+                    <property name="checkable">
+                     <bool>true</bool>
+                    </property>
+                    <property name="checked">
+                     <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="RaptorIndicatorButton" name="_Media">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="checkable">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="Line" name="_CorePanelLine">
+                    <property name="styleSheet">
+                     <string notr="true"/>
+                    </property>
+                    <property name="frameShadow">
+                     <enum>QFrame::Shadow::Plain</enum>
+                    </property>
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QWidget" name="_ExtraPanel" native="true">
+                 <property name="styleSheet">
+                  <string notr="true"/>
+                 </property>
+                 <layout class="QVBoxLayout" name="_ExtraPanelLayout">
+                  <property name="spacing">
+                   <number>6</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>22</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>22</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>10</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="_ExtraPanelTip">
+                    <property name="styleSheet">
+                     <string notr="true"/>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="RaptorIndicatorButton" name="_Plus">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true"/>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="iconSize">
+                     <size>
+                      <width>24</width>
+                      <height>24</height>
+                     </size>
+                    </property>
+                    <property name="checkable">
+                     <bool>true</bool>
+                    </property>
+                    <property name="checked">
+                     <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="RaptorIndicatorButton" name="_Story">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true"/>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="checkable">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="RaptorIndicatorButton" name="_Setting">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true"/>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="iconSize">
+                     <size>
+                      <width>24</width>
+                      <height>24</height>
+                     </size>
+                    </property>
+                    <property name="checkable">
+                     <bool>true</bool>
+                    </property>
+                    <property name="checked">
+                     <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <spacer name="_NavigationSpaces">
+              <property name="orientation">
+               <enum>Qt::Orientation::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QWidget" name="_ProfileWrapper" native="true">
+              <layout class="QVBoxLayout" name="_ProfileWrapperLayout">
+               <property name="spacing">
+                <number>6</number>
+               </property>
+               <property name="leftMargin">
+                <number>22</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>22</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QWidget" name="_ProfilePanel" native="true">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>100</height>
+                  </size>
+                 </property>
+                 <layout class="QVBoxLayout" name="_ProfilePanelVLayout">
+                  <property name="spacing">
+                   <number>6</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>6</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>6</number>
+                  </property>
+                  <item>
+                   <widget class="RaptorIndicatorButton" name="_Capacity">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="RaptorIndicatorButton" name="_AlbumCapacity">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="RaptorIndicatorButton" name="_NoteCapacity">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="RaptorIndicatorButton" name="_Meet">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>26</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QWidget" name="_Main" native="true">
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <layout class="QVBoxLayout" name="_MainLayout" stretch="0,0">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>22</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QStackedWidget" name="_Page">
+              <property name="layoutDirection">
+               <enum>Qt::LayoutDirection::LeftToRight</enum>
+              </property>
+              <property name="styleSheet">
+               <string notr="true"/>
+              </property>
+              <widget class="RaptorSpacePage" name="_SpacePage"/>
+              <widget class="RaptorTransferPage" name="_TransferPage"/>
+              <widget class="RaptorSharePage" name="_SharePage"/>
+              <widget class="RaptorStarPage" name="_StarPage"/>
+              <widget class="RaptorTrashPage" name="_TrashPage"/>
+              <widget class="RaptorMediaPage" name="_MediaPage"/>
+              <widget class="RaptorPlusPage" name="_PlusPage"/>
+              <widget class="RaptorStoryPage" name="_StoryPage"/>
+              <widget class="RaptorSettingPage" name="_SettingPage"/>
+             </widget>
+            </item>
+            <item>
+             <widget class="QWidget" name="_Footer" native="true">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>26</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>26</height>
+               </size>
+              </property>
+              <property name="styleSheet">
+               <string notr="true"/>
+              </property>
+              <layout class="QHBoxLayout" name="_FooterLayout">
+               <property name="spacing">
+                <number>12</number>
+               </property>
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <spacer name="_FooterSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Orientation::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>421</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QLabel" name="_Copyright">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>22</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>22</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="_AriaStatus">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>22</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>22</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QWidget" name="_PoweredPanel" native="true">
+                 <layout class="QHBoxLayout" name="_PoweredPanelLayout">
+                  <property name="spacing">
+                   <number>0</number>
+                  </property>
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="QPushButton" name="_PoweredTip">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>22</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>22</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="_Powered">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>22</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>22</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
         </layout>
+       </widget>
+      </item>
+     </layout>
     </widget>
-    <customwidgets>
-        <customwidget>
-            <class>RaptorTransferPage</class>
-            <extends>QWidget</extends>
-            <header>../../../Src/Gui/Page/Transfer/RaptorTransferPage.h</header>
-            <container>1</container>
-        </customwidget>
-        <customwidget>
-            <class>RaptorTrashPage</class>
-            <extends>QWidget</extends>
-            <header>../../../Src/Gui/Page/Trash/RaptorTrashPage.h</header>
-            <container>1</container>
-        </customwidget>
-        <customwidget>
-            <class>RaptorStoryPage</class>
-            <extends>QWidget</extends>
-            <header>../../../Src/Gui/Page/Story/RaptorStoryPage.h</header>
-            <container>1</container>
-        </customwidget>
-        <customwidget>
-            <class>RaptorSettingPage</class>
-            <extends>QWidget</extends>
-            <header>../../../Src/Gui/Page/Setting/RaptorSettingPage.h</header>
-            <container>1</container>
-        </customwidget>
-        <customwidget>
-            <class>RaptorSharePage</class>
-            <extends>QWidget</extends>
-            <header>../../../Src/Gui/Page/Share/RaptorSharePage.h</header>
-            <container>1</container>
-        </customwidget>
-        <customwidget>
-            <class>RaptorStarPage</class>
-            <extends>QWidget</extends>
-            <header>../../../Src/Gui/Page/Star/RaptorStarPage.h</header>
-            <container>1</container>
-        </customwidget>
-        <customwidget>
-            <class>RaptorSpacePage</class>
-            <extends>QWidget</extends>
-            <header>../../../Src/Gui/Page/Space/RaptorSpacePage.h</header>
-            <container>1</container>
-        </customwidget>
-        <customwidget>
-            <class>RaptorPlusPage</class>
-            <extends>QWidget</extends>
-            <header>../../../Src/Gui/Page/Plus/RaptorPlusPage.h</header>
-            <container>1</container>
-        </customwidget>
-        <customwidget>
-            <class>RaptorIndicatorButton</class>
-            <extends>QPushButton</extends>
-            <header>../../../Src/Component/IndicatorButton/RaptorIndicatorButton.h</header>
-        </customwidget>
-    </customwidgets>
-    <resources/>
-    <connections/>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>RaptorTransferPage</class>
+   <extends>QWidget</extends>
+   <header>../../../Src/Gui/Page/Transfer/RaptorTransferPage.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RaptorTrashPage</class>
+   <extends>QWidget</extends>
+   <header>../../../Src/Gui/Page/Trash/RaptorTrashPage.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RaptorStoryPage</class>
+   <extends>QWidget</extends>
+   <header>../../../Src/Gui/Page/Story/RaptorStoryPage.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RaptorSettingPage</class>
+   <extends>QWidget</extends>
+   <header>../../../Src/Gui/Page/Setting/RaptorSettingPage.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RaptorSharePage</class>
+   <extends>QWidget</extends>
+   <header>../../../Src/Gui/Page/Share/RaptorSharePage.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RaptorStarPage</class>
+   <extends>QWidget</extends>
+   <header>../../../Src/Gui/Page/Star/RaptorStarPage.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RaptorSpacePage</class>
+   <extends>QWidget</extends>
+   <header>../../../Src/Gui/Page/Space/RaptorSpacePage.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RaptorPlusPage</class>
+   <extends>QWidget</extends>
+   <header>../../../Src/Gui/Page/Plus/RaptorPlusPage.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>RaptorIndicatorButton</class>
+   <extends>QPushButton</extends>
+   <header>../../../Src/Component/IndicatorButton/RaptorIndicatorButton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>RaptorMediaPage</class>
+   <extends>QWidget</extends>
+   <header>../../../Src/Gui/Page/Media/RaptorMediaPage.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
 </ui>

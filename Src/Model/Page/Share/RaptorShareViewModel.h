@@ -25,6 +25,7 @@
 #define RAPTORSHAREVIEWMODEL_H
 
 #include <QAbstractTableModel>
+#include <QCollator>
 
 #include "../../../Common/RaptorDeclare.h"
 
@@ -33,7 +34,7 @@ class RaptorShareViewModel Q_DECL_FINAL : public QAbstractTableModel
     Q_OBJECT
 
 public:
-    using QAbstractTableModel::QAbstractTableModel;
+    explicit RaptorShareViewModel(QObject *qParent = Q_NULLPTR);
 
     [[nodiscard]]
     QVariant headerData(int qSection,
@@ -41,34 +42,52 @@ public:
                         int qRole = Qt::DisplayRole) const Q_DECL_OVERRIDE;
 
     [[nodiscard]]
-    int rowCount(const QModelIndex& qIndex = QModelIndex()) const Q_DECL_OVERRIDE;
+    int rowCount(const QModelIndex &qIndex = QModelIndex()) const Q_DECL_OVERRIDE;
 
     [[nodiscard]]
-    int columnCount(const QModelIndex& qIndex = QModelIndex()) const Q_DECL_OVERRIDE;
+    int columnCount(const QModelIndex &qIndex = QModelIndex()) const Q_DECL_OVERRIDE;
 
     [[nodiscard]]
-    QVariant data(const QModelIndex& qIndex, int qRole = Qt::DisplayRole) const Q_DECL_OVERRIDE;
+    QVariant data(const QModelIndex &qIndex, int qRole = Qt::DisplayRole) const Q_DECL_OVERRIDE;
 
-    bool setData(const QModelIndex& qIndex,
-                 const QVariant& qVariant,
+    bool setData(const QModelIndex &qIndex,
+                 const QVariant &qVariant,
                  int qRole = Qt::EditRole) Q_DECL_OVERRIDE;
 
-    bool removeRow(int qRow, const QModelIndex& qIndex = QModelIndex());
+    bool removeRow(int qRow, const QModelIndex &qIndex = QModelIndex());
 
-    void invokeHeaderSet(const QVector<QString>& qHeader);
+    void sort(int qColumn, Qt::SortOrder qOrder) Q_DECL_OVERRIDE;
 
-    void invokeColumnCountSet(const quint16& qCount);
+    void invokeHeaderSet(const QVector<QString> &qHeader);
 
-    void invokeItemAppend(const RaptorShareItem& item);
+    void invokeColumnCountSet(const quint16 &qCount);
 
-    void invokeItemsAppend(const QVector<RaptorShareItem>& items);
+    void invokeItemAppend(const RaptorShareItem &item);
+
+    void invokeItemsAppend(const QVector<RaptorShareItem> &items);
 
     void invokeItemsClear();
+
+private:
+    void invokeInstanceInit();
+
+    [[nodiscard]]
+    bool invokeItemsByNameAscSort(const RaptorShareItem &item, const RaptorShareItem &iten) const;
+
+    [[nodiscard]]
+    bool invokeItemsByNameDescSort(const RaptorShareItem &item, const RaptorShareItem &iten) const;
+
+    [[nodiscard]]
+    bool invokeItemsByExpiredAscSort(const RaptorShareItem &item, const RaptorShareItem &iten) const;
+
+    [[nodiscard]]
+    bool invokeItemsByExpiredDescSort(const RaptorShareItem &item, const RaptorShareItem &iten) const;
 
 private:
     QVector<QString> _Headers;
     quint16 _ColumnCount;
     QVector<RaptorShareItem> _Items;
+    QCollator qCollator;
 };
 
 #endif // RAPTORSHAREVIEWMODEL_H

@@ -34,9 +34,9 @@ std::tuple<QString, RaptorInput, QVector<RaptorFileItem> > RaptorShareSuite::inv
 {
     auto inpus = input;
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/adrive/v2/file/list_by_share";
-    USE_HEADER_DEFAULT(qHttpPayload)
-    USE_HEADER_X_SHARE_TOKEN(qHttpPayload, input._Token)
+    qHttpPayload._Url = "https://api.alipan.com/adrive/v2/file/list_by_share";
+    qUseHeaderDefault(qHttpPayload)
+    qUseHeaderXShareToken(qHttpPayload, input._Token)
     auto qRow = QJsonObject();
     qRow["limit"] = 100;
     qRow["share_id"] = input._Id;
@@ -102,8 +102,8 @@ void RaptorShareSuite::onItemsFetching(const QVariant &qVariant) const
 {
     const auto input = qVariant.value<RaptorInput>();
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/v2/share_link/search";
-    USE_HEADER_DEFAULT(qHttpPayload)
+    qHttpPayload._Url = "https://api.alipan.com/v2/share_link/search";
+    qUseHeaderDefault(qHttpPayload)
     auto qCondition = QString();
     if (!input._Name.isEmpty())
     {
@@ -239,9 +239,9 @@ void RaptorShareSuite::onItemsCancelling(const QVariant &qVariant) const
     {
         const auto item = qIndex.data(Qt::UserRole).value<RaptorShareItem>();
         auto qHttpPayload = RaptorHttpPayload();
-        qHttpPayload._Url = "https://api.aliyundrive.com/adrive/v2/share_link/cancel";
-        USE_HEADER_DEFAULT(qHttpPayload)
-        USE_HEADER_APPLICATION_JSON(qHttpPayload)
+        qHttpPayload._Url = "https://api.alipan.com/adrive/v2/share_link/cancel";
+        qUseHeaderDefault(qHttpPayload)
+        qUseHeaderApplicationJson(qHttpPayload)
         auto qRow = QJsonObject();
         qRow["share_id"] = item._Id;
         qHttpPayload._Body = QJsonDocument(qRow);
@@ -282,8 +282,8 @@ void RaptorShareSuite::onItemCreating(const QVariant &qVariant) const
 {
     auto input = qVariant.value<RaptorInput>();
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/v2/share_link/create";
-    USE_HEADER_DEFAULT(qHttpPayload)
+    qHttpPayload._Url = "https://api.alipan.com/v2/share_link/create";
+    qUseHeaderDefault(qHttpPayload)
     auto qRow = QJsonObject();
     qRow["drive_id"] = RaptorStoreSuite::invokeUserGet()._Space;
     qRow["share_name"] = input._Name;
@@ -345,8 +345,8 @@ void RaptorShareSuite::onItemsRapidCreating(const QVariant &qVariant) const
     const auto input = qVariant.value<RaptorInput>();
     const auto qIndexList = input._Indexes;
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/adrive/v1/share/create";
-    USE_HEADER_DEFAULT(qHttpPayload)
+    qHttpPayload._Url = "https://api.alipan.com/adrive/v1/share/create";
+    qUseHeaderDefault(qHttpPayload)
     auto qRow = QJsonObject();
     auto qArray = QJsonArray();
     for (auto &qIndex: qIndexList)
@@ -389,8 +389,8 @@ void RaptorShareSuite::onItemsRapidCreating(const QVariant &qVariant) const
 void RaptorShareSuite::onItemsRapidFetching() const
 {
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/adrive/v1/share/list";
-    USE_HEADER_DEFAULT(qHttpPayload)
+    qHttpPayload._Url = "https://api.alipan.com/adrive/v1/share/list";
+    qUseHeaderDefault(qHttpPayload)
     auto qRow = QJsonObject();
     qRow["limit"] = 100;
     qRow["order_by"] = "browse_count";
@@ -449,8 +449,8 @@ void RaptorShareSuite::onItemRapidImporting(const QVariant &qVariant) const
     const auto input = qVariant.value<RaptorInput>();
     const auto qId = input._Link.right(20);
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/adrive/v1/share/getShareToken";
-    USE_HEADER_DEFAULT(qHttpPayload)
+    qHttpPayload._Url = "https://api.alipan.com/adrive/v1/share/getShareToken";
+    qUseHeaderDefault(qHttpPayload)
     auto qRow = QJsonObject();
     qRow["share_id"] = qId;
     qHttpPayload._Body = QJsonDocument(qRow);
@@ -476,9 +476,9 @@ void RaptorShareSuite::onItemRapidImporting(const QVariant &qVariant) const
     }
 
     auto qHttpPayloae = RaptorHttpPayload();
-    qHttpPayloae._Url = "https://api.aliyundrive.com/adrive/v1/share/saveFile";
-    USE_HEADER_DEFAULT(qHttpPayloae)
-    USE_HEADER_X_SHARE_TOKEN(qHttpPayloae, qDocument["share_token"].toString())
+    qHttpPayloae._Url = "https://api.alipan.com/adrive/v1/share/saveFile";
+    qUseHeaderDefault(qHttpPayloae)
+    qUseHeaderXShareToken(qHttpPayloae, qDocument["share_token"].toString())
     auto qJsoo = QJsonObject();
     qJsoo["share_id"] = qId;
     qJsoo["to_drive_id"] = RaptorStoreSuite::invokeUserGet()._Space;
@@ -513,8 +513,8 @@ void RaptorShareSuite::onItemParsing(const QVariant &qVariant) const
     const auto input = qVariant.value<RaptorInput>();
     const auto qId = input._Link.right(11);
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/adrive/v3/share_link/get_share_by_anonymous";
-    USE_HEADER_DEFAULT(qHttpPayload)
+    qHttpPayload._Url = "https://api.alipan.com/adrive/v3/share_link/get_share_by_anonymous";
+    qUseHeaderDefault(qHttpPayload)
     auto qRow = QJsonObject();
     qRow["share_id"] = qId;
     qHttpPayload._Body = QJsonDocument(qRow);
@@ -549,8 +549,8 @@ void RaptorShareSuite::onItemParsing(const QVariant &qVariant) const
     }
 
     auto qHttpPayloae = RaptorHttpPayload();
-    qHttpPayloae._Url = "https://api.aliyundrive.com/v2/share_link/get_share_token";
-    USE_HEADER_DEFAULT(qHttpPayloae)
+    qHttpPayloae._Url = "https://api.alipan.com/v2/share_link/get_share_token";
+    qUseHeaderDefault(qHttpPayloae)
     auto qJsoo = QJsonObject();
     qJsoo["share_id"] = qId;
     qJsoo["share_pwd"] = input._Password;
@@ -632,9 +632,9 @@ void RaptorShareSuite::onItemImporting(const QVariant &qVariant) const
     }
 
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/adrive/v4/batch";
-    USE_HEADER_DEFAULT(qHttpPayload)
-    USE_HEADER_X_SHARE_TOKEN(qHttpPayload, input._Token)
+    qHttpPayload._Url = "https://api.alipan.com/adrive/v4/batch";
+    qUseHeaderDefault(qHttpPayload)
+    qUseHeaderXShareToken(qHttpPayload, input._Token)
     auto qRow = QJsonObject();
     qRow["requests"] = qArray;
     qRow["resource"] = "file";

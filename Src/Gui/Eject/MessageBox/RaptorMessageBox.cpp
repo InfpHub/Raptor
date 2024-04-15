@@ -35,7 +35,7 @@ RaptorMessageBox::RaptorMessageBox(QWidget *qParent) : RaptorEject(qParent),
 
 RaptorMessageBox::~RaptorMessageBox()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 bool RaptorMessageBox::eventFilter(QObject *qObject, QEvent *qEvent)

@@ -30,17 +30,17 @@ QString RaptorUtil::invoke3rdPartyDownloaderEvoke(const QString &qUrl,
     auto qProgram = QString();
     auto qArgs = QStringList();
     const auto qEngines = RaptorSettingSuite::invokeItemFind(Setting::Section::Download,
-                                                             Setting::Video::Engine).value<QVector<
+                                                             Setting::Video::ThirdPartyEngine).value<QVector<
         RaptorSettingItem> >();
     const auto qEngine = RaptorSettingSuite::invokeItemFind(Setting::Section::Download,
-                                                            Setting::Video::ActiveEngine).toString();
+                                                            Setting::Video::ThirdPartyActiveEngine).toString();
     for (const auto &item: qEngines)
     {
         if (item._Name == qEngine)
         {
             if (!QFileInfo::exists(item._Path))
             {
-                return QStringLiteral("请先设置 %1 路径!").arg(QString(WARNING_TEMPLATE).arg(qEngine));
+                return QStringLiteral("请先设置 %1 路径!").arg(QString(qWarningTemplate).arg(qEngine));
             }
 
             qProgram = item._Path;
@@ -67,17 +67,17 @@ QString RaptorUtil::invoke3rdPartyPlayerEvoke(const QString &qUrl, const QString
 {
     auto qProgram = QString();
     const auto qEngines = RaptorSettingSuite::invokeItemFind(Setting::Section::Video,
-                                                             Setting::Video::Engine).value<QVector<
+                                                             Setting::Video::ThirdPartyEngine).value<QVector<
         RaptorSettingItem> >();
     const auto qEngine = RaptorSettingSuite::invokeItemFind(Setting::Section::Video,
-                                                            Setting::Video::ActiveEngine).toString();
-    for (const auto& item: qEngines)
+                                                            Setting::Video::ThirdPartyActiveEngine).toString();
+    for (const auto &item: qEngines)
     {
         if (item._Name == qEngine)
         {
             if (!QFileInfo::exists(item._Path))
             {
-                return QStringLiteral("请先设置 %1 路径!").arg(QString(WARNING_TEMPLATE).arg(qEngine));
+                return QStringLiteral("请先设置 %1 路径!").arg(QString(qWarningTemplate).arg(qEngine));
             }
 
             qProgram = item._Path;
@@ -109,7 +109,7 @@ QString RaptorUtil::invoke3rdPartyExcelEvoke(const QString &qUrl)
 {
     auto qProgram = QString();
     const auto qEngines = RaptorSettingSuite::invokeItemFind(Setting::Section::Office,
-                                                             Setting::Office::Engine).value<QVector<
+                                                             Setting::Office::ThirdPartyEngine).value<QVector<
         RaptorSettingItem> >();
     for (const auto &item: qEngines)
     {
@@ -117,7 +117,7 @@ QString RaptorUtil::invoke3rdPartyExcelEvoke(const QString &qUrl)
         {
             if (!QFileInfo::exists(item._Path))
             {
-                return QStringLiteral("请先设置 %1 路径!").arg(QString(WARNING_TEMPLATE).arg(item._Name));
+                return QStringLiteral("请先设置 %1 路径!").arg(QString(qWarningTemplate).arg(item._Name));
             }
 
             qProgram = item._Path;
@@ -134,7 +134,7 @@ QString RaptorUtil::invoke3rdPartyPowerPointEvoke(const QString &qUrl)
 {
     auto qProgram = QString();
     const auto qEngines = RaptorSettingSuite::invokeItemFind(Setting::Section::Office,
-                                                             Setting::Office::Engine).value<QVector<
+                                                             Setting::Office::ThirdPartyEngine).value<QVector<
         RaptorSettingItem> >();
     for (const auto &item: qEngines)
     {
@@ -142,7 +142,7 @@ QString RaptorUtil::invoke3rdPartyPowerPointEvoke(const QString &qUrl)
         {
             if (!QFileInfo::exists(item._Path))
             {
-                return QStringLiteral("请先设置 %1 路径!").arg(QString(WARNING_TEMPLATE).arg(item._Name));
+                return QStringLiteral("请先设置 %1 路径!").arg(QString(qWarningTemplate).arg(item._Name));
             }
 
             qProgram = item._Path;
@@ -159,7 +159,7 @@ QString RaptorUtil::invoke3rdPartyWordEvoke(const QString &qUrl)
 {
     auto qProgram = QString();
     const auto qEngines = RaptorSettingSuite::invokeItemFind(Setting::Section::Office,
-                                                             Setting::Office::Engine).value<QVector<
+                                                             Setting::Office::ThirdPartyEngine).value<QVector<
         RaptorSettingItem> >();
     for (const auto &item: qEngines)
     {
@@ -167,7 +167,7 @@ QString RaptorUtil::invoke3rdPartyWordEvoke(const QString &qUrl)
         {
             if (!QFileInfo::exists(item._Path))
             {
-                return QStringLiteral("请先设置 %1 路径!").arg(QString(WARNING_TEMPLATE).arg(item._Name));
+                return QStringLiteral("请先设置 %1 路径!").arg(QString(qWarningTemplate).arg(item._Name));
             }
 
             qProgram = item._Path;
@@ -184,7 +184,7 @@ QString RaptorUtil::invoke3rdPartyPDFEvoke(const QString &qUrl)
 {
     auto qProgram = QString();
     const auto qEngines = RaptorSettingSuite::invokeItemFind(Setting::Section::Office,
-                                                             Setting::Office::Engine).value<QVector<
+                                                             Setting::Office::ThirdPartyEngine).value<QVector<
         RaptorSettingItem> >();
     for (const auto &item: qEngines)
     {
@@ -192,7 +192,7 @@ QString RaptorUtil::invoke3rdPartyPDFEvoke(const QString &qUrl)
         {
             if (!QFileInfo::exists(item._Path))
             {
-                return QStringLiteral("请先设置 %1 路径!").arg(QString(WARNING_TEMPLATE).arg(item._Name));
+                return QStringLiteral("请先设置 %1 路径!").arg(QString(qWarningTemplate).arg(item._Name));
             }
 
             qProgram = item._Path;
@@ -253,7 +253,6 @@ QString RaptorUtil::invokeStyleSheetLoad(const QString &qValue)
     if (sass_context_get_error_status(qContext) != 0)
     {
         qFatal(sass_context_get_error_message(qContext));
-        return QString();
     }
 
     const auto qStyleSheet = QString::fromStdString(sass_context_get_output_string(qContext));
@@ -263,13 +262,12 @@ QString RaptorUtil::invokeStyleSheetLoad(const QString &qValue)
 
 QString RaptorUtil::invokeCompileTimestampCompute()
 {
-    return QLocale(QLocale::English).toDate(QString(__DATE__).simplified(), "MMM d yyyy").toString(Qt::ISODate) +
-           QStringLiteral(" ") + QStringLiteral(__TIME__);
+    return QLocale(QLocale::English).toDate(QString(__DATE__).simplified(), "MMM d yyyy").toString(Qt::ISODate) + QStringLiteral(" ") + QStringLiteral(__TIME__);
 }
 
-QSize RaptorUtil::invokePrimaryDesktopGeometryCompute()
+QSize RaptorUtil::invokePrimaryScreenSizeGet()
 {
-    return qApp->primaryScreen()->geometry().size();
+    return qApp->primaryScreen()->size();
 }
 
 void RaptorUtil::invokeItemLocate(const QString &qPath)
@@ -448,6 +446,19 @@ QQueue<QPair<qint64, qint64> > RaptorUtil::invokeItemRangeCompute(const qint64 &
 QString RaptorUtil::invokeUUIDGenerate()
 {
     return QUuid::createUuid().toString().remove(QRegularExpression("[{}-]"));
+}
+
+QString RaptorUtil::invokeLeafIdGenerate()
+{
+    auto qGID = QString();
+    const auto qCharacters = QString("0123456789abcdef");
+    qGID.append(qCharacters.at(QRandomGenerator::global()->bounded(16)));
+    for (auto i = 1; i < 16; ++i)
+    {
+        qGID.append(qCharacters.at(QRandomGenerator::global()->bounded(16)));
+    }
+
+    return qGID;
 }
 
 QString RaptorUtil::invokePasswordGenerate()

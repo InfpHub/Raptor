@@ -215,15 +215,15 @@ void RaptorDownloadingWorker::invokeItemDownload()
                                                                        Setting::Network::ProxyPort).toUInt();
             curl_easy_setopt(qCurl, CURLOPT_PROXY, qProxyHost.toStdString().c_str());
             curl_easy_setopt(qCurl, CURLOPT_PROXYPORT, qProxyPort);
-            if (const auto qProxyUserName = RaptorSettingSuite::invokeItemFind(Setting::Section::Network,
-                                                                               Setting::Network::ProxyUserName).toString();
-                !qProxyUserName.isNull())
+            if (const auto qProxyUsername = RaptorSettingSuite::invokeItemFind(Setting::Section::Network,
+                                                                               Setting::Network::ProxyUsername).toString();
+                !qProxyUsername.isEmpty())
             {
-                curl_easy_setopt(qCurl, CURLOPT_PROXYUSERNAME, qProxyUserName.toStdString().c_str());
+                curl_easy_setopt(qCurl, CURLOPT_PROXYUSERNAME, qProxyUsername.toStdString().c_str());
             }
             if (const auto qProxyPassword = RaptorSettingSuite::invokeItemFind(Setting::Section::Network,
                                                                                Setting::Network::ProxyPassword).toString();
-                !qProxyPassword.isNull())
+                !qProxyPassword.isEmpty())
             {
                 curl_easy_setopt(qCurl, CURLOPT_PROXYPASSWORD, qProxyPassword.toStdString().c_str());
             }
@@ -259,6 +259,29 @@ void RaptorDownloadingWorker::invokeItemDownload()
 
 void RaptorDownloadingWorker::invokeItemComplete()
 {
+    if (const auto qFileInfo = QFileInfo(QStringLiteral("%1/%2").arg(_Item._Path, _Item._Name));
+        qFileInfo.exists())
+    {
+        if (RaptorSettingSuite::invokeItemFind(Setting::Section::Download,
+                                               Setting::Download::AutoRename).toBool())
+        {
+            _Item._Name = QStringLiteral("%1-%2-%3").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd")).arg(QDateTime::currentDateTime().toMSecsSinceEpoch()).arg(_Item._Name);
+        } else
+        {
+            if (!QFile::remove(qFileInfo.absoluteFilePath()))
+            {
+                const auto qError = QStringLiteral("无法移除文件，跳过 %1 合并!").arg(_Item._Name);
+                qCritical() << qError;
+                auto output = RaptorOutput();
+                output._State = true;
+                output._Message = qError;
+                output._Data = QVariant::fromValue<RaptorTransferItem>(_Item);
+                Q_EMIT itemErrored(QVariant::fromValue<RaptorOutput>(output));
+                return;;
+            }
+        }
+    }
+
     auto qFile = QFile(QStringLiteral("%1/%2").arg(_Item._Path, _Item._Name));
     if (!qFile.open(QIODevice::ReadWrite))
     {
@@ -427,7 +450,9 @@ void RaptorDownloadingWorker::invokeItemCommonPerformCallback(uv_poll_t *qReq,
                 const auto qCurl = qMessage->easy_handle;
                 auto qPayload = static_cast<void *>(Q_NULLPTR);
                 curl_easy_getinfo(qCurl, CURLINFO_PRIVATE, &qPayload);
-                static_cast<Payload *>(qPayload)->_File.close();
+                auto qPayloae = static_cast<Payload *>(qPayload);
+                qPayloae->_File.close();
+                qContext->_Worker->_Payloads.removeOne(qPayloae);
                 curl_multi_remove_handle(qContext->_Worker->_Multi, qCurl);
                 curl_easy_cleanup(qCurl);
                 break;
@@ -441,7 +466,7 @@ void RaptorDownloadingWorker::invokeItemCommonPerformCallback(uv_poll_t *qReq,
 void RaptorDownloadingWorker::invokeItemCommonUVCloseCallback(uv_handle_t *qHandle)
 {
     auto qContext = static_cast<Context *>(qHandle->data);
-    FREE(qContext);
+    qFree(qContext);
 }
 
 int RaptorDownloadingWorker::invokeItemCommonSocketCallback(CURL *qCurl,
@@ -514,6 +539,11 @@ void RaptorDownloadingWorker::invokeItemCommonTimeoutCallback(uv_timer_t *qTimer
             case CURLMSG_DONE:
             {
                 const auto qCurl = qMessage->easy_handle;
+                auto qPayload = static_cast<void *>(Q_NULLPTR);
+                curl_easy_getinfo(qCurl, CURLINFO_PRIVATE, &qPayload);
+                auto qPayloae = static_cast<Payload *>(qPayload);
+                qPayloae->_File.close();
+                qInstance->_Payloads.removeOne(qPayloae);
                 curl_multi_remove_handle(qInstance->_Multi, qCurl);
                 curl_easy_cleanup(qCurl);
                 break;
@@ -550,10 +580,8 @@ size_t RaptorDownloadingWorker::invokeItemCommonWriteCallback(char *qTarget,
                                                               size_t qNMemb,
                                                               void *qData)
 {
-    _WriteMutex.lock();
     if (qTarget == Q_NULLPTR)
     {
-        _WriteMutex.unlock();
         return 0;
     }
 
@@ -562,6 +590,7 @@ size_t RaptorDownloadingWorker::invokeItemCommonWriteCallback(char *qTarget,
     {
         qPayload->_File.close();
         qPayload->_Worker->_Payloads.removeOne(qPayload);
+        qDebug() << qPayload->_Worker->_Payloads.length();
         if (qPayload->_Worker->_Payloads.length() == 1)
         {
             // 最后一个分片暂停
@@ -569,7 +598,6 @@ size_t RaptorDownloadingWorker::invokeItemCommonWriteCallback(char *qTarget,
             Q_EMIT qPayload->_Worker->itemPaused(QVariant::fromValue<RaptorTransferItem>(qPayload->_Worker->_Item));
         }
 
-        _WriteMutex.unlock();
         return CURLE_ABORTED_BY_CALLBACK;
     }
 
@@ -584,7 +612,6 @@ size_t RaptorDownloadingWorker::invokeItemCommonWriteCallback(char *qTarget,
             Q_EMIT qPayload->_Worker->itemCancelled(QVariant::fromValue<RaptorTransferItem>(qPayload->_Worker->_Item));
         }
 
-        _WriteMutex.unlock();
         return CURLE_ABORTED_BY_CALLBACK;
     }
 
@@ -601,14 +628,12 @@ size_t RaptorDownloadingWorker::invokeItemCommonWriteCallback(char *qTarget,
             output._Message = qError;
             output._Data = QVariant::fromValue<RaptorTransferItem>(qPayload->_Worker->_Item);
             Q_EMIT qPayload->_Worker->itemErrored(QVariant::fromValue<RaptorOutput>(output));
-            _WriteMutex.unlock();
             return CURLE_ABORTED_BY_CALLBACK;
         }
 
         qPayload->_File.flush();
     }
 
-    _WriteMutex.unlock();
     return qLength;
 }
 
@@ -622,7 +647,6 @@ int RaptorDownloadingWorker::invokeItemCommonProgressCallback(void *qData,
     Q_UNUSED(dltotal)
     Q_UNUSED(ulnow)
     Q_UNUSED(ultotal)
-    _ProgressMutex.lock();
     if (const auto qPayload = static_cast<Payload *>(qData);
         !qPayload->_Worker->_Paused && !qPayload->_Worker->_Cancel)
     {
@@ -674,7 +698,6 @@ int RaptorDownloadingWorker::invokeItemCommonProgressCallback(void *qData,
         qPayload->_LastTransferred = dlnow;
     }
 
-    _ProgressMutex.unlock();
     return CURLE_OK;
 }
 

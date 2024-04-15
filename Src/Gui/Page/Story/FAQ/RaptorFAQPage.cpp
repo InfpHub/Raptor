@@ -33,7 +33,7 @@ RaptorFAQPage::RaptorFAQPage(QWidget* qParent) : QWidget(qParent),
 
 RaptorFAQPage::~RaptorFAQPage()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 void RaptorFAQPage::invokeUiInit() const

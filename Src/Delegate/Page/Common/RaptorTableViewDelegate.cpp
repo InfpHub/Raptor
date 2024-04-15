@@ -60,6 +60,11 @@ void RaptorTableViewDelegate::paint(QPainter *qPainter,
             invokeIconPaint(qPainter,
                             qIndex.data(Qt::UserRole).value<RaptorTrashItem>()._Icon,
                             qStyleOption.rect);
+        } else if (qIndex.data(Qt::UserRole).canConvert<RaptorMediaItem>())
+        {
+            invokeIconPaint(qPainter,
+                            qIndex.data(Qt::UserRole).value<RaptorMediaItem>()._Icon,
+                            qStyleOption.rect);
         } else if (qIndex.data(Qt::UserRole).canConvert<RaptorSettingItem>())
         {
             invokeIconPaint(qPainter,

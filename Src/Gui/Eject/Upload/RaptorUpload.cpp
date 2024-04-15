@@ -35,7 +35,7 @@ RaptorUpload::RaptorUpload(QWidget *qParent) : RaptorEject(qParent),
 
 RaptorUpload::~RaptorUpload()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 bool RaptorUpload::eventFilter(QObject *qObject, QEvent *qEvent)
@@ -61,7 +61,7 @@ void RaptorUpload::invokeEject(const QVariant &qVariant)
     _Variant = qVariant;
     _Ui->_Title->setText(
         QStringLiteral("上传文件到 %1").arg(
-            QString(CREATIVE_TEMPLATE).arg(_Variant.value<QPair<QString, QString> >().second)));
+            QString(qCreativeTemplate).arg(_Variant.value<QPair<QString, QString> >().second)));
     RaptorEject::invokeEject();
 }
 
@@ -252,9 +252,14 @@ void RaptorUpload::onAddDirClicked()
                                                              QStandardPaths::DownloadLocation),
                                                          QFileDialog::Option::ShowDirsOnly |
                                                          QFileDialog::Option::DontResolveSymlinks);
+    if (qPath.isEmpty())
+    {
+        return;
+    }
+
     auto item = RaptorTransferItem();
     item._Type = "folder";
-    item._Name = QDir{qPath}.dirName();
+    item._Name = QDir(qPath).dirName();
     item._Icon = RaptorUtil::invokeIconMatch(QString{}, true);
     item._Path = qPath;
     _ItemViewModel->invokeItemAppend(item);

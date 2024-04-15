@@ -125,6 +125,8 @@ private:
 
     void invokeItemsRename() const;
 
+    void invokeItemsDelete() const;
+
     [[nodiscard]]
     QPair<QString, QString> invokeTypeWithCategoryFilter() const;
 
@@ -153,6 +155,8 @@ Q_SIGNALS:
     Q_SIGNAL void itemsMoving(const QVariant &qVariant) const;
 
     Q_SIGNAL void itemsTrashing(const QVariant &qVariant) const;
+
+    Q_SIGNAL void itemsDeleting(const QVariant &qVariant) const;
 
     Q_SIGNAL void itemVideoPreviewPlayInfoFetching(const QVariant &qVariant) const;
 
@@ -185,6 +189,8 @@ public Q_SLOTS:
 
     Q_SLOT void onItemsStarred(const QVariant &qVariant) const;
 
+    Q_SLOT void onItemsDeleted(const QVariant &qVariant) const;
+
     Q_SLOT void onItemsTrashed(const QVariant &qVariant) const;
 
     Q_SLOT void onItemsCopied(const QVariant &qVariant);
@@ -192,7 +198,7 @@ public Q_SLOTS:
     Q_SLOT void onItemsMoved(const QVariant &qVariant);
 
 private Q_SLOTS:
-    Q_SLOT void onLoadingStateChanged(const RaptorLoading::State &state) const;
+    Q_SLOT void onItemViewLoadingStateChanged(const RaptorLoading::State &state) const;
 
     Q_SLOT void onNewFolderClicked() const;
 
@@ -263,7 +269,7 @@ private:
     RaptorDownload *_Download = Q_NULLPTR;
     RaptorRename* _Rename = Q_NULLPTR;
     RaptorShare *_Share = Q_NULLPTR;
-    RaptorLoading *_Loading = Q_NULLPTR;
+    RaptorLoading *_ItemViewLoading = Q_NULLPTR;
     Payload _Payload;
 };
 

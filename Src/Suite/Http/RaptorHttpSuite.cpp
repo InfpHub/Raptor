@@ -81,15 +81,15 @@ std::tuple<QString, long, QByteArray> RaptorHttpSuite::invokeGet(const RaptorHtt
                                                                    Setting::Network::ProxyPort).toUInt();
         curl_easy_setopt(qCurl, CURLOPT_PROXY, qProxyHost.toStdString().c_str());
         curl_easy_setopt(qCurl, CURLOPT_PROXYPORT, qProxyPort);
-        if (const auto qProxyUserName = RaptorSettingSuite::invokeItemFind(Setting::Section::Network,
-                                                                           Setting::Network::ProxyUserName).toString();
-            !qProxyUserName.isNull())
+        if (const auto qProxyUsername = RaptorSettingSuite::invokeItemFind(Setting::Section::Network,
+                                                                           Setting::Network::ProxyUsername).toString();
+            !qProxyUsername.isEmpty())
         {
-            curl_easy_setopt(qCurl, CURLOPT_PROXYUSERNAME, qProxyUserName.toStdString().c_str());
+            curl_easy_setopt(qCurl, CURLOPT_PROXYUSERNAME, qProxyUsername.toStdString().c_str());
         }
         if (const auto qProxyPassword = RaptorSettingSuite::invokeItemFind(Setting::Section::Network,
                                                                            Setting::Network::ProxyPassword).toString();
-            !qProxyPassword.isNull())
+            !qProxyPassword.isEmpty())
         {
             curl_easy_setopt(qCurl, CURLOPT_PROXYPASSWORD, qProxyPassword.toStdString().c_str());
         }
@@ -202,15 +202,15 @@ std::tuple<QString, long, QByteArray> RaptorHttpSuite::invokePost(const RaptorHt
                                                                    Setting::Network::ProxyPort).toUInt();
         curl_easy_setopt(qCurl, CURLOPT_PROXY, qProxyHost.toStdString().c_str());
         curl_easy_setopt(qCurl, CURLOPT_PROXYPORT, qProxyPort);
-        if (const auto qProxyUserName = RaptorSettingSuite::invokeItemFind(Setting::Section::Network,
-                                                                           Setting::Network::ProxyUserName).toString();
-            !qProxyUserName.isNull())
+        if (const auto qProxyUsername = RaptorSettingSuite::invokeItemFind(Setting::Section::Network,
+                                                                           Setting::Network::ProxyUsername).toString();
+            !qProxyUsername.isEmpty())
         {
-            curl_easy_setopt(qCurl, CURLOPT_PROXYUSERNAME, qProxyUserName.toStdString().c_str());
+            curl_easy_setopt(qCurl, CURLOPT_PROXYUSERNAME, qProxyUsername.toStdString().c_str());
         }
         if (const auto qProxyPassword = RaptorSettingSuite::invokeItemFind(Setting::Section::Network,
                                                                            Setting::Network::ProxyPassword).toString();
-            !qProxyPassword.isNull())
+            !qProxyPassword.isEmpty())
         {
             curl_easy_setopt(qCurl, CURLOPT_PROXYPASSWORD, qProxyPassword.toStdString().c_str());
         }
@@ -322,11 +322,12 @@ std::pair<QString, long> RaptorHttpSuite::invokeItemProxyConnectTest(const QStri
 
     curl_easy_setopt(qCurl, CURLOPT_PROXY, qHost.toStdString().c_str());
     curl_easy_setopt(qCurl, CURLOPT_PROXYPORT, qPort);
-    if (!qUsername.isNull())
+    if (!qUsername.isEmpty())
     {
         curl_easy_setopt(qCurl, CURLOPT_PROXYUSERNAME, qUsername.toStdString().c_str());
     }
-    if (!qPassword.isNull())
+
+    if (!qPassword.isEmpty())
     {
         curl_easy_setopt(qCurl, CURLOPT_PROXYPASSWORD, qPassword.toStdString().c_str());
     }
@@ -342,6 +343,74 @@ std::pair<QString, long> RaptorHttpSuite::invokeItemProxyConnectTest(const QStri
     curl_easy_getinfo(qCurl, CURLINFO_RESPONSE_CODE, &qStatus);
     curl_easy_cleanup(qCurl);
     return std::make_pair(QString(), qStatus);
+}
+
+QString RaptorHttpSuite::invokeItemWebSocketConnectTest(const QString &qEndPoint)
+{
+    const auto qCurl = curl_easy_init();
+    curl_easy_setopt(qCurl, CURLOPT_SSL_VERIFYPEER, 0L);
+    curl_easy_setopt(qCurl, CURLOPT_SSL_VERIFYHOST, 0L);
+    curl_easy_setopt(qCurl, CURLOPT_URL, qEndPoint.toStdString().c_str());
+    curl_easy_setopt(qCurl, CURLOPT_CONNECT_ONLY, 2L);
+    curl_easy_setopt(qCurl, CURLOPT_CONNECTTIMEOUT_MS, 750);
+    if (const auto qIPResolve = RaptorSettingSuite::invokeItemFind(Setting::Section::Network,
+                                                                   Setting::Network::IPResolve).toString();
+        qIPResolve == Setting::Network::Auto)
+    {
+        curl_easy_setopt(qCurl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_WHATEVER);
+    } else if (qIPResolve == Setting::Network::IPV4)
+    {
+        curl_easy_setopt(qCurl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+    } else if (qIPResolve == Setting::Network::IPV6)
+    {
+        curl_easy_setopt(qCurl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V6);
+    }
+
+    if (RaptorSettingSuite::invokeItemFind(Setting::Section::Network,
+                                           Setting::Network::Proxy).toBool())
+    {
+        if (const auto qProxyEngine = RaptorSettingSuite::invokeItemFind(Setting::Section::Network,
+                                                                         Setting::Network::ProxyEngine).toString();
+            qProxyEngine == Setting::Network::HTTP)
+        {
+            curl_easy_setopt(qCurl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+        } else if (qProxyEngine == Setting::Network::HTTP1_0)
+        {
+            curl_easy_setopt(qCurl, CURLOPT_PROXYTYPE, CURLPROXY_HTTP_1_0);
+        } else if (qProxyEngine == Setting::Network::HTTPS)
+        {
+            curl_easy_setopt(qCurl, CURLOPT_PROXYTYPE, CURLPROXY_HTTPS);
+        } else if (qProxyEngine == Setting::Network::HTTPS2)
+        {
+            curl_easy_setopt(qCurl, CURLOPT_PROXYTYPE, CURLPROXY_HTTPS2);
+        } else if (qProxyEngine == Setting::Network::SOCKS4)
+        {
+            curl_easy_setopt(qCurl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4);
+        } else if (qProxyEngine == Setting::Network::SOCKS5)
+        {
+            curl_easy_setopt(qCurl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+        }
+
+        const auto qProxyHost = RaptorSettingSuite::invokeItemFind(Setting::Section::Network,
+                                                                   Setting::Network::ProxyHost).toString();
+        const auto qProxyPort = RaptorSettingSuite::invokeItemFind(Setting::Section::Network,
+                                                                   Setting::Network::ProxyPort).toUInt();
+        curl_easy_setopt(qCurl, CURLOPT_PROXY, qProxyHost.toStdString().c_str());
+        curl_easy_setopt(qCurl, CURLOPT_PROXYPORT, qProxyPort);
+    }
+
+    auto qSend = size_t();
+    if (const auto qCode = curl_easy_perform(qCurl);
+        qCode != CURLE_OK)
+    {
+        curl_ws_send(qCurl, Q_NULLPTR, 0, &qSend, 0, CURLWS_CLOSE);
+        curl_easy_cleanup(qCurl);
+        return QString::fromStdString(curl_easy_strerror(qCode));
+    }
+
+    curl_ws_send(qCurl, Q_NULLPTR, 0, &qSend, 0, CURLWS_CLOSE);
+    curl_easy_cleanup(qCurl);
+    return QString();
 }
 
 size_t RaptorHttpSuite::invokeCommonWriteCallback(char *qTarget, size_t qSize, size_t nmemb, void *qData)

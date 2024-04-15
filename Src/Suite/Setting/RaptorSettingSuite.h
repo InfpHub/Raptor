@@ -26,6 +26,7 @@
 
 #include <QApplication>
 #include <QDir>
+#include <QFontDatabase>
 #include <QObject>
 #include <QSettings>
 #include <QStandardPaths>
@@ -67,8 +68,16 @@ namespace Setting
 
     namespace Download
     {
-        Q_DECL_CONSTEXPR auto Engine = "Engine";
-        Q_DECL_CONSTEXPR auto ActiveEngine = "ActiveEngine";
+        Q_DECL_CONSTEXPR auto PrimaryEngine = "PrimaryEngine";
+        Q_DECL_CONSTEXPR auto Embed = "Embed";
+        Q_DECL_CONSTEXPR auto Aria = "Aria";
+        Q_DECL_CONSTEXPR auto AriaHost = "AriaHost";
+        Q_DECL_CONSTEXPR auto AriaPort = "AriaPort";
+        Q_DECL_CONSTEXPR auto AriaSSL = "AriaSSL";
+        Q_DECL_CONSTEXPR auto AriaToken = "AriaToken";
+        Q_DECL_CONSTEXPR auto AriaRemotePath = "AriaRemotePath";
+        Q_DECL_CONSTEXPR auto ThirdPartyEngine = "ThirdPartyEngine";
+        Q_DECL_CONSTEXPR auto ThirdPartyActiveEngine = "ThirdPartyActiveEngine";
         Q_DECL_CONSTEXPR auto IDM = "IDM";
         Q_DECL_CONSTEXPR auto FDM = "FDM";
         Q_DECL_CONSTEXPR auto Path = "Path";
@@ -90,8 +99,8 @@ namespace Setting
 
     namespace Video
     {
-        Q_DECL_CONSTEXPR auto Engine = "Engine";
-        Q_DECL_CONSTEXPR auto ActiveEngine = "ActiveEngine";
+        Q_DECL_CONSTEXPR auto ThirdPartyEngine = "ThirdPartyEngine";
+        Q_DECL_CONSTEXPR auto ThirdPartyActiveEngine = "ThirdPartyActiveEngine";
         Q_DECL_CONSTEXPR auto Quality = "Quality";
         Q_DECL_CONSTEXPR auto SD = "SD";
         Q_DECL_CONSTEXPR auto HD = "HD";
@@ -110,7 +119,7 @@ namespace Setting
 
     namespace Office
     {
-        Q_DECL_CONSTEXPR auto Engine = "Engine";
+        Q_DECL_CONSTEXPR auto ThirdPartyEngine = "ThirdPartyEngine";
         Q_DECL_CONSTEXPR auto Excel = "Excel";
         Q_DECL_CONSTEXPR auto PowerPoint = "PowerPoint";
         Q_DECL_CONSTEXPR auto Word = "Word";
@@ -130,7 +139,7 @@ namespace Setting
         Q_DECL_CONSTEXPR auto ProxyEngine = "ProxyEngine";
         Q_DECL_CONSTEXPR auto ProxyHost = "ProxyHost";
         Q_DECL_CONSTEXPR auto ProxyPort = "ProxyPort";
-        Q_DECL_CONSTEXPR auto ProxyUserName = "ProxyUserName";
+        Q_DECL_CONSTEXPR auto ProxyUsername = "ProxyUsername";
         Q_DECL_CONSTEXPR auto ProxyPassword = "ProxyPassword";
         Q_DECL_CONSTEXPR auto IPResolve = "IPResolve";
         Q_DECL_CONSTEXPR auto Auto = "Auto";
@@ -169,6 +178,9 @@ public:
     static QVariant invokeItemFind(const QString &qSection,
                                    const QString &qKey);
 
+    static QVariant invokeImmutableItemFind(const QString &qSection,
+                                            const QString &qKey);
+
     static void invokeItemSave(const QString &qSection,
                                const QString &qKey,
                                const QVariant &qVariant);
@@ -183,6 +195,7 @@ private:
 private:
     YAML::Node _Yaml;
     static inline QMap<QString, QVariantMap> _Config;
+    static inline QMap<QString, QVariantMap> _ImmutableConfig;
 };
 
 #endif // RAPTORSETTINGSUITE_H

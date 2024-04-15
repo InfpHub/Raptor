@@ -213,6 +213,14 @@ bool RaptorWorld::eventFilter(QObject *qObject, QEvent *qEvent)
         }
     }
 
+    if (qObject == _Ui->_Stage)
+    {
+        if (qEvent->type() == QEvent::Resize)
+        {
+            _Mask->resize(static_cast<QResizeEvent *>(qEvent)->size());
+        }
+    }
+
     if (qObject == _Ui->_Page)
     {
         if (qEvent->type() == QEvent::Paint)
@@ -246,10 +254,11 @@ void RaptorWorld::invokeRender()
     _StartAnimation->setEndValue(1);
     _StartAnimation->setDuration(750);
     _StartAnimation->setEasingCurve(QEasingCurve::InOutExpo);
-    const auto qSize = RaptorUtil::invokePrimaryDesktopGeometryCompute();
-    _StartAnimatioo->setStartValue(
-        QPoint(qSize.width() / 2 - width() / 2 - 220, qSize.height() / 2 - height() / 2));
-    _StartAnimatioo->setEndValue(QPoint(qSize.width() / 2 - width() / 2, qSize.height() / 2 - height() / 2));
+    const auto qSize = RaptorUtil::invokePrimaryScreenSizeGet();
+    _StartAnimatioo->setStartValue(QPoint(qSize.width() / 2 - width() / 2 - 220,
+                                          qSize.height() / 2 - height() / 2));
+    _StartAnimatioo->setEndValue(QPoint(qSize.width() / 2 - width() / 2,
+                                        qSize.height() / 2 - height() / 2));
     _StartAnimatioo->setDuration(750);
     _StartAnimatioo->setEasingCurve(QEasingCurve::InOutExpo);
     _StartAnimationGroup->start();
@@ -346,6 +355,11 @@ RaptorTrashPage *RaptorWorld::invokeTrashPageGet() const
     return _Ui->_TrashPage;
 }
 
+RaptorMediaPage *RaptorWorld::invokeMediaPageGet() const
+{
+    return _Ui->_MediaPage;
+}
+
 RaptorPlusPage *RaptorWorld::invokePlusPageGet() const
 {
     return _Ui->_PlusPage;
@@ -379,6 +393,11 @@ RaptorAboutPage *RaptorWorld::invokeAboutPageGet() const
 RaptorSettingPage *RaptorWorld::invokeSettingPageGet() const
 {
     return _Ui->_SettingPage;
+}
+
+RaptorDownloadPage *RaptorWorld::invokeDownloadPageGet() const
+{
+    return invokeSettingPageGet()->invokeDownloadPageGet();
 }
 
 RaptorNetworkPage *RaptorWorld::invokeNetworkPageGet() const
@@ -444,6 +463,16 @@ void RaptorWorld::invokeGoToSpacePage() const
     onSpaceClicked();
 }
 
+void RaptorWorld::invokeAriaStatusSet(const QString &qValue) const
+{
+    _Ui->_AriaStatus->setText(qValue);
+}
+
+void RaptorWorld::invokeMaskPaint(const bool &qValue) const
+{
+    qValue ? _Mask->invokeshow() : _Mask->invokeHide();
+}
+
 void RaptorWorld::invokeInstanceInit()
 {
     _NavigationGroup = new QButtonGroup(this);
@@ -453,6 +482,7 @@ void RaptorWorld::invokeInstanceInit()
     _NavigationGroup->addButton(_Ui->_Share);
     _NavigationGroup->addButton(_Ui->_Star);
     _NavigationGroup->addButton(_Ui->_Trash);
+    _NavigationGroup->addButton(_Ui->_Media);
     _NavigationGroup->addButton(_Ui->_Plus);
     _NavigationGroup->addButton(_Ui->_Story);
     _NavigationGroup->addButton(_Ui->_Setting);
@@ -466,6 +496,7 @@ void RaptorWorld::invokeInstanceInit()
     _DebounceTimer->setSingleShot(true);
     _DebounceTimer->setInterval(500);
 
+    _Mask = new RaptorMask(_Ui->_Stage);
     _Device = new RaptorDevice(this);
     _Login = new RaptorLogin(this);
     _Notice = new RaptorNotice(this);
@@ -501,8 +532,8 @@ void RaptorWorld::invokeUiInit()
         setStyleSheet(RaptorUtil::invokeStyleSheetLoad(qTheme));
     }
 
-    qApp->setFont(RaptorSettingSuite::invokeItemFind(Setting::Section::Ui,
-                                                     Setting::Ui::Font).toString());
+    qApp->setFont(RaptorSettingSuite::invokeImmutableItemFind(Setting::Section::Ui,
+                                                              Setting::Ui::Font).toString());
     setWindowFlags(Qt::FramelessWindowHint);
     setAttribute(Qt::WA_TranslucentBackground);
     setWindowTitle(QStringLiteral("%1 %2.%3.%4").arg(APPLICATION_NAME, QString::number(MAJOR_VERSION), QString::number(MINOR_VERSION), QString::number(PATCH_VERSION)));
@@ -545,6 +576,10 @@ void RaptorWorld::invokeUiInit()
     _Ui->_Trash->setContentsMargins(6, 0, 6, 0);
     _Ui->_Trash->setIconSize(QSize(22, 22));
     _Ui->_Trash->setText(QStringLiteral("回收站"));
+    _Ui->_Media->invokeIconSet(RaptorUtil::invokeIconMatch("Media", false, true));
+    _Ui->_Media->setContentsMargins(6, 0, 6, 0);
+    _Ui->_Media->setIconSize(QSize(22, 22));
+    _Ui->_Media->setText(QStringLiteral("放映室"));
     _Ui->_Plus->invokeIconSet(RaptorUtil::invokeIconMatch("Plus", false, true));
     _Ui->_Plus->setContentsMargins(6, 0, 6, 0);
     _Ui->_Plus->setIconSize(QSize(22, 22));
@@ -584,7 +619,11 @@ void RaptorWorld::invokeUiInit()
     _Ui->_Meet->setIconSize(QSize(22, 22));
     _Ui->_Meet->invokeIndicatorHeightSet(16);
     _Ui->_Meet->setText(QStringLiteral("一起走过"));
+    _Ui->_Stage->installEventFilter(this);
     _Ui->_Copyright->setText(QStringLiteral("2024 凉州刺史 - Built on %1").arg(RaptorUtil::invokeCompileTimestampCompute()));
+    _Ui->_AriaStatus->setVisible(RaptorSettingSuite::invokeImmutableItemFind(Setting::Section::Download,
+                                                                             Setting::Download::PrimaryEngine).toString() == Setting::Download::Aria);
+    _Ui->_AriaStatus->setText(QStringLiteral(qCreativeTemplate).arg("Aria ⚯ 正在连接节点"));
     _Ui->_PoweredTip->setText(QStringLiteral("Powered by"));
     _Ui->_Powered->setText(QStringLiteral("Qt"));
     _TrayIcon->setIcon(QIcon(RaptorUtil::invokeIconMatch("Free", false, true)));
@@ -637,10 +676,15 @@ void RaptorWorld::invokeSlotInit() const
             this,
             &RaptorWorld::onTrashClicked);
 
+    connect(_Ui->_Media,
+            &QPushButton::clicked,
+            this,
+            &RaptorWorld::onMediaClicked);
+
     connect(_Ui->_Plus,
             &QPushButton::clicked,
             this,
-            &RaptorWorld::onExtraClicked);
+            &RaptorWorld::onPlusClicked);
 
     connect(_Ui->_Story,
             &QPushButton::clicked,
@@ -723,19 +767,11 @@ void RaptorWorld::invokeLogoPaint() const
     }
 }
 
-void RaptorWorld::invokeBackgroundPaint()
+void RaptorWorld::invokeBackgroundPaint() const
 {
     auto qPainter = QPainter(_Ui->_Page);
-    auto qTheme = property(Setting::Ui::Theme).toString();
-    if (qTheme.isEmpty())
-    {
-        // 该属性为空则设置一次即可
-        // 避免在切换主题而程序没有重启的情况下基于最新的主题进行绘制
-        qTheme = RaptorSettingSuite::invokeItemFind(Setting::Section::Ui,
-                                                    Setting::Ui::Theme).toString();
-        setProperty(Setting::Ui::Theme, qTheme);
-    }
-
+    auto qTheme = RaptorSettingSuite::invokeImmutableItemFind(Setting::Section::Ui,
+                                                              Setting::Ui::Theme).toString();
     if (qTheme == Setting::Ui::Auto)
     {
         if (RaptorUtil::invokeSystemDarkThemeConfirm())
@@ -784,8 +820,8 @@ void RaptorWorld::onAvatarClicked() const
     {
         if (const auto qOperatf = RaptorMessageBox::invokeWarningEject(QStringLiteral("注销用户"),
                                                                        QStringLiteral("即将注销用户 %1,，是否继续?").arg(
-                                                                           QString(WARNING_TEMPLATE).arg(
-                                                                               item._Nickname)));
+                                                                           QString(qWarningTemplate).arg(
+                                                                               item._NickName)));
             qOperatf == RaptorMessageBox::No)
         {
             return;
@@ -798,8 +834,8 @@ void RaptorWorld::onAvatarClicked() const
     {
         if (const auto qOperatf = RaptorMessageBox::invokeWarningEject(QStringLiteral("切换用户"),
                                                                        QStringLiteral("即将切换到用户 %1，是否继续?").arg(
-                                                                           QString(WARNING_TEMPLATE).arg(
-                                                                               item._Nickname)));
+                                                                           QString(qWarningTemplate).arg(
+                                                                               item._NickName)));
             qOperatf == RaptorMessageBox::No)
         {
             return;
@@ -881,14 +917,14 @@ void RaptorWorld::onItemLogoutd(const QVariant &qVariant)
     if (RaptorStoreSuite::invokeUserIsValidConfirm())
     {
         RaptorToast::invokeSuccessEject(QStringLiteral("已切换到 %1 用户。").arg(
-            QString(INFORMATION_TEMPLATE).arg(RaptorStoreSuite::invokeUserGet()._Nickname)));
+            QString(qInformationTemplate).arg(RaptorStoreSuite::invokeUserGet()._NickName)));
         return;
     }
 
     _Avatar = QPixmap();
     _Ui->_Avatar->update();
     RaptorToast::invokeSuccessEject(
-        QStringLiteral("%1 已退出登录!").arg(QString(SUCCESS_TEMPLATE).arg(item._Nickname)));
+        QStringLiteral("%1 已退出登录!").arg(QString(qSuccessTemplate).arg(item._NickName)));
 }
 
 void RaptorWorld::onItemSwitched(const QVariant &qVariant) const
@@ -901,7 +937,7 @@ void RaptorWorld::onItemSwitched(const QVariant &qVariant) const
 
     const auto item = _Data.value<RaptorAuthenticationItem>();
     RaptorToast::invokeSuccessEject(
-        QStringLiteral("已切换到 %1 用户。").arg(QString(INFORMATION_TEMPLATE).arg(item._Nickname)));
+        QStringLiteral("已切换到 %1 用户。").arg(QString(qInformationTemplate).arg(item._NickName)));
     RaptorStoreSuite::invokeUserSwitchingSet(false);
     Q_EMIT itemAccessTokenRefreshing();
     Q_EMIT itemsLoading();
@@ -1025,7 +1061,18 @@ void RaptorWorld::onTrashClicked() const
     _Ui->_TrashPage->invokeNavigate();
 }
 
-void RaptorWorld::onExtraClicked() const
+void RaptorWorld::onMediaClicked() const
+{
+    if (_Ui->_Page->currentWidget() == _Ui->_MediaPage)
+    {
+        return;
+    }
+
+    _Ui->_Page->setCurrentWidget(_Ui->_MediaPage);
+    _Ui->_MediaPage->invokeNavigate();
+}
+
+void RaptorWorld::onPlusClicked() const
 {
     if (_Ui->_Page->currentWidget() == _Ui->_PlusPage)
     {
@@ -1066,11 +1113,12 @@ void RaptorWorld::onStartAnimationGroupFinished() const
         _TrayIcon->show();
     }
 
-    if (RaptorSettingSuite::invokeItemFind(Setting::Section::Ui,
-                                           Setting::Ui::Notice).toBool())
-    {
-        Q_EMIT itemNoticeFetching();
-    }
+    // TODO: 目前没有服务器，暂时禁用
+    // if (RaptorSettingSuite::invokeItemFind(Setting::Section::Ui,
+    //                                        Setting::Ui::Notice).toBool())
+    // {
+    //     Q_EMIT itemNoticeFetching();
+    // }
 }
 
 void RaptorWorld::onPoweredClicked() const

@@ -74,7 +74,7 @@ public Q_SLOTS:
 
     Q_SLOT void onItemQrCodeEncoded(const QVariant& qVariant) const;
 
-    Q_SLOT void onItemQrCodeStatusFetched(const QVariant& qVariant);
+    Q_SLOT void onItemQrCodeStatusFetched(const QVariant& qVariant) const;
 
     Q_SLOT void onItemAccessTokenRefreshed(const QVariant& qVariant);
 

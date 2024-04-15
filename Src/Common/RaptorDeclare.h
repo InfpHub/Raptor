@@ -121,7 +121,7 @@ struct RaptorAuthenticationItem
     QString _Private;
     QString _Public;
     QString _Description;
-    QString _Nickname;
+    QString _NickName;
     QByteArray _Avatar;
     QString _Meet;
     QString _AccessToken;
@@ -206,7 +206,6 @@ struct RaptorFileItem
     QString _Created;
     QString _Updated;
     QString _Url;
-    bool _Starred;
     QString _Mime;
 
     bool operator==(const RaptorFileItem &item) const
@@ -216,6 +215,17 @@ struct RaptorFileItem
 };
 
 Q_DECLARE_METATYPE(RaptorFileItem)
+
+struct RaptorMediaItem : RaptorFileItem
+{
+    QString _CompilationId;
+    QString _Thumbnail;
+    QString _Description;
+    quint16 _Number;
+    qreal _Duration;
+};
+
+Q_DECLARE_METATYPE(RaptorMediaItem)
 
 struct RaptorPartial
 {
@@ -310,6 +320,7 @@ struct RaptorStarItem
     QString _Size;
     QString _Created;
     QString _Updated;
+    quint64 _Byte = 0;
 };
 
 Q_DECLARE_METATYPE(RaptorStarItem)
@@ -329,6 +340,7 @@ struct RaptorTrashItem
     QString _Created;
     QString _Updated;
     QString _Trashed;
+    quint64 _Byte = 0;
     QString _Url;
 };
 

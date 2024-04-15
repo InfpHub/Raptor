@@ -33,7 +33,7 @@ RaptorCopyUser::RaptorCopyUser(QWidget* qParent) : RaptorEject(qParent),
 
 RaptorCopyUser::~RaptorCopyUser()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 bool RaptorCopyUser::eventFilter(QObject* qObject, QEvent* qEvent)
@@ -56,8 +56,8 @@ bool RaptorCopyUser::eventFilter(QObject* qObject, QEvent* qEvent)
 
 QPair<RaptorAuthenticationItem, RaptorAuthenticationItem> RaptorCopyUser::invokeEject()
 {
-    _SourceViewModel->invokeItemsClear();
-    _TargetViewModel->invokeItemsClear();
+    _ItemSourceViewModel->invokeItemsClear();
+    _ItemTargetViewModel->invokeItemsClear();
     RaptorEject::invokeEject();
     return _User;
 }
@@ -65,20 +65,20 @@ QPair<RaptorAuthenticationItem, RaptorAuthenticationItem> RaptorCopyUser::invoke
 void RaptorCopyUser::invokeInstanceInit()
 {
     RaptorEject::invokeInstanceInit();
-    _SourceViewHeader = new RaptorUserViewHeader(Qt::Horizontal, _Ui->_SourceView);
-    _SourceViewModel = new RaptorUserViewModel(this);
+    _ItemSourceViewHeader = new RaptorUserViewHeader(Qt::Horizontal, _Ui->_ItemSourceView);
+    _ItemSourceViewModel = new RaptorUserViewModel(this);
     auto qHeader = QVector<QString>();
     qHeader << QStringLiteral("源用户");
-    _SourceViewModel->invokeHeaderSet(qHeader);
-    _SourceViewModel->invokeColumnCountSet(2);
-    _TargetViewHeader = new RaptorUserViewHeader(Qt::Horizontal, _Ui->_TargetView);
-    _TargetViewModel = new RaptorUserViewModel(this);
+    _ItemSourceViewModel->invokeHeaderSet(qHeader);
+    _ItemSourceViewModel->invokeColumnCountSet(2);
+    _ItemTargetViewHeader = new RaptorUserViewHeader(Qt::Horizontal, _Ui->_ItemTargetView);
+    _ItemTargetViewModel = new RaptorUserViewModel(this);
     qHeader.clear();
     qHeader << QStringLiteral("目标用户");
-    _TargetViewModel->invokeHeaderSet(qHeader);
-    _TargetViewModel->invokeColumnCountSet(2);
-    _SourceViewDelegate = new RaptorUserViewDelegate(this);
-    _TargetViewDelegate = new RaptorUserViewDelegate(this);
+    _ItemTargetViewModel->invokeHeaderSet(qHeader);
+    _ItemTargetViewModel->invokeColumnCountSet(2);
+    _ItemSourceViewDelegate = new RaptorUserViewDelegate(this);
+    _ItemTargetViewDelegate = new RaptorUserViewDelegate(this);
 }
 
 void RaptorCopyUser::invokeUiInit()
@@ -88,36 +88,36 @@ void RaptorCopyUser::invokeUiInit()
     _Ui->_Title->setText(QStringLiteral("选择用户"));
     _Ui->_Close->setIcon(QIcon(RaptorUtil::invokeIconMatch("Close", false, true)));
     _Ui->_Close->setIconSize(QSize(10, 10));
-    _Ui->_SourceView->setModel(_SourceViewModel);
-    _Ui->_SourceView->setHorizontalHeader(_SourceViewHeader);
-    _Ui->_SourceView->setItemDelegate(_SourceViewDelegate);
-    _Ui->_SourceView->setContextMenuPolicy(Qt::NoContextMenu);
-    _Ui->_SourceView->horizontalHeader()->setFixedHeight(26);
-    _Ui->_SourceView->horizontalHeader()->setMinimumSectionSize(30);
-    _Ui->_SourceView->horizontalHeader()->setDefaultSectionSize(30);
-    _Ui->_SourceView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
-    _Ui->_SourceView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
-    _Ui->_SourceView->verticalHeader()->setDefaultSectionSize(26);
-    _Ui->_SourceView->verticalHeader()->setHidden(true);
-    _Ui->_SourceView->setShowGrid(false);
-    _Ui->_SourceView->setColumnWidth(0, 30);
-    _Ui->_SourceView->setSelectionMode(QAbstractItemView::SingleSelection);
-    _Ui->_SourceView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    _Ui->_TargetView->setModel(_TargetViewModel);
-    _Ui->_TargetView->setHorizontalHeader(_TargetViewHeader);
-    _Ui->_TargetView->setItemDelegate(_TargetViewDelegate);
-    _Ui->_TargetView->setContextMenuPolicy(Qt::NoContextMenu);
-    _Ui->_TargetView->horizontalHeader()->setFixedHeight(26);
-    _Ui->_TargetView->horizontalHeader()->setMinimumSectionSize(30);
-    _Ui->_TargetView->horizontalHeader()->setDefaultSectionSize(30);
-    _Ui->_TargetView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
-    _Ui->_TargetView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
-    _Ui->_TargetView->verticalHeader()->setDefaultSectionSize(26);
-    _Ui->_TargetView->verticalHeader()->setHidden(true);
-    _Ui->_TargetView->setShowGrid(false);
-    _Ui->_TargetView->setColumnWidth(0, 30);
-    _Ui->_TargetView->setSelectionMode(QAbstractItemView::SingleSelection);
-    _Ui->_TargetView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    _Ui->_ItemSourceView->setModel(_ItemSourceViewModel);
+    _Ui->_ItemSourceView->setHorizontalHeader(_ItemSourceViewHeader);
+    _Ui->_ItemSourceView->setItemDelegate(_ItemSourceViewDelegate);
+    _Ui->_ItemSourceView->setContextMenuPolicy(Qt::NoContextMenu);
+    _Ui->_ItemSourceView->horizontalHeader()->setFixedHeight(26);
+    _Ui->_ItemSourceView->horizontalHeader()->setMinimumSectionSize(30);
+    _Ui->_ItemSourceView->horizontalHeader()->setDefaultSectionSize(30);
+    _Ui->_ItemSourceView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
+    _Ui->_ItemSourceView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    _Ui->_ItemSourceView->verticalHeader()->setDefaultSectionSize(26);
+    _Ui->_ItemSourceView->verticalHeader()->setHidden(true);
+    _Ui->_ItemSourceView->setShowGrid(false);
+    _Ui->_ItemSourceView->setColumnWidth(0, 30);
+    _Ui->_ItemSourceView->setSelectionMode(QAbstractItemView::SingleSelection);
+    _Ui->_ItemSourceView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    _Ui->_ItemTargetView->setModel(_ItemTargetViewModel);
+    _Ui->_ItemTargetView->setHorizontalHeader(_ItemTargetViewHeader);
+    _Ui->_ItemTargetView->setItemDelegate(_ItemTargetViewDelegate);
+    _Ui->_ItemTargetView->setContextMenuPolicy(Qt::NoContextMenu);
+    _Ui->_ItemTargetView->horizontalHeader()->setFixedHeight(26);
+    _Ui->_ItemTargetView->horizontalHeader()->setMinimumSectionSize(30);
+    _Ui->_ItemTargetView->horizontalHeader()->setDefaultSectionSize(30);
+    _Ui->_ItemTargetView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
+    _Ui->_ItemTargetView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    _Ui->_ItemTargetView->verticalHeader()->setDefaultSectionSize(26);
+    _Ui->_ItemTargetView->verticalHeader()->setHidden(true);
+    _Ui->_ItemTargetView->setShowGrid(false);
+    _Ui->_ItemTargetView->setColumnWidth(0, 30);
+    _Ui->_ItemTargetView->setSelectionMode(QAbstractItemView::SingleSelection);
+    _Ui->_ItemTargetView->setSelectionBehavior(QAbstractItemView::SelectRows);
     _Ui->_OK->setText(QStringLiteral("确定"));
     _Ui->_Cancel->setText(QStringLiteral("取消"));
 }
@@ -130,12 +130,12 @@ void RaptorCopyUser::invokeSlotInit()
             this,
             &RaptorCopyUser::onCloseClicked);
 
-    connect(_Ui->_SourceView,
+    connect(_Ui->_ItemSourceView,
             &QTableView::clicked,
             this,
             &RaptorCopyUser::onSourceViewClicked);
 
-    connect(_Ui->_TargetView,
+    connect(_Ui->_ItemTargetView,
             &QTableView::clicked,
             this,
             &RaptorCopyUser::onTargetViewClicked);
@@ -161,8 +161,8 @@ void RaptorCopyUser::onItemsLoaded(const QVariant& qVariant) const
     }
 
     const auto items = _Data.value<QVector<RaptorAuthenticationItem>>();
-    _SourceViewModel->invokeItemsAppend(items);
-    _TargetViewModel->invokeItemsAppend(items);
+    _ItemSourceViewModel->invokeItemsAppend(items);
+    _ItemTargetViewModel->invokeItemsAppend(items);
 }
 
 void RaptorCopyUser::onCloseClicked()
@@ -182,13 +182,13 @@ void RaptorCopyUser::onTargetViewClicked(const QModelIndex& qIndex)
 
 void RaptorCopyUser::onOkClicked()
 {
-    if (_Ui->_SourceView->selectionModel()->selectedRows().isEmpty())
+    if (_Ui->_ItemSourceView->selectionModel()->selectedRows().isEmpty())
     {
         RaptorToast::invokeWarningEject(QStringLiteral("尚未选择源用户!"));
         return;
     }
 
-    if (_Ui->_TargetView->selectionModel()->selectedRows().isEmpty())
+    if (_Ui->_ItemTargetView->selectionModel()->selectedRows().isEmpty())
     {
         RaptorToast::invokeWarningEject(QStringLiteral("尚未选择目标用户!"));
         return;

@@ -117,3 +117,13 @@ bool RaptorStoreSuite::invokeViewPaintableGet()
 {
     return _ViewPaintable;
 }
+
+void RaptorStoreSuite::invokeAriaIsLocalHostSet(const bool &qValue)
+{
+    _AriaLocalHost = qValue;
+}
+
+bool RaptorStoreSuite::invokeAriaIsLocalHostGet()
+{
+    return _AriaLocalHost;
+}

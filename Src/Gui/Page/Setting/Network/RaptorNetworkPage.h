@@ -86,7 +86,7 @@ private Q_SLOTS:
 
     Q_SLOT void onProxyPortTextChanged(const QString& qValue) const;
 
-    Q_SLOT void onProxyUserNameTextChanged(const QString& qValue) const;
+    Q_SLOT void onProxyUsernameTextChanged(const QString& qValue) const;
 
     Q_SLOT void onProxyPasswordTextChanged(const QString& qValue) const;
 

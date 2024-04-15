@@ -84,8 +84,8 @@
                                             <number>12</number>
                                         </property>
                                         <item row="0" column="1">
-                                            <widget class="QWidget" name="_EnginePanel" native="true">
-                                                <layout class="QHBoxLayout" name="_EnginePanelLayout" stretch="9">
+                                            <widget class="QWidget" name="_ThirdPartyEnginePanel" native="true">
+                                                <layout class="QHBoxLayout" name="_ThirdPartyEnginePanelLayout" stretch="9">
                                                     <property name="spacing">
                                                         <number>12</number>
                                                     </property>
@@ -102,7 +102,7 @@
                                                         <number>12</number>
                                                     </property>
                                                     <item>
-                                                        <widget class="QTableView" name="_EngineView">
+                                                        <widget class="QTableView" name="_ThirdPartyEngineView">
                                                             <property name="minimumSize">
                                                                 <size>
                                                                     <width>0</width>
@@ -115,7 +115,7 @@
                                             </widget>
                                         </item>
                                         <item row="0" column="0">
-                                            <widget class="QLabel" name="_EngineTip">
+                                            <widget class="QLabel" name="_ThirdPartyEngineTip">
                                                 <property name="minimumSize">
                                                     <size>
                                                         <width>0</width>

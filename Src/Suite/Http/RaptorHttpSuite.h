@@ -44,6 +44,8 @@ public:
                                                                const QString &qHost,
                                                                const quint32 &qPort);
 
+    static QString invokeItemWebSocketConnectTest(const QString &qEndPoint);
+
 private:
     static size_t invokeCommonWriteCallback(char *qTarget,
                                             size_t qSize,

@@ -34,8 +34,8 @@ void RaptorCleanSuite::onItemsFetching(const QVariant &qVariant) const
 {
     auto input = qVariant.value<RaptorInput>();
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/adrive/v1/file/listToClean";
-    USE_HEADER_DEFAULT(qHttpPayload)
+    qHttpPayload._Url = "https://api.alipan.com/adrive/v1/file/listToClean";
+    qUseHeaderDefault(qHttpPayload)
     auto qRow = QJsonObject();
     qRow["drive_id"] = RaptorStoreSuite::invokeUserGet()._Space;
     qRow["limit"] = 200;

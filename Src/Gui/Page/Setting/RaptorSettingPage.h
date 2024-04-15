@@ -27,6 +27,7 @@
 #include <QButtonGroup>
 #include <QWidget>
 
+#include "Download/RaptorDownloadPage.h"
 #include "Network/RaptorNetworkPage.h"
 #include "../../Eject/MessageBox/RaptorMessageBox.h"
 #include "../../Eject/Toast/RaptorToast.h"
@@ -53,6 +54,9 @@ public:
     explicit RaptorSettingPage(QWidget* qParent = Q_NULLPTR);
 
     ~RaptorSettingPage() Q_DECL_OVERRIDE;
+
+    [[nodiscard]]
+    RaptorDownloadPage* invokeDownloadPageGet() const;
 
     [[nodiscard]]
     RaptorNetworkPage* invokeNetworkPageGet() const;

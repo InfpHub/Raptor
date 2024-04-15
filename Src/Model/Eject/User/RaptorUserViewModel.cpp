@@ -86,7 +86,7 @@ QVariant RaptorUserViewModel::data(const QModelIndex& qIndex, int qRole) const
             switch (qIndex.column())
             {
             case 1:
-                return item._Nickname;
+                return item._NickName;
             default:
                 return QVariant();
             }

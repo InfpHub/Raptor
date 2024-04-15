@@ -37,7 +37,7 @@ RaptorAboutPage::RaptorAboutPage(QWidget* qParent) : QWidget(qParent),
 
 RaptorAboutPage::~RaptorAboutPage()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 bool RaptorAboutPage::eventFilter(QObject* qObject, QEvent* qEvent)

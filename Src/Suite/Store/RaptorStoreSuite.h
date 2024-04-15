@@ -64,6 +64,10 @@ public:
 
     static bool invokeViewPaintableGet();
 
+    static void invokeAriaIsLocalHostSet(const bool& qValue);
+
+    static bool invokeAriaIsLocalHostGet();
+
 private:
     static inline RaptorSpace _Space = Private;
     static inline RaptorAuthenticationItem _User;
@@ -73,6 +77,7 @@ private:
     static inline QWidget* _SpacePage = Q_NULLPTR;
     static inline QObject* _Engine = Q_NULLPTR;
     static inline bool _ViewPaintable = true;
+    static inline bool _AriaLocalHost = false;
 };
 
 #endif // RAPTORSTORESUITE_H

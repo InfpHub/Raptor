@@ -35,7 +35,7 @@ RaptorTrashPage::RaptorTrashPage(QWidget *qParent) : QWidget(qParent),
 
 RaptorTrashPage::~RaptorTrashPage()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 bool RaptorTrashPage::eventFilter(QObject *qObject, QEvent *qEvent)
@@ -68,7 +68,7 @@ void RaptorTrashPage::invokeNavigate()
         return;
     }
 
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     _Ui->_ItemView->invokeBackgroundPaintableSet(false);
     _ItemViewModel->invokeItemsClear();
     _Payload._Marker.clear();
@@ -86,7 +86,7 @@ void RaptorTrashPage::invokeInstanceInit()
     qHeader << QStringLiteral("名称") << QStringLiteral("大小") << QStringLiteral("放入时间");
     _ItemViewModel->invokeHeaderSet(qHeader);
     _ItemViewModel->invokeColumnCountSet(4);
-    _Loading = new RaptorLoading(_Ui->_ItemView);
+    _ItemViewLoading = new RaptorLoading(_Ui->_ItemView);
 }
 
 void RaptorTrashPage::invokeUiInit()
@@ -109,6 +109,8 @@ void RaptorTrashPage::invokeUiInit()
     _Ui->_ItemView->setHorizontalHeader(_ItemViewHeader);
     _Ui->_ItemView->setItemDelegate(_ItemViewDelegate);
     _Ui->_ItemView->setContextMenuPolicy(Qt::CustomContextMenu);
+    _Ui->_ItemView->horizontalHeader()->setSortIndicatorShown(true);
+    _Ui->_ItemView->horizontalHeader()->setSectionsClickable(true);
     _Ui->_ItemView->horizontalHeader()->setFixedHeight(26);
     _Ui->_ItemView->horizontalHeader()->setMinimumSectionSize(30);
     _Ui->_ItemView->horizontalHeader()->setDefaultSectionSize(30);
@@ -120,7 +122,9 @@ void RaptorTrashPage::invokeUiInit()
     _Ui->_ItemView->setColumnWidth(0, 30);
     _Ui->_ItemView->setColumnWidth(2, 110);
     _Ui->_ItemView->setColumnWidth(3, 80);
+    _Ui->_ItemView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     _Ui->_ItemView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    _Ui->_ItemView->setSortingEnabled(true);
     _Ui->_ItemNameTip->setText(QStringLiteral("名称:"));
     _Ui->_ItemName->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_ItemTrashedTip->setText(QStringLiteral("放入时间:"));
@@ -141,10 +145,10 @@ void RaptorTrashPage::invokeUiInit()
 
 void RaptorTrashPage::invokeSlotInit() const
 {
-    connect(_Loading,
+    connect(_ItemViewLoading,
             &RaptorLoading::stateChanged,
             this,
-            &RaptorTrashPage::onLoadingStateChanged);
+            &RaptorTrashPage::onItemViewLoadingStateChanged);
 
     connect(_Ui->_Restore,
             &QPushButton::clicked,
@@ -253,7 +257,7 @@ void RaptorTrashPage::onItemSwitching(const QVariant &qVariant) const
 
 void RaptorTrashPage::onItemsFetched(const QVariant &qVariant)
 {
-    _Loading->invokeStateSet(RaptorLoading::State::Finished);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Finished);
     if (!RaptorStoreSuite::invokeUserIsValidConfirm())
     {
         _Ui->_ItemView->invokeServerCodeSet(RaptorTableView::Forbidden);
@@ -380,7 +384,7 @@ void RaptorTrashPage::onItemsCleared(const QVariant &qVariant) const
     RaptorToast::invokeInformationEject(QStringLiteral("回收站已清空。"));
 }
 
-void RaptorTrashPage::onLoadingStateChanged(const RaptorLoading::State &state) const
+void RaptorTrashPage::onItemViewLoadingStateChanged(const RaptorLoading::State &state) const
 {
     _Ui->_Refresh->setEnabled(state == RaptorLoading::State::Finished);
     _Ui->_ItemName->clear();
@@ -411,8 +415,10 @@ void RaptorTrashPage::onDeleteClicked() const
         return;
     }
 
-    if (_ItemViewModel->rowCount() == 0)
+    const auto qIndexList = _Ui->_ItemView->selectionModel()->selectedRows();
+    if (qIndexList.isEmpty())
     {
+        RaptorToast::invokeWarningEject(QStringLiteral("尚未选择任何文件，无法继续!"));
         return;
     }
 
@@ -423,13 +429,9 @@ void RaptorTrashPage::onDeleteClicked() const
         return;
     }
 
-    if (const auto qIndexList = _Ui->_ItemView->selectionModel()->selectedRows();
-        !qIndexList.isEmpty())
-    {
-        auto input = RaptorInput();
-        input._Indexes = qIndexList;
-        Q_EMIT itemsDeleting(QVariant::fromValue<RaptorInput>(input));
-    }
+    auto input = RaptorInput();
+    input._Indexes = qIndexList;
+    Q_EMIT itemsDeleting(QVariant::fromValue<RaptorInput>(input));
 }
 
 void RaptorTrashPage::onClearClicked() const
@@ -461,7 +463,7 @@ void RaptorTrashPage::onRefreshClicked()
         return;
     }
 
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     _ItemViewModel->invokeItemsClear();
     _Payload._Marker.clear();
     Q_EMIT itemsFetching(QVariant::fromValue<RaptorInput>(RaptorInput()));
@@ -542,7 +544,7 @@ void RaptorTrashPage::onItemViewVerticalScrollValueChanged(const int &qValue) co
 
     if (qValue == _Ui->_ItemView->verticalScrollBar()->maximum())
     {
-        _Loading->invokeStateSet(RaptorLoading::State::Loading);
+        _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
         auto input = RaptorInput();
         input._Marker = qMarker;
         Q_EMIT itemsFetching(QVariant::fromValue<RaptorInput>(input));

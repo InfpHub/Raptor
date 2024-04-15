@@ -23,6 +23,11 @@
 
 #include "RaptorSpaceViewModel.h"
 
+RaptorSpaceViewModel::RaptorSpaceViewModel(QObject *qParent) : QAbstractTableModel(qParent)
+{
+    invokeInstanceInit();
+}
+
 QVariant RaptorSpaceViewModel::headerData(int qSection,
                                           Qt::Orientation qOrientation,
                                           int qRole) const
@@ -181,6 +186,56 @@ Qt::ItemFlags RaptorSpaceViewModel::flags(const QModelIndex &qIndex) const
     return QAbstractTableModel::flags(qIndex);
 }
 
+void RaptorSpaceViewModel::sort(int qColumn, Qt::SortOrder qOrder)
+{
+    if (qColumn == 0)
+    {
+        return;
+    }
+
+    beginResetModel();
+    switch (qColumn)
+    {
+        case 1:
+        {
+            if (qOrder == Qt::AscendingOrder)
+            {
+                std::sort(_Items.begin(), _Items.end(), std::bind(invokeItemsByNameAscSort, this, std::placeholders::_1, std::placeholders::_2));
+            } else
+            {
+                std::sort(_Items.begin(), _Items.end(), std::bind(invokeItemsByNameDescSort, this, std::placeholders::_1, std::placeholders::_2));
+            }
+            break;
+        }
+        case 2:
+        {
+            if (qOrder == Qt::AscendingOrder)
+            {
+                std::sort(_Items.begin(), _Items.end(), std::bind(invokeItemsBySizeAscSort, this, std::placeholders::_1, std::placeholders::_2));
+            } else
+            {
+                std::sort(_Items.begin(), _Items.end(), std::bind(invokeItemsBySizeDescSort, this, std::placeholders::_1, std::placeholders::_2));
+            }
+            break;
+        }
+        case 3:
+        {
+            if (qOrder == Qt::AscendingOrder)
+            {
+                std::sort(_Items.begin(), _Items.end(), std::bind(invokeItemsByUpdatedAscSort, this, std::placeholders::_1, std::placeholders::_2));
+            } else
+            {
+                std::sort(_Items.begin(), _Items.end(), std::bind(invokeItemsByUpdatedDescSort, this, std::placeholders::_1, std::placeholders::_2));
+            }
+            break;
+        }
+        default:
+            break;
+    }
+
+    endResetModel();
+}
+
 void RaptorSpaceViewModel::invokeHeaderSet(const QVector<QString> &qHeader)
 {
     _Headers = qHeader;
@@ -220,4 +275,41 @@ void RaptorSpaceViewModel::invokeItemsClear()
 QVector<RaptorFileItem> RaptorSpaceViewModel::invokeItemsEject()
 {
     return _Items;
+}
+
+void RaptorSpaceViewModel::invokeInstanceInit()
+{
+    qCollator = QCollator(QLocale::Chinese);
+    qCollator.setNumericMode(false);
+    qCollator.setIgnorePunctuation(true);
+}
+
+bool RaptorSpaceViewModel::invokeItemsByNameAscSort(const RaptorFileItem &item, const RaptorFileItem &iten) const
+{
+    return qCollator.compare(item._Name, iten._Name) < 0;
+}
+
+bool RaptorSpaceViewModel::invokeItemsByNameDescSort(const RaptorFileItem &item, const RaptorFileItem &iten) const
+{
+    return qCollator.compare(item._Name, iten._Name) > 0;
+}
+
+bool RaptorSpaceViewModel::invokeItemsBySizeAscSort(const RaptorFileItem &item, const RaptorFileItem &iten) const
+{
+    return item._Byte < iten._Byte;
+}
+
+bool RaptorSpaceViewModel::invokeItemsBySizeDescSort(const RaptorFileItem &item, const RaptorFileItem &iten) const
+{
+    return item._Byte > iten._Byte;
+}
+
+bool RaptorSpaceViewModel::invokeItemsByUpdatedAscSort(const RaptorFileItem &item, const RaptorFileItem &iten) const
+{
+    return qCollator.compare(item._Updated, iten._Updated) < 0;
+}
+
+bool RaptorSpaceViewModel::invokeItemsByUpdatedDescSort(const RaptorFileItem &item, const RaptorFileItem &iten) const
+{
+    return qCollator.compare(item._Updated, iten._Updated) > 0;
 }

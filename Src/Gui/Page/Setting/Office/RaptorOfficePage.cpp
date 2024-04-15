@@ -35,19 +35,19 @@ RaptorOfficePage::RaptorOfficePage(QWidget *qParent) : QWidget(qParent),
 
 RaptorOfficePage::~RaptorOfficePage()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 void RaptorOfficePage::invokeInstanceInit()
 {
-    _EngineViewDelegate = new RaptorTableViewDelegate(this);
-    _EngineViewHeader = new RaptorTableViewHeader(Qt::Horizontal, _Ui->_EngineView);
-    _EngineViewHeader->invokeIconSet(RaptorUtil::invokeIconMatch("Legend", false, true));
-    _EngineViewModel = new RaptorSettingViewModel(this);
+    _ThirdPartyEngineViewDelegate = new RaptorTableViewDelegate(this);
+    _ThirdPartyEngineViewHeader = new RaptorTableViewHeader(Qt::Horizontal, _Ui->_ThirdPartyEngineView);
+    _ThirdPartyEngineViewHeader->invokeIconSet(RaptorUtil::invokeIconMatch("Legend", false, true));
+    _ThirdPartyEngineViewModel = new RaptorSettingViewModel(this);
     auto qHeader = QVector<QString>();
     qHeader << QStringLiteral("名称") << QStringLiteral("路径");
-    _EngineViewModel->invokeHeaderSet(qHeader);
-    _EngineViewModel->invokeColumnCountSet(3);
+    _ThirdPartyEngineViewModel->invokeHeaderSet(qHeader);
+    _ThirdPartyEngineViewModel->invokeColumnCountSet(3);
 
     _DebounceTimer = new QTimer(this);
     _DebounceTimer->setSingleShot(true);
@@ -56,33 +56,33 @@ void RaptorOfficePage::invokeInstanceInit()
 
 void RaptorOfficePage::invokeUiInit() const
 {
-    _Ui->_EngineTip->setText(QStringLiteral("引擎:"));
-    _Ui->_EngineView->setModel(_EngineViewModel);
-    _Ui->_EngineView->setHorizontalHeader(_EngineViewHeader);
-    _Ui->_EngineView->setItemDelegate(_EngineViewDelegate);
-    _Ui->_EngineView->setContextMenuPolicy(Qt::NoContextMenu);
-    _Ui->_EngineView->horizontalHeader()->setFixedHeight(26);
-    _Ui->_EngineView->horizontalHeader()->setMinimumSectionSize(30);
-    _Ui->_EngineView->horizontalHeader()->setDefaultSectionSize(30);
-    _Ui->_EngineView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
-    _Ui->_EngineView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Fixed);
-    _Ui->_EngineView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
-    _Ui->_EngineView->verticalHeader()->setDefaultSectionSize(26);
-    _Ui->_EngineView->verticalHeader()->setHidden(true);
-    _Ui->_EngineView->setShowGrid(false);
-    _Ui->_EngineView->setColumnWidth(0, 30);
-    _Ui->_EngineView->setColumnWidth(1, 80);
-    _Ui->_EngineView->setSelectionMode(QAbstractItemView::SingleSelection);
-    _Ui->_EngineView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    _Ui->_ThirdPartyEngineTip->setText(QStringLiteral("引擎:"));
+    _Ui->_ThirdPartyEngineView->setModel(_ThirdPartyEngineViewModel);
+    _Ui->_ThirdPartyEngineView->setHorizontalHeader(_ThirdPartyEngineViewHeader);
+    _Ui->_ThirdPartyEngineView->setItemDelegate(_ThirdPartyEngineViewDelegate);
+    _Ui->_ThirdPartyEngineView->setContextMenuPolicy(Qt::NoContextMenu);
+    _Ui->_ThirdPartyEngineView->horizontalHeader()->setFixedHeight(26);
+    _Ui->_ThirdPartyEngineView->horizontalHeader()->setMinimumSectionSize(30);
+    _Ui->_ThirdPartyEngineView->horizontalHeader()->setDefaultSectionSize(30);
+    _Ui->_ThirdPartyEngineView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
+    _Ui->_ThirdPartyEngineView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Fixed);
+    _Ui->_ThirdPartyEngineView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+    _Ui->_ThirdPartyEngineView->verticalHeader()->setDefaultSectionSize(26);
+    _Ui->_ThirdPartyEngineView->verticalHeader()->setHidden(true);
+    _Ui->_ThirdPartyEngineView->setShowGrid(false);
+    _Ui->_ThirdPartyEngineView->setColumnWidth(0, 30);
+    _Ui->_ThirdPartyEngineView->setColumnWidth(1, 80);
+    _Ui->_ThirdPartyEngineView->setSelectionMode(QAbstractItemView::SingleSelection);
+    _Ui->_ThirdPartyEngineView->setSelectionBehavior(QAbstractItemView::SelectRows);
     const auto qEngines = RaptorSettingSuite::invokeItemFind(Setting::Section::Office,
-                                                             Setting::Office::Engine).value<QVector<
+                                                             Setting::Office::ThirdPartyEngine).value<QVector<
         RaptorSettingItem> >();
     for (auto i = 0; i < qEngines.length(); ++i)
     {
         auto qEnginf = qEngines[i];
         auto [_Icon, _Name, _Path] = qEnginf;
         qEnginf._Icon = RaptorUtil::invokeIconMatch(_Name, false, true);
-        _EngineViewModel->invokeItemAppend(qEnginf);
+        _ThirdPartyEngineViewModel->invokeItemAppend(qEnginf);
     }
 }
 
@@ -93,10 +93,10 @@ void RaptorOfficePage::invokeSlotInit() const
             this,
             &RaptorOfficePage::onDebounceTimerTimeout);
 
-    connect(_EngineViewModel,
+    connect(_ThirdPartyEngineViewModel,
             &RaptorSettingViewModel::itemEdited,
             this,
-            &RaptorOfficePage::onEngineViewModelItemEdited);
+            &RaptorOfficePage::onThirdPartyEngineViewModelItemEdited);
 }
 
 void RaptorOfficePage::onDebounceTimerTimeout() const
@@ -109,7 +109,7 @@ void RaptorOfficePage::onDebounceTimerTimeout() const
     }
 }
 
-void RaptorOfficePage::onEngineViewModelItemEdited(const QVariant &qVariant) const
+void RaptorOfficePage::onThirdPartyEngineViewModelItemEdited(const QVariant &qVariant) const
 {
     const auto [_State, _Message, _Data] = qVariant.value<RaptorOutput>();
     if (!_State)
@@ -120,7 +120,7 @@ void RaptorOfficePage::onEngineViewModelItemEdited(const QVariant &qVariant) con
 
     const auto item = _Data.value<QModelIndex>().data(Qt::UserRole).value<RaptorSettingItem>();
     auto qEngines = RaptorSettingSuite::invokeItemFind(Setting::Section::Office,
-                                                       Setting::Office::Engine).value<QVector<
+                                                       Setting::Office::ThirdPartyEngine).value<QVector<
         RaptorSettingItem> >();
     for (auto &iten: qEngines)
     {
@@ -131,7 +131,7 @@ void RaptorOfficePage::onEngineViewModelItemEdited(const QVariant &qVariant) con
         }
     }
 
-    _DebounceTimer->setProperty(Setting::Office::Engine,
+    _DebounceTimer->setProperty(Setting::Office::ThirdPartyEngine,
                                 QVariant::fromValue<QPair<QString, QVariant> >(qMakePair(
                                     Setting::Section::Office,
                                     QVariant::fromValue<QVector<RaptorSettingItem> >(qEngines)))
@@ -139,5 +139,5 @@ void RaptorOfficePage::onEngineViewModelItemEdited(const QVariant &qVariant) con
 
     _DebounceTimer->start();
     RaptorToast::invokeSuccessEject(
-        QStringLiteral(R"(办公套件 %1 已更新!)").arg(QString(INFORMATION_TEMPLATE).arg(item._Name)));
+        QStringLiteral(R"(办公套件 %1 已更新!)").arg(QString(qInformationTemplate).arg(item._Name)));
 }

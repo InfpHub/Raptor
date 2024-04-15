@@ -35,7 +35,7 @@ RaptorUiPage::RaptorUiPage(QWidget *qParent) : QWidget(qParent),
 
 RaptorUiPage::~RaptorUiPage()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 void RaptorUiPage::invokeInstanceInit()
@@ -65,10 +65,16 @@ void RaptorUiPage::invokeUiInit() const
     _Ui->_FontTip->setText(QStringLiteral("字体:"));
     _Ui->_Font->setText(RaptorSettingSuite::invokeItemFind(Setting::Section::Ui,
                                                            Setting::Ui::Font).toString());
-    _Ui->_NoticeTip->setText(QStringLiteral("通知:"));
-    _Ui->_Notice->setText(QStringLiteral("允许来自 %1 仓库的新版本和公告通知").arg(APPLICATION_NAME));
-    _Ui->_Notice->setChecked(RaptorSettingSuite::invokeItemFind(Setting::Section::Ui,
-                                                                  Setting::Ui::Notice).toBool());
+
+    // TODO: 目前没有服务器，暂时禁用
+    _Ui->_NoticeTip->setVisible(false);
+    _Ui->_NoticeTip->setEnabled(false);
+    _Ui->_Notice->setVisible(false);
+    _Ui->_Notice->setEnabled(false);
+    // _Ui->_NoticeTip->setText(QStringLiteral("通知:"));
+    // _Ui->_Notice->setText(QStringLiteral("允许来自 %1 仓库的新版本和公告通知").arg(APPLICATION_NAME));
+    // _Ui->_Notice->setChecked(RaptorSettingSuite::invokeItemFind(Setting::Section::Ui,
+    //                                                               Setting::Ui::Notice).toBool());
     _Ui->_AutoSignTip->setText(QStringLiteral("签到:"));
     _Ui->_AutoSign->setText(QStringLiteral("自动签到"));
     _Ui->_AutoSign->setChecked(RaptorSettingSuite::invokeItemFind(Setting::Section::Ui,

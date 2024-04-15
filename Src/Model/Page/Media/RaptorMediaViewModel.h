@@ -21,15 +21,15 @@
  *
  */
 
-#ifndef RAPTORSPACEVIEWMODEL_H
-#define RAPTORSPACEVIEWMODEL_H
+#ifndef RAPTORMEDIAVIEWMODEL_H
+#define RAPTORMEDIAVIEWMODEL_H
 
 #include <QAbstractTableModel>
 #include <QBrush>
 
 #include "../../../Common/RaptorDeclare.h"
 
-class RaptorSpaceViewModel Q_DECL_FINAL : public QAbstractTableModel
+class RaptorMediaViewModel Q_DECL_FINAL : public QAbstractTableModel
 {
     Q_OBJECT
 
@@ -50,10 +50,6 @@ public:
     [[nodiscard]]
     QVariant data(const QModelIndex &qIndex, int qRole = Qt::DisplayRole) const Q_DECL_OVERRIDE;
 
-    bool setData(const QModelIndex &qIndex,
-                 const QVariant &qVariant,
-                 int qRole = Qt::EditRole) Q_DECL_OVERRIDE;
-
     bool removeRow(int qRow, const QModelIndex &parent = QModelIndex());
 
     bool removeRows(int qRow,
@@ -67,13 +63,13 @@ public:
 
     void invokeColumnCountSet(const quint16 &qCount);
 
-    void invokeItemAppend(const RaptorFileItem &item);
+    void invokeItemAppend(const RaptorMediaItem &item);
 
-    void invokeItemsAppend(const QVector<RaptorFileItem> &items);
+    void invokeItemsAppend(const QVector<RaptorMediaItem> &items);
 
     void invokeItemsClear();
 
-    QVector<RaptorFileItem> invokeItemsEject();
+    QVector<RaptorMediaItem> invokeItemsEject();
 
 Q_SIGNALS:
     Q_SIGNAL void itemEdited(const QVariant &qVariant);
@@ -81,7 +77,7 @@ Q_SIGNALS:
 private:
     QVector<QString> _Headers;
     quint16 _ColumnCount;
-    QVector<RaptorFileItem> _Items;
+    QVector<RaptorMediaItem> _Items;
 };
 
-#endif // RAPTORSPACEVIEWMODEL_H
+#endif // RAPTORMEDIAVIEWMODEL_H

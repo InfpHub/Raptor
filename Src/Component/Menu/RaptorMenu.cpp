@@ -35,7 +35,7 @@ RaptorMenu::RaptorMenu(QWidget *qParent) : QWidget(qParent),
 
 RaptorMenu::~RaptorMenu()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 void RaptorMenu::invokeItemAdd(const QString &qText,

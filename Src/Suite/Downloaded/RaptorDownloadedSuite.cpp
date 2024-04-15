@@ -34,10 +34,18 @@ void RaptorDownloadedSuite::onItemsLoading() const
 {
     auto qSQLQuery = RaptorPersistenceSuite::invokeQueryGenerate();
     const auto qSQL = R"(
-        SELECT * FROM Downloaded WHERE UserId = :UserId
+        SELECT * FROM Downloaded WHERE UserId = :UserId AND Embed = :Embed
     )";
     qSQLQuery.prepare(qSQL);
+    auto qEmbed = true;
+    if (RaptorSettingSuite::invokeImmutableItemFind(Setting::Section::Download,
+        Setting::Download::PrimaryEngine).toString() == Setting::Download::Aria)
+    {
+        qEmbed = false;
+    }
+
     qSQLQuery.bindValue(":UserId", RaptorStoreSuite::invokeUserGet()._LeafId);
+    qSQLQuery.bindValue(":Embed", qEmbed ? 1 : 0);
     qSQLQuery.exec();
     if (qSQLQuery.lastError().isValid())
     {
@@ -147,10 +155,17 @@ void RaptorDownloadedSuite::onItemCompleted(const QVariant& qVariant) const
     const auto item = _Data.value<RaptorTransferItem>();
     auto qSQLQuery = RaptorPersistenceSuite::invokeQueryGenerate();
     const auto qSQL = R"(
-            INSERT INTO Downloaded ("LeafId", "Name", "Path", "Created", "Size", "SHA1", "UserId")
-            VALUES (:LeafId, :Name, :Path, :Created, :Size, :SHA1, :UserId)
+            INSERT INTO Downloaded ("LeafId", "Name", "Path", "Created", "Size", "SHA1", "UserId", "Embed")
+            VALUES (:LeafId, :Name, :Path, :Created, :Size, :SHA1, :UserId, :Embed)
     )";
     qSQLQuery.prepare(qSQL);
+    auto qEmbed = true;
+    if (RaptorSettingSuite::invokeImmutableItemFind(Setting::Section::Download,
+        Setting::Download::PrimaryEngine).toString() == Setting::Download::Aria)
+    {
+        qEmbed = false;
+    }
+
     qSQLQuery.bindValue(":LeafId", item._LeafId);
     qSQLQuery.bindValue(":Name", item._Name);
     qSQLQuery.bindValue(":Path", item._Path);
@@ -158,6 +173,7 @@ void RaptorDownloadedSuite::onItemCompleted(const QVariant& qVariant) const
     qSQLQuery.bindValue(":Size", item._Size);
     qSQLQuery.bindValue(":SHA1", item._SHA1);
     qSQLQuery.bindValue(":UserId", RaptorStoreSuite::invokeUserGet()._LeafId);
+    qSQLQuery.bindValue(":Embed", qEmbed ? 1 : 0);
     qSQLQuery.exec();
     if (qSQLQuery.lastError().isValid())
     {

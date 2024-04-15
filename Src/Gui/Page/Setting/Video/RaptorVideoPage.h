@@ -60,9 +60,9 @@ private:
 private Q_SLOTS:
     Q_SLOT void onDebounceTimerTimeout() const;
 
-    Q_SLOT void onEngineViewModelItemEdited(const QVariant &qVariant) const;
+    Q_SLOT void onThirdPartyEngineViewModelItemEdited(const QVariant &qVariant) const;
 
-    Q_SLOT void onEngineViewDoubleClicked(const QModelIndex &qIndex) const;
+    Q_SLOT void onThirdPartyEngineViewDoubleClicked(const QModelIndex &qIndex) const;
 
     Q_SLOT void onQualitySDClicked(const bool &qChecked) const;
 
@@ -86,9 +86,9 @@ private:
     Ui::RaptorVideoPage *_Ui = Q_NULLPTR;
     QButtonGroup *_QualityGroup = Q_NULLPTR;
     QButtonGroup *_StreamGroup = Q_NULLPTR;
-    RaptorTableViewDelegate *_EngineViewDelegate = Q_NULLPTR;
-    RaptorTableViewHeader *_EngineViewHeader = Q_NULLPTR;
-    RaptorSettingViewModel *_EngineViewModel = Q_NULLPTR;
+    RaptorTableViewDelegate *_ThirdPartyEngineViewDelegate = Q_NULLPTR;
+    RaptorTableViewHeader *_ThirdPartyEngineViewHeader = Q_NULLPTR;
+    RaptorSettingViewModel *_ThirdPartyEngineViewModel = Q_NULLPTR;
     QTimer *_DebounceTimer = Q_NULLPTR;
 };
 

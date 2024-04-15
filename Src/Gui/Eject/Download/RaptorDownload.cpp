@@ -35,7 +35,7 @@ RaptorDownload::RaptorDownload(QWidget *qParent) : RaptorEject(qParent),
 
 RaptorDownload::~RaptorDownload()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 bool RaptorDownload::eventFilter(QObject *qObject, QEvent *qEvent)
@@ -92,20 +92,34 @@ void RaptorDownload::invokeEject(const QVariant &qVariant)
         _Ui->_Name->setEnabled(false);
     }
 
-    _Ui->_ParallelSlider->setRange(1, 32);
     if (RaptorStoreSuite::invokeUserGet()._VIP)
     {
+        _Ui->_ParallelSlider->setRange(1, 32);
         _Ui->_ParallelSlider->setValue(1);
         _Ui->_ParallelSlider->setEnabled(false);
         _Ui->_Parallel->setEnabled(false);
     }
 
-    _Ui->_ParallelSlider->setValue(10);
-    if (RaptorSettingSuite::invokeItemFind(Setting::Section::Download,
-                                           Setting::Download::DefaultPath).toBool())
+    if (const auto qEngine = RaptorSettingSuite::invokeImmutableItemFind(Setting::Section::Download,
+                                                                         Setting::Download::PrimaryEngine).toString(); qEngine == Setting::Download::Aria)
     {
+        _Ui->_ParallelSlider->setRange(1, 16);
+        _Ui->_ParallelSlider->setValue(16);
         _Ui->_Dir->setText(RaptorSettingSuite::invokeItemFind(Setting::Section::Download,
-                                                              Setting::Download::Path).toString());
+                                                              Setting::Download::AriaRemotePath).toString());
+        const auto qAriaLocalHost = RaptorStoreSuite::invokeAriaIsLocalHostGet();
+        _Ui->_DirSelect->setVisible(qAriaLocalHost);
+        _Ui->_DirSelect->setEnabled(qAriaLocalHost);
+    } else if (qEngine == Setting::Download::Embed)
+    {
+        _Ui->_ParallelSlider->setRange(1, 32);
+        _Ui->_ParallelSlider->setValue(10);
+        if (RaptorSettingSuite::invokeItemFind(Setting::Section::Download,
+                                               Setting::Download::DefaultPath).toBool())
+        {
+            _Ui->_Dir->setText(RaptorSettingSuite::invokeItemFind(Setting::Section::Download,
+                                                                  Setting::Download::Path).toString());
+        }
     }
 
     _Ui->_Tip->clear();
@@ -144,8 +158,18 @@ void RaptorDownload::invokeUiInit()
     _Ui->_Dir->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_DirSelect->setText(QStringLiteral("选择"));
     _Ui->_Icon->installEventFilter(this);
-    _Ui->_3rdPartyEvoke->setText(QStringLiteral("唤起 %1").arg(RaptorSettingSuite::invokeItemFind(Setting::Section::Download,
-                                                                                                Setting::Download::ActiveEngine).toString()));
+    if (const auto qEngine = RaptorSettingSuite::invokeImmutableItemFind(Setting::Section::Download,
+                                                                         Setting::Download::PrimaryEngine).toString();
+        qEngine == Setting::Download::Embed)
+    {
+        _Ui->_3rdPartyEvoke->setText(QStringLiteral("唤起 %1").arg(RaptorSettingSuite::invokeItemFind(Setting::Section::Download,
+                                                                                                    Setting::Download::ThirdPartyActiveEngine).toString()));
+    } else if (qEngine == Setting::Download::Aria)
+    {
+        _Ui->_3rdPartyEvoke->setVisible(false);
+        _Ui->_3rdPartyEvoke->setEnabled(false);
+    }
+
     _Ui->_Download->setText(QStringLiteral("下载"));
     _Ui->_Cancel->setText(QStringLiteral("取消"));
 }
@@ -224,7 +248,7 @@ void RaptorDownload::onParallelSliderValueChanged(const int &qValue) const
 {
     if (qValue > 10)
     {
-        _Ui->_Tip->setText(QString(CRITICAL_TEMPLATE).arg(QStringLiteral("温馨提示：%1 并发可能会触发风控检测处罚!").arg(qValue)));
+        _Ui->_Tip->setText(QString(qCriticalTemplate).arg(QStringLiteral("温馨提示：%1 并发可能会触发风控检测处罚!").arg(qValue)));
     } else
     {
         _Ui->_Tip->clear();

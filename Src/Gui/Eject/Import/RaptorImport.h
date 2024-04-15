@@ -88,7 +88,7 @@ public Q_SLOTS:
     Q_SLOT void onItemParsed(const QVariant &qVariant);
 
 private Q_SLOTS:
-    Q_SLOT void onLoadingStateChanged(const RaptorLoading::State &state) const;
+    Q_SLOT void onItemViewLoadingStateChanged(const RaptorLoading::State &state) const;
 
     Q_SLOT void onCloseClicked();
 
@@ -117,7 +117,7 @@ private:
     RaptorTableViewDelegate *_ItemViewDelegate = Q_NULLPTR;
     RaptorTableViewHeader *_ItemViewHeader = Q_NULLPTR;
     RaptorSpaceViewModel *_ItemViewModel = Q_NULLPTR;
-    RaptorLoading *_Loading = Q_NULLPTR;
+    RaptorLoading *_ItemViewLoading = Q_NULLPTR;
     QScopedPointer<QSvgRenderer> _SvgRender = QScopedPointer(new QSvgRenderer());
     Payload _Payload;
     QVariant _Variant;

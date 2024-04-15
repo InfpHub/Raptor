@@ -80,12 +80,12 @@ private Q_SLOTS:
 private:
     Ui::RaptorRename *_Ui = Q_NULLPTR;
     Payload _Payload;
-    RaptorTableViewHeader *_SourceViewHeader = Q_NULLPTR;
-    RaptorSpaceViewModel *_SourceViewModel = Q_NULLPTR;
-    RaptorTableViewHeader *_TargetViewHeader = Q_NULLPTR;
-    RaptorSpaceViewModel *_TargetViewModel = Q_NULLPTR;
-    RaptorTableViewDelegate *_SourceViewDelegate = Q_NULLPTR;
-    RaptorTableViewDelegate *_TargetViewDelegate = Q_NULLPTR;
+    RaptorTableViewHeader *_ItemSourceViewHeader = Q_NULLPTR;
+    RaptorSpaceViewModel *_ItemSourceViewModel = Q_NULLPTR;
+    RaptorTableViewHeader *_ItemTargetViewHeader = Q_NULLPTR;
+    RaptorSpaceViewModel *_ItemTargetViewModel = Q_NULLPTR;
+    RaptorTableViewDelegate *_ItemSourceViewDelegate = Q_NULLPTR;
+    RaptorTableViewDelegate *_ItemTargetViewDelegate = Q_NULLPTR;
 };
 
 #endif // RAPTORRENAME_H

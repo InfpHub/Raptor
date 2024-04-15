@@ -36,13 +36,13 @@ QPair<QString, QString> RaptorCopySuite::invokeItemCreate(const RaptorAuthentica
                                                           const QString &qName)
 {
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/adrive/v2/file/createWithFolders";
-    USE_HEADER_X_CANARY(qHttpPayload)
-    USE_HEADER_REFERER(qHttpPayload)
-    USE_HEADER_CUSTOM_X_DEVICE_ID(qHttpPayload, item._Session._Device)
-    USE_HEADER_CUSTOM_X_SIGNATURE(qHttpPayload, item._Session._Signature)
-    USE_HEADER_CUSTOM_AUTHORIZATION(qHttpPayload, item._AccessToken)
-    USE_HEADER_APPLICATION_JSON(qHttpPayload)
+    qHttpPayload._Url = "https://api.alipan.com/adrive/v2/file/createWithFolders";
+    qUseHeaderXCanary(qHttpPayload)
+    qUseHeaderReferer(qHttpPayload)
+    qUseHeaderCustomXDeviceId(qHttpPayload, item._Session._Device)
+    qUseHeaderCustomXSignature(qHttpPayload, item._Session._Signature)
+    qUseHeaderCustomAuthorization(qHttpPayload, item._AccessToken)
+    qUseHeaderApplicationJson(qHttpPayload)
     auto qRow = QJsonObject();
     qRow["check_name_mode"] = "refuse";
     qRow["drive_id"] = item._Space;
@@ -95,13 +95,13 @@ QPair<QString, bool> RaptorCopySuite::invokeItemRapid(const RaptorAuthentication
 
     const auto qProofCode = QString::fromUtf8(qBody.toBase64());
     auto qHttpPayloae = RaptorHttpPayload();
-    qHttpPayloae._Url = "https://api.aliyundrive.com/adrive/v2/file/createWithFolders";
-    USE_HEADER_X_CANARY(qHttpPayloae)
-    USE_HEADER_REFERER(qHttpPayloae)
-    USE_HEADER_CUSTOM_X_DEVICE_ID(qHttpPayloae, item._Session._Device)
-    USE_HEADER_CUSTOM_X_SIGNATURE(qHttpPayloae, item._Session._Signature)
-    USE_HEADER_CUSTOM_AUTHORIZATION(qHttpPayloae, item._AccessToken)
-    USE_HEADER_APPLICATION_JSON(qHttpPayloae)
+    qHttpPayloae._Url = "https://api.alipan.com/adrive/v2/file/createWithFolders";
+    qUseHeaderXCanary(qHttpPayloae)
+    qUseHeaderReferer(qHttpPayloae)
+    qUseHeaderCustomXDeviceId(qHttpPayloae, item._Session._Device)
+    qUseHeaderCustomXSignature(qHttpPayloae, item._Session._Signature)
+    qUseHeaderCustomAuthorization(qHttpPayloae, item._AccessToken)
+    qUseHeaderApplicationJson(qHttpPayloae)
     auto qRow = QJsonObject();
     qRow["parent_file_id"] = iten._Parent;
     qRow["check_name_mode"] = "auto_rename";
@@ -255,13 +255,13 @@ void RaptorCopySuite::onItemsByParentIdFetching(const QVariant &qVariant) const
 {
     auto input = qVariant.value<RaptorInput>();
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/adrive/v3/file/list";
-    USE_HEADER_X_CANARY(qHttpPayload)
-    USE_HEADER_REFERER(qHttpPayload)
-    USE_HEADER_CUSTOM_X_DEVICE_ID(qHttpPayload, input._Variant.value<RaptorAuthenticationItem>()._Session._Device)
-    USE_HEADER_CUSTOM_X_SIGNATURE(qHttpPayload, input._Variant.value<RaptorAuthenticationItem>()._Session._Signature)
-    USE_HEADER_CUSTOM_AUTHORIZATION(qHttpPayload, input._Variant.value<RaptorAuthenticationItem>()._AccessToken)
-    USE_HEADER_APPLICATION_JSON(qHttpPayload)
+    qHttpPayload._Url = "https://api.alipan.com/adrive/v3/file/list";
+    qUseHeaderXCanary(qHttpPayload)
+    qUseHeaderReferer(qHttpPayload)
+    qUseHeaderCustomXDeviceId(qHttpPayload, input._Variant.value<RaptorAuthenticationItem>()._Session._Device)
+    qUseHeaderCustomXSignature(qHttpPayload, input._Variant.value<RaptorAuthenticationItem>()._Session._Signature)
+    qUseHeaderCustomAuthorization(qHttpPayload, input._Variant.value<RaptorAuthenticationItem>()._AccessToken)
+    qUseHeaderApplicationJson(qHttpPayload)
     auto qRow = QJsonObject();
     qRow["drive_id"] = input._Variant.value<RaptorAuthenticationItem>()._Space;
     qRow["parent_file_id"] = input._Parent;
@@ -302,13 +302,13 @@ void RaptorCopySuite::onItemsByIdFetching(const QVariant &qVariant) const
 {
     auto input = qVariant.value<RaptorInput>();
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/adrive/v1/file/get_path";
-    USE_HEADER_X_CANARY(qHttpPayload)
-    USE_HEADER_REFERER(qHttpPayload)
-    USE_HEADER_CUSTOM_X_DEVICE_ID(qHttpPayload, input._Variant.value<RaptorAuthenticationItem>()._Session._Device)
-    USE_HEADER_CUSTOM_X_SIGNATURE(qHttpPayload, input._Variant.value<RaptorAuthenticationItem>()._Session._Signature)
-    USE_HEADER_CUSTOM_AUTHORIZATION(qHttpPayload, input._Variant.value<RaptorAuthenticationItem>()._AccessToken)
-    USE_HEADER_APPLICATION_JSON(qHttpPayload)
+    qHttpPayload._Url = "https://api.alipan.com/adrive/v1/file/get_path";
+    qUseHeaderXCanary(qHttpPayload)
+    qUseHeaderReferer(qHttpPayload)
+    qUseHeaderCustomXDeviceId(qHttpPayload, input._Variant.value<RaptorAuthenticationItem>()._Session._Device)
+    qUseHeaderCustomXSignature(qHttpPayload, input._Variant.value<RaptorAuthenticationItem>()._Session._Signature)
+    qUseHeaderCustomAuthorization(qHttpPayload, input._Variant.value<RaptorAuthenticationItem>()._AccessToken)
+    qUseHeaderApplicationJson(qHttpPayload)
     auto qRow = QJsonObject();
     qRow["drive_id"] = input._Variant.value<RaptorAuthenticationItem>()._Space;
     qRow["file_id"] = input._Id;
@@ -342,13 +342,13 @@ void RaptorCopySuite::onItemsByConditionFetching(const QVariant &qVariant) const
 {
     auto input = qVariant.value<RaptorInput>();
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/adrive/v3/file/search";
-    USE_HEADER_X_CANARY(qHttpPayload)
-    USE_HEADER_REFERER(qHttpPayload)
-    USE_HEADER_CUSTOM_X_DEVICE_ID(qHttpPayload, input._Variant.value<RaptorAuthenticationItem>()._Session._Device)
-    USE_HEADER_CUSTOM_X_SIGNATURE(qHttpPayload, input._Variant.value<RaptorAuthenticationItem>()._Session._Signature)
-    USE_HEADER_CUSTOM_AUTHORIZATION(qHttpPayload, input._Variant.value<RaptorAuthenticationItem>()._AccessToken)
-    USE_HEADER_APPLICATION_JSON(qHttpPayload)
+    qHttpPayload._Url = "https://api.alipan.com/adrive/v3/file/search";
+    qUseHeaderXCanary(qHttpPayload)
+    qUseHeaderReferer(qHttpPayload)
+    qUseHeaderCustomXDeviceId(qHttpPayload, input._Variant.value<RaptorAuthenticationItem>()._Session._Device)
+    qUseHeaderCustomXSignature(qHttpPayload, input._Variant.value<RaptorAuthenticationItem>()._Session._Signature)
+    qUseHeaderCustomAuthorization(qHttpPayload, input._Variant.value<RaptorAuthenticationItem>()._AccessToken)
+    qUseHeaderApplicationJson(qHttpPayload)
     const auto qCondition = QStringLiteral(R"(name match "%1")").arg(input._Name);
     auto qRow = QJsonObject();
     qRow["drive_id"] = input._Variant.value<RaptorAuthenticationItem>()._Space;
@@ -414,7 +414,7 @@ void RaptorCopySuite::onItemsCopying(const QVariant &qVariant)
         invokeItemPreorderTraversal(_Item, input._Id, qUser);
         for (auto iten: _Items)
         {
-            FREE(iten)
+            qFree(iten)
         }
 
         output._State = true;

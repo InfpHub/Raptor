@@ -35,7 +35,7 @@ RaptorUser::RaptorUser(QWidget *qParent) : QDialog(qParent),
 
 RaptorUser::~RaptorUser()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 bool RaptorUser::eventFilter(QObject *qObject, QEvent *qEvent)
@@ -240,7 +240,7 @@ void RaptorUser::onItemAccessTokenRefreshed(const QVariant &qVariant) const
     }
 
     const auto item = RaptorStoreSuite::invokeUserGet();
-    _Ui->_NickName->setText(QStringLiteral("Hi, %1").arg(item._Nickname));
+    _Ui->_NickName->setText(QStringLiteral("Hi, %1").arg(item._NickName));
     _Ui->_Capacity->setText(QStringLiteral("%1 / %2").arg(item._Capacity._Used,
                                                           item._Capacity._Total));
     if (RaptorSettingSuite::invokeItemFind(Setting::Section::Ui,

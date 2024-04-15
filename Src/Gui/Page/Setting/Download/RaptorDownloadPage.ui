@@ -1,443 +1,779 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-    <class>RaptorDownloadPage</class>
-    <widget class="QWidget" name="RaptorDownloadPage">
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>1030</width>
-                <height>641</height>
-            </rect>
-        </property>
-        <property name="windowTitle">
-            <string>RaptorDownloadPage</string>
-        </property>
-        <layout class="QVBoxLayout" name="_DownloadPageLayout">
-            <property name="spacing">
-                <number>0</number>
+ <class>RaptorDownloadPage</class>
+ <widget class="QWidget" name="RaptorDownloadPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1030</width>
+    <height>641</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>RaptorDownloadPage</string>
+  </property>
+  <layout class="QVBoxLayout" name="_DownloadPageLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QScrollArea" name="_ScrollArea">
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="_Body">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>1028</width>
+        <height>639</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="_BodyLayout" stretch="5,0">
+       <property name="spacing">
+        <number>12</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QWidget" name="_DownloadPanel" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>0</height>
+          </size>
+         </property>
+         <layout class="QGridLayout" name="_DownloadPanelLayout">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>12</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>12</number>
+          </property>
+          <property name="spacing">
+           <number>12</number>
+          </property>
+          <item row="4" column="1">
+           <widget class="QWidget" name="_OtherPanel" native="true">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
             </property>
-            <property name="leftMargin">
-                <number>0</number>
+            <layout class="QVBoxLayout" name="_OtherPanelLayout">
+             <property name="spacing">
+              <number>12</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QCheckBox" name="_DefaultPath">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="_FullPath">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="_SkipViolation">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="_AutoRename">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QWidget" name="_ThirdPartyEnginePanel" native="true">
+            <layout class="QHBoxLayout" name="_ThirdPartyEnginePanelLayout" stretch="9">
+             <property name="spacing">
+              <number>12</number>
+             </property>
+             <property name="leftMargin">
+              <number>12</number>
+             </property>
+             <property name="topMargin">
+              <number>12</number>
+             </property>
+             <property name="rightMargin">
+              <number>12</number>
+             </property>
+             <property name="bottomMargin">
+              <number>12</number>
+             </property>
+             <item>
+              <widget class="QTableView" name="_ThirdPartyEngineView">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>200</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="_ConcurrentTip">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>26</height>
+             </size>
             </property>
-            <property name="topMargin">
-                <number>0</number>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>26</height>
+             </size>
             </property>
-            <property name="rightMargin">
-                <number>0</number>
+            <property name="text">
+             <string/>
             </property>
-            <property name="bottomMargin">
-                <number>0</number>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
             </property>
-            <item>
-                <widget class="QScrollArea" name="_ScrollArea">
-                    <property name="widgetResizable">
-                        <bool>true</bool>
-                    </property>
-                    <widget class="QWidget" name="_Body">
-                        <property name="geometry">
-                            <rect>
-                                <x>0</x>
-                                <y>0</y>
-                                <width>1028</width>
-                                <height>639</height>
-                            </rect>
-                        </property>
-                        <layout class="QHBoxLayout" name="_BodyLayout" stretch="5,5">
-                            <property name="spacing">
-                                <number>12</number>
-                            </property>
-                            <property name="leftMargin">
-                                <number>0</number>
-                            </property>
-                            <property name="topMargin">
-                                <number>0</number>
-                            </property>
-                            <property name="rightMargin">
-                                <number>0</number>
-                            </property>
-                            <property name="bottomMargin">
-                                <number>0</number>
-                            </property>
-                            <item>
-                                <widget class="QWidget" name="_DownloadPanel" native="true">
-                                    <property name="sizePolicy">
-                                        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                                            <horstretch>0</horstretch>
-                                            <verstretch>0</verstretch>
-                                        </sizepolicy>
-                                    </property>
-                                    <property name="minimumSize">
-                                        <size>
-                                            <width>100</width>
-                                            <height>0</height>
-                                        </size>
-                                    </property>
-                                    <layout class="QGridLayout" name="_DownloadPanelLayout">
-                                        <property name="leftMargin">
-                                            <number>0</number>
-                                        </property>
-                                        <property name="topMargin">
-                                            <number>12</number>
-                                        </property>
-                                        <property name="rightMargin">
-                                            <number>0</number>
-                                        </property>
-                                        <property name="bottomMargin">
-                                            <number>12</number>
-                                        </property>
-                                        <property name="spacing">
-                                            <number>12</number>
-                                        </property>
-                                        <item row="1" column="1">
-                                            <widget class="QWidget" name="_PathPanel" native="true">
-                                                <layout class="QHBoxLayout" name="_PathPanelLayout">
-                                                    <property name="spacing">
-                                                        <number>12</number>
-                                                    </property>
-                                                    <property name="leftMargin">
-                                                        <number>0</number>
-                                                    </property>
-                                                    <property name="topMargin">
-                                                        <number>0</number>
-                                                    </property>
-                                                    <property name="rightMargin">
-                                                        <number>0</number>
-                                                    </property>
-                                                    <property name="bottomMargin">
-                                                        <number>0</number>
-                                                    </property>
-                                                    <item>
-                                                        <widget class="QLineEdit" name="_Path">
-                                                            <property name="minimumSize">
-                                                                <size>
-                                                                    <width>0</width>
-                                                                    <height>26</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="maximumSize">
-                                                                <size>
-                                                                    <width>16777215</width>
-                                                                    <height>26</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="readOnly">
-                                                                <bool>true</bool>
-                                                            </property>
-                                                        </widget>
-                                                    </item>
-                                                    <item>
-                                                        <widget class="QPushButton" name="_PathSelect">
-                                                            <property name="minimumSize">
-                                                                <size>
-                                                                    <width>0</width>
-                                                                    <height>26</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="maximumSize">
-                                                                <size>
-                                                                    <width>16777215</width>
-                                                                    <height>26</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="text">
-                                                                <string/>
-                                                            </property>
-                                                        </widget>
-                                                    </item>
-                                                </layout>
-                                            </widget>
-                                        </item>
-                                        <item row="2" column="1">
-                                            <widget class="QWidget" name="_OtherPanel" native="true">
-                                                <property name="minimumSize">
-                                                    <size>
-                                                        <width>0</width>
-                                                        <height>0</height>
-                                                    </size>
-                                                </property>
-                                                <layout class="QVBoxLayout" name="_OtherPanelLayout">
-                                                    <property name="spacing">
-                                                        <number>12</number>
-                                                    </property>
-                                                    <property name="leftMargin">
-                                                        <number>0</number>
-                                                    </property>
-                                                    <property name="topMargin">
-                                                        <number>0</number>
-                                                    </property>
-                                                    <property name="rightMargin">
-                                                        <number>0</number>
-                                                    </property>
-                                                    <property name="bottomMargin">
-                                                        <number>0</number>
-                                                    </property>
-                                                    <item>
-                                                        <widget class="QCheckBox" name="_DefaultPath">
-                                                            <property name="minimumSize">
-                                                                <size>
-                                                                    <width>0</width>
-                                                                    <height>26</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="maximumSize">
-                                                                <size>
-                                                                    <width>16777215</width>
-                                                                    <height>26</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="text">
-                                                                <string/>
-                                                            </property>
-                                                        </widget>
-                                                    </item>
-                                                    <item>
-                                                        <widget class="QCheckBox" name="_FullPath">
-                                                            <property name="minimumSize">
-                                                                <size>
-                                                                    <width>0</width>
-                                                                    <height>26</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="maximumSize">
-                                                                <size>
-                                                                    <width>16777215</width>
-                                                                    <height>26</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="text">
-                                                                <string/>
-                                                            </property>
-                                                        </widget>
-                                                    </item>
-                                                    <item>
-                                                        <widget class="QCheckBox" name="_SkipViolation">
-                                                            <property name="minimumSize">
-                                                                <size>
-                                                                    <width>0</width>
-                                                                    <height>26</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="maximumSize">
-                                                                <size>
-                                                                    <width>16777215</width>
-                                                                    <height>26</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="text">
-                                                                <string/>
-                                                            </property>
-                                                        </widget>
-                                                    </item>
-                                                    <item>
-                                                        <widget class="QCheckBox" name="_AutoRename">
-                                                            <property name="minimumSize">
-                                                                <size>
-                                                                    <width>0</width>
-                                                                    <height>26</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="maximumSize">
-                                                                <size>
-                                                                    <width>16777215</width>
-                                                                    <height>26</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="text">
-                                                                <string/>
-                                                            </property>
-                                                        </widget>
-                                                    </item>
-                                                </layout>
-                                            </widget>
-                                        </item>
-                                        <item row="1" column="0">
-                                            <widget class="QLabel" name="_PathTip">
-                                                <property name="minimumSize">
-                                                    <size>
-                                                        <width>0</width>
-                                                        <height>26</height>
-                                                    </size>
-                                                </property>
-                                                <property name="maximumSize">
-                                                    <size>
-                                                        <width>16777215</width>
-                                                        <height>26</height>
-                                                    </size>
-                                                </property>
-                                                <property name="text">
-                                                    <string/>
-                                                </property>
-                                                <property name="alignment">
-                                                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                                                </property>
-                                            </widget>
-                                        </item>
-                                        <item row="0" column="1">
-                                            <widget class="QWidget" name="_EnginePanel" native="true">
-                                                <layout class="QHBoxLayout" name="_EnginePanelLayout" stretch="9">
-                                                    <property name="spacing">
-                                                        <number>12</number>
-                                                    </property>
-                                                    <property name="leftMargin">
-                                                        <number>12</number>
-                                                    </property>
-                                                    <property name="topMargin">
-                                                        <number>12</number>
-                                                    </property>
-                                                    <property name="rightMargin">
-                                                        <number>12</number>
-                                                    </property>
-                                                    <property name="bottomMargin">
-                                                        <number>12</number>
-                                                    </property>
-                                                    <item>
-                                                        <widget class="QTableView" name="_EngineView">
-                                                            <property name="minimumSize">
-                                                                <size>
-                                                                    <width>0</width>
-                                                                    <height>200</height>
-                                                                </size>
-                                                            </property>
-                                                        </widget>
-                                                    </item>
-                                                </layout>
-                                            </widget>
-                                        </item>
-                                        <item row="3" column="1">
-                                            <widget class="QWidget" name="_ConcurrentPanel" native="true">
-                                                <layout class="QHBoxLayout" name="_ConcurrentPanelLayout">
-                                                    <property name="spacing">
-                                                        <number>12</number>
-                                                    </property>
-                                                    <property name="leftMargin">
-                                                        <number>0</number>
-                                                    </property>
-                                                    <property name="topMargin">
-                                                        <number>0</number>
-                                                    </property>
-                                                    <property name="rightMargin">
-                                                        <number>0</number>
-                                                    </property>
-                                                    <property name="bottomMargin">
-                                                        <number>0</number>
-                                                    </property>
-                                                    <item>
-                                                        <widget class="QSlider" name="_ConcurrentSlider">
-                                                            <property name="minimumSize">
-                                                                <size>
-                                                                    <width>0</width>
-                                                                    <height>26</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="maximumSize">
-                                                                <size>
-                                                                    <width>16777215</width>
-                                                                    <height>26</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="minimum">
-                                                                <number>1</number>
-                                                            </property>
-                                                            <property name="maximum">
-                                                                <number>5</number>
-                                                            </property>
-                                                            <property name="pageStep">
-                                                                <number>1</number>
-                                                            </property>
-                                                            <property name="orientation">
-                                                                <enum>Qt::Horizontal</enum>
-                                                            </property>
-                                                        </widget>
-                                                    </item>
-                                                    <item>
-                                                        <widget class="QLabel" name="_Concurrent">
-                                                            <property name="minimumSize">
-                                                                <size>
-                                                                    <width>0</width>
-                                                                    <height>26</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="maximumSize">
-                                                                <size>
-                                                                    <width>16777215</width>
-                                                                    <height>26</height>
-                                                                </size>
-                                                            </property>
-                                                            <property name="text">
-                                                                <string/>
-                                                            </property>
-                                                        </widget>
-                                                    </item>
-                                                </layout>
-                                            </widget>
-                                        </item>
-                                        <item row="0" column="0">
-                                            <widget class="QLabel" name="_EngineTip">
-                                                <property name="minimumSize">
-                                                    <size>
-                                                        <width>0</width>
-                                                        <height>26</height>
-                                                    </size>
-                                                </property>
-                                                <property name="maximumSize">
-                                                    <size>
-                                                        <width>16777215</width>
-                                                        <height>16777215</height>
-                                                    </size>
-                                                </property>
-                                                <property name="text">
-                                                    <string/>
-                                                </property>
-                                                <property name="alignment">
-                                                    <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignTrailing</set>
-                                                </property>
-                                            </widget>
-                                        </item>
-                                        <item row="3" column="0">
-                                            <widget class="QLabel" name="_ConcurrentTip">
-                                                <property name="minimumSize">
-                                                    <size>
-                                                        <width>0</width>
-                                                        <height>26</height>
-                                                    </size>
-                                                </property>
-                                                <property name="maximumSize">
-                                                    <size>
-                                                        <width>16777215</width>
-                                                        <height>26</height>
-                                                    </size>
-                                                </property>
-                                                <property name="text">
-                                                    <string/>
-                                                </property>
-                                                <property name="alignment">
-                                                    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                                                </property>
-                                            </widget>
-                                        </item>
-                                    </layout>
-                                </widget>
-                            </item>
-                            <item>
-                                <spacer name="_BodySpacer">
-                                    <property name="orientation">
-                                        <enum>Qt::Horizontal</enum>
-                                    </property>
-                                    <property name="sizeHint" stdset="0">
-                                        <size>
-                                            <width>466</width>
-                                            <height>20</height>
-                                        </size>
-                                    </property>
-                                </spacer>
-                            </item>
-                        </layout>
-                    </widget>
-                </widget>
-            </item>
-        </layout>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QWidget" name="_PathPanel" native="true">
+            <layout class="QHBoxLayout" name="_PathPanelLayout">
+             <property name="spacing">
+              <number>12</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLineEdit" name="_Path">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="_PathSelect">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="_PrimaryEngineTip">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>26</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTop|Qt::AlignmentFlag::AlignTrailing</set>
+            </property>
+            <property name="margin">
+             <number>0</number>
+            </property>
+            <property name="indent">
+             <number>5</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QWidget" name="_PrimaryEnginePanel" native="true">
+            <layout class="QHBoxLayout" name="_PrimaryEnginePanelLayout">
+             <property name="spacing">
+              <number>12</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QCheckBox" name="_Aria">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="_Embed">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="_PrimaryEnginePanelSpacer">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QWidget" name="_ConcurrentPanel" native="true">
+            <layout class="QHBoxLayout" name="_ConcurrentPanelLayout">
+             <property name="spacing">
+              <number>12</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QSlider" name="_ConcurrentSlider">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>5</number>
+               </property>
+               <property name="pageStep">
+                <number>1</number>
+               </property>
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="_Concurrent">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="_ThirdPartyEngineTip">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>26</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTop|Qt::AlignmentFlag::AlignTrailing</set>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="_PathTip">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>26</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>26</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="_AriaTip">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>26</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTop|Qt::AlignmentFlag::AlignTrailing</set>
+            </property>
+            <property name="indent">
+             <number>5</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QWidget" name="_AriaPanel" native="true">
+            <layout class="QGridLayout" name="_AriaPanelLayout">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <property name="spacing">
+              <number>12</number>
+             </property>
+             <item row="2" column="0">
+              <widget class="QLabel" name="_AriaTokenTip">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="4">
+              <widget class="QLineEdit" name="_AriaPort">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>26</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="3">
+              <widget class="QLabel" name="_AriaPortTip">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="_AriaHostTip">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QLineEdit" name="_AriaHost">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>26</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="2">
+              <widget class="QLineEdit" name="_AriaToken">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>26</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="4">
+              <widget class="QPushButton" name="_AriaTest">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="3">
+              <widget class="QLabel" name="_AriaRemotePathTip">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="4">
+              <widget class="QLineEdit" name="_AriaRemotePath">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>26</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="2">
+              <widget class="QCheckBox" name="_AriaSSL">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>26</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="_BodySpacer">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>466</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
     </widget>
-    <resources/>
-    <connections/>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
 </ui>

@@ -35,7 +35,7 @@ RaptorEngine::~RaptorEngine()
 {
     _SuiteThread->quit();
     _SuiteThread->wait();
-    FREE(_World)
+    qFree(_World)
     qInfo() << QStringLiteral("Raptor 引擎已停止。");
 }
 
@@ -51,9 +51,19 @@ void RaptorEngine::invokeStop() const
                               "invokeStop",
                               Qt::AutoConnection);
 
-    QMetaObject::invokeMethod(_DownloadingSuite,
-                              "invokeStop",
-                              Qt::AutoConnection);
+    if (const auto qEngine = RaptorSettingSuite::invokeImmutableItemFind(Setting::Section::Download,
+                                                                         Setting::Download::PrimaryEngine).toString();
+        qEngine == Setting::Download::Aria)
+    {
+        QMetaObject::invokeMethod(_AriaSuite,
+                                  "invokeStop",
+                                  Qt::AutoConnection);
+    } else if (qEngine == Setting::Download::Embed)
+    {
+        QMetaObject::invokeMethod(_DownloadingSuite,
+                                  "invokeStop",
+                                  Qt::AutoConnection);
+    }
 
     QMetaObject::invokeMethod(_UploadingSuite,
                               "invokeStop",
@@ -70,14 +80,18 @@ void RaptorEngine::invokeInstanceInit()
 {
     qInstallMessageHandler(invokeMessageCallback);
     _SuiteThread = new QThread(this);
+    _SettingSuite = RaptorSettingSuite::invokeSingletonGet();
+    _SettingSuite->moveToThread(_SuiteThread);
     _PersistenceSuite = RaptorPersistenceSuite::invokeSingletonGet();
     _PersistenceSuite->moveToThread(_SuiteThread);
+    _AriaSuite = RaptorAriaSuite::invokeSingletonGet();
+    _AriaSuite->moveToThread(_SuiteThread);
+    _DownloadingSuite = RaptorDownloadingSuite::invokeSingletonGet();
+    _DownloadingSuite->moveToThread(_SuiteThread);
     _AuthenticationSuite = RaptorAuthenticationSuite::invokeSingletonGet();
     _AuthenticationSuite->moveToThread(_SuiteThread);
     _FileSuite = RaptorFileSuite::invokeSingletonGet();
     _FileSuite->moveToThread(_SuiteThread);
-    _DownloadingSuite = RaptorDownloadingSuite::invokeSingletonGet();
-    _DownloadingSuite->moveToThread(_SuiteThread);
     _DownloadedSuite = RaptorDownloadedSuite::invokeSingletonGet();
     _DownloadedSuite->moveToThread(_SuiteThread);
     _UploadingSuite = RaptorUploadingSuite::invokeSingletonGet();
@@ -90,16 +104,21 @@ void RaptorEngine::invokeInstanceInit()
     _StarSuite->moveToThread(_SuiteThread);
     _TrashSuite = RaptorTrashSuite::invokeSingletonGet();
     _TrashSuite->moveToThread(_SuiteThread);
+    _MediaSuite = RaptorMediaSuite::invokeSingletonGet();
+    _MediaSuite->moveToThread(_SuiteThread);
     _CopySuite = RaptorCopySuite::invokeSingletonGet();
     _CopySuite->moveToThread(_SuiteThread);
-    _SettingSuite = RaptorSettingSuite::invokeSingletonGet();
-    _SettingSuite->moveToThread(_SuiteThread);
     _CopilotSuite = RaptorCopilotSuite::invokeSingletonGet();
     _CopilotSuite->moveToThread(_SuiteThread);
     _CleanSuite = RaptorCleanSuite::invokeSingletonGet();
     _CleanSuite->moveToThread(_SuiteThread);
     _SuiteThread->start();
     _World = new RaptorWorld();
+    if (RaptorSettingSuite::invokeImmutableItemFind(Setting::Section::Download,
+                                                    Setting::Download::PrimaryEngine).toString() == Setting::Download::Aria)
+    {
+        QMetaObject::invokeMethod(_CopilotSuite, "invokeAriaHostParse");
+    }
 }
 
 void RaptorEngine::invokeSlotInit() const
@@ -184,6 +203,11 @@ void RaptorEngine::invokeSlotInit() const
 
     connect(_World,
             &RaptorWorld::itemLogouting,
+            _World->invokeMediaPageGet(),
+            &RaptorMediaPage::onItemLogouting);
+
+    connect(_World,
+            &RaptorWorld::itemLogouting,
             _World->invokePlusPageGet(),
             &RaptorPlusPage::onItemLogouting);
 
@@ -252,6 +276,11 @@ void RaptorEngine::invokeSlotInit() const
             &RaptorWorld::itemSwitching,
             _World->invokeTrashPageGet(),
             &RaptorTrashPage::onItemSwitching);
+
+    connect(_World,
+            &RaptorWorld::itemSwitching,
+            _World->invokeMediaPageGet(),
+            &RaptorMediaPage::onItemSwitching);
 
     connect(_World,
             &RaptorWorld::itemSwitching,
@@ -347,6 +376,11 @@ void RaptorEngine::invokeSlotInit() const
 
     connect(_AuthenticationSuite,
             &RaptorAuthenticationSuite::itemAccessTokenRefreshed,
+            _World->invokeMediaPageGet(),
+            &RaptorMediaPage::onItemAccessTokenRefreshed);
+
+    connect(_AuthenticationSuite,
+            &RaptorAuthenticationSuite::itemAccessTokenRefreshed,
             _World->invokeCopyPageGet(),
             &RaptorCopyPage::onItemAccessTokenRefreshed);
 
@@ -412,6 +446,11 @@ void RaptorEngine::invokeSlotInit() const
 
     connect(_CopilotSuite,
             &RaptorCopilotSuite::itemCopyWriterHaveFound,
+            _World->invokeMediaPageGet(),
+            &RaptorMediaPage::onItemCopyWriterHaveFound);
+
+    connect(_CopilotSuite,
+            &RaptorCopilotSuite::itemCopyWriterHaveFound,
             _World->invokePlusPageGet(),
             &RaptorPlusPage::onItemCopyWriterHaveFound);
 
@@ -424,11 +463,6 @@ void RaptorEngine::invokeSlotInit() const
             &RaptorCopilotSuite::itemCopyWriterHaveFound,
             _World->invokeSettingPageGet(),
             &RaptorSettingPage::onItemCopyWriterHaveFound);
-
-    connect(_World,
-            &RaptorWorld::itemsLoading,
-            _DownloadingSuite,
-            &RaptorDownloadingSuite::onItemsLoading);
 
     connect(_World,
             &RaptorWorld::itemsLoading,
@@ -559,67 +593,155 @@ void RaptorEngine::invokeSlotInit() const
             _World->invokeSpacePageGet(),
             &RaptorSpacePage::onItemsMoved);
 
-    connect(_World->invokeDownloadUiGet(),
-            &RaptorDownload::itemsDownloading,
-            _DownloadingSuite,
-            &RaptorDownloadingSuite::onItemsDownloading);
+    connect(_World->invokeSpacePageGet(),
+            &RaptorSpacePage::itemsDeleting,
+            _FileSuite,
+            &RaptorFileSuite::onItemsDeleting);
 
-    connect(_DownloadingSuite,
-            &RaptorDownloadingSuite::itemsQueuing,
-            _World->invokeDownloadingPageGet(),
-            &RaptorDownloadingPage::onItemsQueuing);
+    connect(_FileSuite,
+            &RaptorFileSuite::itemsDeleted,
+            _World->invokeSpacePageGet(),
+            &RaptorSpacePage::onItemsDeleted);
 
-    connect(_DownloadingSuite,
-            &RaptorDownloadingSuite::itemsStatusChanged,
-            _World->invokeDownloadingPageGet(),
-            &RaptorDownloadingPage::onItemsStatusChanged);
+    if (const auto qEngine = RaptorSettingSuite::invokeImmutableItemFind(Setting::Section::Download,
+                                                                         Setting::Download::PrimaryEngine).toString();
+        qEngine == Setting::Download::Aria)
+    {
+        connect(_World->invokeDownloadUiGet(),
+                &RaptorDownload::itemsDownloading,
+                _AriaSuite,
+                &RaptorAriaSuite::onItemsDownloading);
 
-    // 暂停下载
-    connect(_World->invokeDownloadingPageGet(),
-            &RaptorDownloadingPage::itemsPausing,
-            _DownloadingSuite,
-            &RaptorDownloadingSuite::onItemsPausing);
+        connect(_AriaSuite,
+                &RaptorAriaSuite::itemsQueuing,
+                _World->invokeDownloadingPageGet(),
+                &RaptorDownloadingPage::onItemsQueuing);
 
-    connect(_DownloadingSuite,
-            &RaptorDownloadingSuite::itemPaused,
-            _World->invokeDownloadingPageGet(),
-            &RaptorDownloadingPage::onItemPaused);
+        connect(_AriaSuite,
+                &RaptorAriaSuite::itemsStatusChanged,
+                _World->invokeDownloadingPageGet(),
+                &RaptorDownloadingPage::onItemsStatusChanged);
 
-    // 继续下载
-    connect(_World->invokeDownloadingPageGet(),
-            &RaptorDownloadingPage::itemsResuming,
-            _DownloadingSuite,
-            &RaptorDownloadingSuite::onItemsResuming);
+        // 暂停下载
+        connect(_World->invokeDownloadingPageGet(),
+                &RaptorDownloadingPage::itemsPausing,
+                _AriaSuite,
+                &RaptorAriaSuite::onItemsPausing);
 
-    connect(_DownloadingSuite,
-            &RaptorDownloadingSuite::itemCompleted,
-            _World->invokeDownloadingPageGet(),
-            &RaptorDownloadingPage::onItemCompleted);
+        connect(_AriaSuite,
+                &RaptorAriaSuite::itemPaused,
+                _World->invokeDownloadingPageGet(),
+                &RaptorDownloadingPage::onItemPaused);
 
-    connect(_DownloadingSuite,
-            &RaptorDownloadingSuite::itemCompleted,
-            _World->invokeDownloadedPageGet(),
-            &RaptorDownloadedPage::onItemCompleted);
+        // 继续下载
+        connect(_World->invokeDownloadingPageGet(),
+                &RaptorDownloadingPage::itemsResuming,
+                _AriaSuite,
+                &RaptorAriaSuite::onItemsResuming);
 
-    connect(_DownloadingSuite,
-            &RaptorDownloadingSuite::itemCompleted,
-            _DownloadedSuite,
-            &RaptorDownloadedSuite::onItemCompleted);
+        connect(_AriaSuite,
+                &RaptorAriaSuite::itemCompleted,
+                _World->invokeDownloadingPageGet(),
+                &RaptorDownloadingPage::onItemCompleted);
 
-    connect(_DownloadingSuite,
-            &RaptorDownloadingSuite::itemErrored,
-            _World->invokeDownloadingPageGet(),
-            &RaptorDownloadingPage::onItemErrored);
+        connect(_AriaSuite,
+                &RaptorAriaSuite::itemCompleted,
+                _World->invokeDownloadedPageGet(),
+                &RaptorDownloadedPage::onItemCompleted);
 
-    connect(_DownloadingSuite,
-            &RaptorDownloadingSuite::itemsLoaded,
-            _World->invokeDownloadingPageGet(),
-            &RaptorDownloadingPage::onItemsLoaded);
+        connect(_AriaSuite,
+                &RaptorAriaSuite::itemCompleted,
+                _DownloadedSuite,
+                &RaptorDownloadedSuite::onItemCompleted);
 
-    connect(_World->invokeDownloadingPageGet(),
-            &RaptorDownloadingPage::itemCancelling,
-            _DownloadingSuite,
-            &RaptorDownloadingSuite::onItemCancelling);
+        connect(_AriaSuite,
+                &RaptorAriaSuite::itemErrored,
+                _World->invokeDownloadingPageGet(),
+                &RaptorDownloadingPage::onItemErrored);
+
+        connect(_World,
+                &RaptorWorld::itemsLoading,
+                _AriaSuite,
+                &RaptorAriaSuite::onItemsLoading);
+
+        connect(_AriaSuite,
+                &RaptorAriaSuite::itemsLoaded,
+                _World->invokeDownloadingPageGet(),
+                &RaptorDownloadingPage::onItemsLoaded);
+
+        connect(_World->invokeDownloadingPageGet(),
+                &RaptorDownloadingPage::itemCancelling,
+                _AriaSuite,
+                &RaptorAriaSuite::onItemCancelling);
+    } else if (qEngine == Setting::Download::Embed)
+    {
+        connect(_World->invokeDownloadUiGet(),
+                &RaptorDownload::itemsDownloading,
+                _DownloadingSuite,
+                &RaptorDownloadingSuite::onItemsDownloading);
+
+        connect(_DownloadingSuite,
+                &RaptorDownloadingSuite::itemsQueuing,
+                _World->invokeDownloadingPageGet(),
+                &RaptorDownloadingPage::onItemsQueuing);
+
+        connect(_DownloadingSuite,
+                &RaptorDownloadingSuite::itemsStatusChanged,
+                _World->invokeDownloadingPageGet(),
+                &RaptorDownloadingPage::onItemsStatusChanged);
+
+        // 暂停下载
+        connect(_World->invokeDownloadingPageGet(),
+                &RaptorDownloadingPage::itemsPausing,
+                _DownloadingSuite,
+                &RaptorDownloadingSuite::onItemsPausing);
+
+        connect(_DownloadingSuite,
+                &RaptorDownloadingSuite::itemPaused,
+                _World->invokeDownloadingPageGet(),
+                &RaptorDownloadingPage::onItemPaused);
+
+        // 继续下载
+        connect(_World->invokeDownloadingPageGet(),
+                &RaptorDownloadingPage::itemsResuming,
+                _DownloadingSuite,
+                &RaptorDownloadingSuite::onItemsResuming);
+
+        connect(_DownloadingSuite,
+                &RaptorDownloadingSuite::itemCompleted,
+                _World->invokeDownloadingPageGet(),
+                &RaptorDownloadingPage::onItemCompleted);
+
+        connect(_DownloadingSuite,
+                &RaptorDownloadingSuite::itemCompleted,
+                _World->invokeDownloadedPageGet(),
+                &RaptorDownloadedPage::onItemCompleted);
+
+        connect(_DownloadingSuite,
+                &RaptorDownloadingSuite::itemCompleted,
+                _DownloadedSuite,
+                &RaptorDownloadedSuite::onItemCompleted);
+
+        connect(_DownloadingSuite,
+                &RaptorDownloadingSuite::itemErrored,
+                _World->invokeDownloadingPageGet(),
+                &RaptorDownloadingPage::onItemErrored);
+
+        connect(_World,
+                &RaptorWorld::itemsLoading,
+                _DownloadingSuite,
+                &RaptorDownloadingSuite::onItemsLoading);
+
+        connect(_DownloadingSuite,
+                &RaptorDownloadingSuite::itemsLoaded,
+                _World->invokeDownloadingPageGet(),
+                &RaptorDownloadingPage::onItemsLoaded);
+
+        connect(_World->invokeDownloadingPageGet(),
+                &RaptorDownloadingPage::itemCancelling,
+                _DownloadingSuite,
+                &RaptorDownloadingSuite::onItemCancelling);
+    }
 
     connect(_DownloadedSuite,
             &RaptorDownloadedSuite::itemsLoaded,
@@ -852,6 +974,14 @@ void RaptorEngine::invokeSlotInit() const
             _World->invokeTrashPageGet(),
             &RaptorTrashPage::onItemsCleared);
 
+    connect(_World->invokeMediaPageGet(),
+            &RaptorMediaPage::itemsFetching,
+            _MediaSuite,
+            &RaptorMediaSuite::onItemsFetching);
+    connect(_MediaSuite,
+            &RaptorMediaSuite::itemsFetched,
+            _World->invokeMediaPageGet(),
+            &RaptorMediaPage::onItemsFetched);
 
     // 创建文件夹
     connect(_World->invokeFolderUiGet(),
@@ -1003,6 +1133,16 @@ void RaptorEngine::invokeSlotInit() const
             &RaptorCleanSuite::itemsCleaned,
             _World->invokeCleanPageGet(),
             &RaptorCleanPage::onItemsCleaned);
+
+    connect(_World->invokeDownloadPageGet(),
+            &RaptorDownloadPage::itemAriaConnectTesting,
+            _CopilotSuite,
+            &RaptorCopilotSuite::onItemAriaConnectTesting);
+
+    connect(_CopilotSuite,
+            &RaptorCopilotSuite::itemAriaConnectTested,
+            _World->invokeDownloadPageGet(),
+            &RaptorDownloadPage::onItemAriaConnectTested);
 
     connect(_World->invokeNetworkPageGet(),
             &RaptorNetworkPage::itemProxyConnectTesting,

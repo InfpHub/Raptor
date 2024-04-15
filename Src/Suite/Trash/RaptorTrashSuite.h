@@ -43,6 +43,8 @@ public:
 
     static QPair<QString, QModelIndexList> invokeItemsTrash(const QModelIndexList& qIndexList);
 
+    static QPair<QString, QModelIndexList> invokeItemsDelete(const QModelIndexList& qIndexList);
+
 Q_SIGNALS:
     Q_SIGNAL void itemsFetched(const QVariant& qVariant) const;
 

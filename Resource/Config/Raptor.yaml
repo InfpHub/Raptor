@@ -1,18 +1,19 @@
 Download:
-  ActiveEngine: IDM
+  AriaHost: 127.0.0.1
+  AriaToken: ""
+  AriaRemotePath: ""
+  AriaPort: 6800
+  AriaSSL: false
+  AriaUsername: ""
   AutoRename: true
   Concurrent: 3
   DefaultPath: true
-  Engine:
-    - Name: IDM
-      Path: ""
-      Icon: ./Store/Icon/Mime/Raptor[EXE].svg
-    - Name: FDM
-      Path: ""
-      Icon: ./Store/Icon/Mime/Raptor[EXE].svg
   FullPath: true
   Path: C:/
+  PrimaryEngine: Embed
   SkipViolation: true
+  ThirdPartyActiveEngine: IDM
+  ThirdPartyEngine: ""
 Network:
   IPResolve: Auto
   Proxy: false
@@ -20,7 +21,9 @@ Network:
   ProxyHost: ""
   ProxyPassword: ""
   ProxyPort: ""
-  ProxyUserName: ""
+  ProxyUsername: ""
+Office:
+  ThirdPartyEngine: ""
 Other:
   CustomPassword: 3344
   Expire: Week
@@ -28,39 +31,9 @@ Other:
   NewFolderTemplate: 「yyyy-MM-dd hh-mm-ss-zzz」
   Password: None
   ShareExpire: Week
-Video:
-  ActiveEngine: VLC
-  Engine:
-    - Name: MPV
-      Path: ./Store/MPV/mpv.exe
-      Icon: ./Store/Icon/Ui/Raptor[MPV].svg
-    - Name: VLC
-      Path: ./Store/VLC/vlc.exe
-      Icon: ./Store/Icon/Ui/Raptor[VLC].svg
-    - Name: PotPlayer
-      Path: ./Store/PotPlayer/PotPlayerMini64.exe
-      Icon: ./Store/Icon/Ui/Raptor[PotPlayer].svg
-  Quality: Origin
-  Stream: Live
-  UseOrigin: true
-  UseSub: true
-Office:
-  Engine:
-    - Name: Excel
-      Path: C:/Program Files (x86)/Microsoft Office/root/Office16/EXCEL.EXE
-      Icon: ./Store/Icon/Ui/Raptor[EXCEL].svg
-    - Name: PowerPoint
-      Path: C:/Program Files (x86)/Microsoft Office/root/Office16/POWERPNT.EXE
-      Icon: ./Store/Icon/Ui/Raptor[POWERPOINT].svg
-    - Name: Word
-      Path: C:/Program Files (x86)/Microsoft Office/root/Office16/WINWORD.EXE
-      Icon: ./Store/Icon/Ui/Raptor[WORD].svg
-    - Name: PDF
-      Path: C:/Program Files (x86)/Microsoft Office/root/Office16/WINWORD.EXE
-      Icon: ./Store/Icon/Ui/Raptor[PDF].svg
 Ui:
   ContextMenu: true
-  Font: Microsoft YaHei UI
+  Font: ""
   MinimizeToTray: true
   Notice: true
   Sign: true
@@ -71,3 +44,10 @@ Upload:
   Filter:
     - desktop.ini
   SkipNoRapid: false
+Video:
+  Quality: Origin
+  Stream: Live
+  ThirdPartyActiveEngine: VLC
+  ThirdPartyEngine: ""
+  UseOrigin: true
+  UseSub: true

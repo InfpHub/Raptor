@@ -60,13 +60,13 @@ private:
 private Q_SLOTS:
     Q_SLOT void onDebounceTimerTimeout() const;
 
-    Q_SLOT void onEngineViewModelItemEdited(const QVariant &qVariant) const;
+    Q_SLOT void onThirdPartyEngineViewModelItemEdited(const QVariant &qVariant) const;
 
 private:
     Ui::RaptorOfficePage *_Ui = Q_NULLPTR;
-    RaptorTableViewDelegate *_EngineViewDelegate = Q_NULLPTR;
-    RaptorTableViewHeader *_EngineViewHeader = Q_NULLPTR;
-    RaptorSettingViewModel *_EngineViewModel = Q_NULLPTR;
+    RaptorTableViewDelegate *_ThirdPartyEngineViewDelegate = Q_NULLPTR;
+    RaptorTableViewHeader *_ThirdPartyEngineViewHeader = Q_NULLPTR;
+    RaptorSettingViewModel *_ThirdPartyEngineViewModel = Q_NULLPTR;
     QTimer *_DebounceTimer = Q_NULLPTR;
 };
 

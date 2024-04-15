@@ -1,8 +1,10 @@
 ﻿cmake_minimum_required(VERSION 3.5)
-project(Raptor VERSION 2024.2.0 HOMEPAGE_URL "https://github.com/InfpHub/Raptor" LANGUAGES CXX)
+project(Raptor VERSION 2024.3.0 HOMEPAGE_URL "https://github.com/InfpHub/Raptor" LANGUAGES CXX)
 
 if (CMAKE_HOST_WIN32)
     set(CMAKE_PREFIX_PATH "C:/Qt/6.8.0/mingw_64" CACHE PATH "Qt Installation Path")
+elseif (CMAKE_HOST_APPLE)
+    set(CMAKE_PREFIX_PATH "/opt/Qt/6.8.0" CACHE PATH "Qt Installation Path")
 elseif (CMAKE_HOST_UNIX)
     set(CMAKE_PREFIX_PATH "/opt/Qt/6.8.0/gcc_64" CACHE PATH "Qt Installation Path")
 endif ()
@@ -14,7 +16,7 @@ if (NOT CMAKE_HOST_APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
 endif ()
 
-find_package(Qt6 REQUIRED COMPONENTS Widgets Sql SvgWidgets Network)
+find_package(Qt6 REQUIRED COMPONENTS Widgets Sql SvgWidgets Network WebSockets)
 qt_standard_project_setup()
 
 if (NOT Qt6_FOUND)
@@ -70,7 +72,7 @@ if (CMAKE_HOST_WIN32)
             ${PROJECT_SOURCES}
             ${PROJECT_SOURCE_DIR}/Src/Raptor.rc
     )
-elseif (CMAKE_HOST_UNIX)
+elseif (CMAKE_HOST_UNIX OR CMAKE_HOST_APPLE)
     add_executable(
             ${CMAKE_PROJECT_NAME}
             ${PROJECT_SOURCES}
@@ -84,6 +86,7 @@ target_link_libraries(
         Qt${QT_VERSION_MAJOR}::Sql
         Qt${QT_VERSION_MAJOR}::SvgWidgets
         Qt${QT_VERSION_MAJOR}::Network
+        Qt${QT_VERSION_MAJOR}::WebSockets
         debug Curl
         debug SECP256K1
         debug Sass

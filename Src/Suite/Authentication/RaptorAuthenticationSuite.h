@@ -60,6 +60,8 @@ private:
 
     QString invokeItemAccessTokenRefresh(RaptorAuthenticationItem &item) const;
 
+    static std::tuple<QString, quint8, quint8, QVector<RaptorDeviceItem>>  invokeItemDevicesFetch(const QString& qValue);
+
     static QPair<QString, RaptorSession> invokeSessionInit(const RaptorAuthenticationItem &item);
 
     static QString invokeItemDetailFetch(RaptorAuthenticationItem &item,

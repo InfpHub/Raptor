@@ -35,7 +35,12 @@ RaptorSettingPage::RaptorSettingPage(QWidget *qParent) : QWidget(qParent),
 
 RaptorSettingPage::~RaptorSettingPage()
 {
-    FREE(_Ui)
+    qFree(_Ui)
+}
+
+RaptorDownloadPage * RaptorSettingPage::invokeDownloadPageGet() const
+{
+    return _Ui->_DownloadPage;
 }
 
 RaptorNetworkPage *RaptorSettingPage::invokeNetworkPageGet() const

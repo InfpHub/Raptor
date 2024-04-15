@@ -70,11 +70,9 @@ PS：如果您选择静态编译则对应的 Qt 工具集也必须是静态的�
 
 ## 特别鸣谢
 
-<table>
-  <tr>
-    <td><a href="https://github.com/HenryWu01"><img src="https://avatars.githubusercontent.com/u/99880210?s=460&v=4" width="100px;" alt="Yuriy Yazlovytskyy"/><br /><sub><b>HenryWu01</b></sub></a></td>
-  </tr>
-</table>
+<a href="https://github.com/HenryWu01" target="_blank">
+    <img width=50 src="https://avatars.githubusercontent.com/u/99880210?s=460&v=4"/>
+</a>
 
 ## 声明
 

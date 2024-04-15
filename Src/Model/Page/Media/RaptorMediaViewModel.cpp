@@ -21,9 +21,9 @@
  *
  */
 
-#include "RaptorSpaceViewModel.h"
+#include "RaptorMediaViewModel.h"
 
-QVariant RaptorSpaceViewModel::headerData(int qSection,
+QVariant RaptorMediaViewModel::headerData(int qSection,
                                           Qt::Orientation qOrientation,
                                           int qRole) const
 {
@@ -47,7 +47,7 @@ QVariant RaptorSpaceViewModel::headerData(int qSection,
     }
 }
 
-int RaptorSpaceViewModel::rowCount(const QModelIndex &qIndex) const
+int RaptorMediaViewModel::rowCount(const QModelIndex &qIndex) const
 {
     if (qIndex.isValid())
     {
@@ -57,7 +57,7 @@ int RaptorSpaceViewModel::rowCount(const QModelIndex &qIndex) const
     return _Items.length();
 }
 
-int RaptorSpaceViewModel::columnCount(const QModelIndex &qIndex) const
+int RaptorMediaViewModel::columnCount(const QModelIndex &qIndex) const
 {
     if (qIndex.isValid())
     {
@@ -67,7 +67,7 @@ int RaptorSpaceViewModel::columnCount(const QModelIndex &qIndex) const
     return _ColumnCount;
 }
 
-QVariant RaptorSpaceViewModel::data(const QModelIndex &qIndex, int qRole) const
+QVariant RaptorMediaViewModel::data(const QModelIndex &qIndex, int qRole) const
 {
     if (!qIndex.isValid())
     {
@@ -78,7 +78,7 @@ QVariant RaptorSpaceViewModel::data(const QModelIndex &qIndex, int qRole) const
     switch (qRole)
     {
         case Qt::UserRole:
-            return QVariant::fromValue<RaptorFileItem>(item);
+            return QVariant::fromValue<RaptorMediaItem>(item);
         case Qt::DisplayRole:
         case Qt::EditRole:
         {
@@ -101,49 +101,7 @@ QVariant RaptorSpaceViewModel::data(const QModelIndex &qIndex, int qRole) const
     }
 }
 
-bool RaptorSpaceViewModel::setData(const QModelIndex &qIndex, const QVariant &qVariant, int qRole)
-{
-    if (!qIndex.isValid())
-    {
-        return QAbstractTableModel::setData(qIndex, qVariant, qRole);
-    }
-
-    if (qRole != Qt::EditRole)
-    {
-        return QAbstractTableModel::setData(qIndex, qVariant, qRole);
-    }
-
-    if (qVariant.canConvert<QString>())
-    {
-        const auto qName = qVariant.value<QString>();
-        auto item = _Items[qIndex.row()];
-        if (item._Name == qName)
-        {
-            return QAbstractTableModel::setData(qIndex, qVariant, qRole);
-        }
-
-        item._Name = qName;
-        _Items.replace(qIndex.row(), item);
-        auto output = RaptorOutput();
-        output._State = true;
-        output._Data = QVariant::fromValue<QModelIndex>(qIndex);
-        Q_EMIT itemEdited(QVariant::fromValue<RaptorOutput>(output));
-        Q_EMIT dataChanged(qIndex, qIndex);
-        return QAbstractTableModel::setData(qIndex, qVariant, qRole);
-    }
-
-    if (qVariant.canConvert<RaptorFileItem>())
-    {
-        const auto item = qVariant.value<RaptorFileItem>();
-        _Items.replace(qIndex.row(), item);
-        Q_EMIT dataChanged(qIndex, qIndex);
-        return QAbstractTableModel::setData(qIndex, qVariant, qRole);
-    }
-
-    return QAbstractTableModel::setData(qIndex, qVariant, qRole);
-}
-
-bool RaptorSpaceViewModel::removeRow(int qRow, const QModelIndex &parent)
+bool RaptorMediaViewModel::removeRow(int qRow, const QModelIndex &parent)
 {
     if (qRow < 0 || qRow > _Items.length())
     {
@@ -156,7 +114,7 @@ bool RaptorSpaceViewModel::removeRow(int qRow, const QModelIndex &parent)
     return true;
 }
 
-bool RaptorSpaceViewModel::removeRows(int qRow,
+bool RaptorMediaViewModel::removeRows(int qRow,
                                       int qCount,
                                       const QModelIndex &qIndex)
 {
@@ -171,7 +129,7 @@ bool RaptorSpaceViewModel::removeRows(int qRow,
     return true;
 }
 
-Qt::ItemFlags RaptorSpaceViewModel::flags(const QModelIndex &qIndex) const
+Qt::ItemFlags RaptorMediaViewModel::flags(const QModelIndex &qIndex) const
 {
     if (qIndex.column() == 1)
     {
@@ -181,24 +139,24 @@ Qt::ItemFlags RaptorSpaceViewModel::flags(const QModelIndex &qIndex) const
     return QAbstractTableModel::flags(qIndex);
 }
 
-void RaptorSpaceViewModel::invokeHeaderSet(const QVector<QString> &qHeader)
+void RaptorMediaViewModel::invokeHeaderSet(const QVector<QString> &qHeader)
 {
     _Headers = qHeader;
 }
 
-void RaptorSpaceViewModel::invokeColumnCountSet(const quint16 &qCount)
+void RaptorMediaViewModel::invokeColumnCountSet(const quint16 &qCount)
 {
     _ColumnCount = qCount;
 }
 
-void RaptorSpaceViewModel::invokeItemAppend(const RaptorFileItem &item)
+void RaptorMediaViewModel::invokeItemAppend(const RaptorMediaItem &item)
 {
     beginInsertRows(QModelIndex(), _Items.length(), _Items.length());
     _Items << item;
     endInsertRows();
 }
 
-void RaptorSpaceViewModel::invokeItemsAppend(const QVector<RaptorFileItem> &items)
+void RaptorMediaViewModel::invokeItemsAppend(const QVector<RaptorMediaItem> &items)
 {
     if (items.empty())
     {
@@ -210,14 +168,14 @@ void RaptorSpaceViewModel::invokeItemsAppend(const QVector<RaptorFileItem> &item
     endInsertRows();
 }
 
-void RaptorSpaceViewModel::invokeItemsClear()
+void RaptorMediaViewModel::invokeItemsClear()
 {
     beginResetModel();
     _Items.clear();
     endResetModel();
 }
 
-QVector<RaptorFileItem> RaptorSpaceViewModel::invokeItemsEject()
+QVector<RaptorMediaItem> RaptorMediaViewModel::invokeItemsEject()
 {
     return _Items;
 }

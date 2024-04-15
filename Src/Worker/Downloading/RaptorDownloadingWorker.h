@@ -26,7 +26,6 @@
 
 #include <QCryptographicHash>
 #include <QFile>
-#include <QMutex>
 #include <QObject>
 #include <QRunnable>
 
@@ -132,8 +131,6 @@ private:
     qint64 _LastTransferred;
     bool _Paused;
     bool _Cancel;
-    inline static QMutex _WriteMutex;
-    inline static QMutex _ProgressMutex;
 };
 
 #endif // RAPTORDOWNLOADINGWORKER_H

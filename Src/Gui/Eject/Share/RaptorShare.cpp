@@ -34,7 +34,7 @@ RaptorShare::RaptorShare(QWidget *qParent) : RaptorEject(qParent),
 
 RaptorShare::~RaptorShare()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 bool RaptorShare::eventFilter(QObject *qObject, QEvent *qEvent)
@@ -94,7 +94,7 @@ void RaptorShare::invokeEject(const QVariant &qVariant)
                                                                   _Ui->_Title->width());
         _Ui->_Title->setText(qTitle);
         _Ui->_Name->setText(item._Name);
-        _Ui->_Description->setText(QStringLiteral("%1 的分享").arg(RaptorStoreSuite::invokeUserGet()._Nickname));
+        _Ui->_Description->setText(QStringLiteral("%1 的分享").arg(RaptorStoreSuite::invokeUserGet()._NickName));
     } else if (qIndexList.length() > 1)
     {
         const auto item = qIndexList[0].data(Qt::UserRole).value<RaptorFileItem>();
@@ -153,7 +153,7 @@ void RaptorShare::invokeUiInit()
     _Ui->_LimitTip->setText(QStringLiteral("限制:"));
     _Ui->_PreviewTip->setText(QStringLiteral("预览:"));
     _Ui->_Preview->setContextMenuPolicy(Qt::NoContextMenu);
-    _Ui->_Preview->setValidator(new QRegularExpressionValidator(QRegularExpression{"[0-9]+$"}, this));
+    _Ui->_Preview->setValidator(new QRegularExpressionValidator(QRegularExpression("[0-9]+$"), this));
     _Ui->_SaveTip->setText(QStringLiteral("转存:"));
     _Ui->_Save->setValidator(_Ui->_Preview->validator());
     _Ui->_Save->setContextMenuPolicy(Qt::NoContextMenu);

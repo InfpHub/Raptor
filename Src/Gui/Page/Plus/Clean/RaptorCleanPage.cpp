@@ -35,7 +35,7 @@ RaptorCleanPage::RaptorCleanPage(QWidget *qParent) : QWidget(qParent),
 
 RaptorCleanPage::~RaptorCleanPage()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 bool RaptorCleanPage::eventFilter(QObject *qObject, QEvent *qEvent)
@@ -72,7 +72,7 @@ void RaptorCleanPage::invokeNavigate()
         return;
     }
 
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     _Payload._Marker.clear();
     _ItemViewModel->invokeItemsClear();
     auto input = RaptorInput();
@@ -111,7 +111,7 @@ void RaptorCleanPage::invokeInstanceInit()
     _ItemViewModel->invokeHeaderSet(qHeader);
     _ItemViewModel->invokeColumnCountSet(4);
     _ItemViewDelegate = new RaptorTableViewDelegate(this);
-    _Loading = new RaptorLoading(_Ui->_ItemView);
+    _ItemViewLoading = new RaptorLoading(_Ui->_ItemView);
 }
 
 void RaptorCleanPage::invokeUiInit()
@@ -124,6 +124,8 @@ void RaptorCleanPage::invokeUiInit()
     _Ui->_ItemView->setHorizontalHeader(_ItemViewHeader);
     _Ui->_ItemView->setItemDelegate(_ItemViewDelegate);
     _Ui->_ItemView->setContextMenuPolicy(Qt::CustomContextMenu);
+    _Ui->_ItemView->horizontalHeader()->setSortIndicatorShown(true);
+    _Ui->_ItemView->horizontalHeader()->setSectionsClickable(true);
     _Ui->_ItemView->horizontalHeader()->setFixedHeight(26);
     _Ui->_ItemView->horizontalHeader()->setMinimumSectionSize(30);
     _Ui->_ItemView->horizontalHeader()->setDefaultSectionSize(30);
@@ -138,6 +140,7 @@ void RaptorCleanPage::invokeUiInit()
     _Ui->_ItemView->setColumnWidth(3, 110);
     _Ui->_ItemView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     _Ui->_ItemView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    _Ui->_ItemView->setSortingEnabled(true);
     _Ui->_ItemNameTip->setText(QStringLiteral("名称:"));
     _Ui->_ItemCreatedTip->setText(QStringLiteral("创建时间:"));
     _Ui->_ItemSizeTip->setText(QStringLiteral("大小:"));
@@ -217,7 +220,7 @@ void RaptorCleanPage::onItemSpaceChanging()
 
 void RaptorCleanPage::onItemsFetched(const QVariant &qVariant)
 {
-    _Loading->invokeStateSet(RaptorLoading::State::Finished);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Finished);
     if (!RaptorStoreSuite::invokeUserIsValidConfirm())
     {
         _Ui->_ItemView->invokeServerCodeSet(RaptorTableView::Forbidden);
@@ -338,7 +341,7 @@ void RaptorCleanPage::onItemViewVerticalScrollValueChanged(const int &qValue) co
         return;
     }
 
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     auto input = RaptorInput();
     input._Marker = qMarker;
     Q_EMIT itemsFetching(QVariant::fromValue<RaptorInput>(input));

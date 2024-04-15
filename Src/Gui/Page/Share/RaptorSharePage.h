@@ -102,7 +102,7 @@ public Q_SLOTS:
     Q_SLOT void onItemsCancelled(const QVariant& qVariant);
 
 private Q_SLOTS:
-    Q_SLOT void onLoadingStateChanged(const RaptorLoading::State& state) const;
+    Q_SLOT void onItemViewLoadingStateChanged(const RaptorLoading::State& state) const;
 
     Q_SLOT void onExportClicked() const;
 
@@ -147,7 +147,7 @@ private:
     RaptorTableViewHeader* _ItemViewHeader = Q_NULLPTR;
     RaptorShareViewModel* _ItemViewModel = Q_NULLPTR;
     RaptorTableViewDelegate* _ItemViewDelegate = Q_NULLPTR;
-    RaptorLoading* _Loading = Q_NULLPTR;
+    RaptorLoading* _ItemViewLoading = Q_NULLPTR;
     Payload _Payload;
 };
 

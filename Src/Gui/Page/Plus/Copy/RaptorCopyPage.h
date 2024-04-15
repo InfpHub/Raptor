@@ -126,17 +126,17 @@ public Q_SLOTS:
     Q_SLOT void onSearchEditTextChanged(const QString& qText);
 
 private Q_SLOTS:
-    Q_SLOT void onSourceViewClicked() const;
+    Q_SLOT void onItemSourceViewClicked() const;
 
-    Q_SLOT void onSourceViewDoubleClicked(const QModelIndex& qIndex);
+    Q_SLOT void onItemSourceViewDoubleClicked(const QModelIndex& qIndex);
 
-    Q_SLOT void onTargetViewClicked() const;
+    Q_SLOT void onItemTargetViewClicked() const;
 
-    Q_SLOT void onTargetViewDoubleClicked(const QModelIndex& qIndex);
+    Q_SLOT void onItemTargetViewDoubleClicked(const QModelIndex& qIndex);
 
-    Q_SLOT void onSourceViewVerticalScrollValueChanged(const int& qValue) const;
+    Q_SLOT void onItemSourceViewVerticalScrollValueChanged(const int& qValue) const;
 
-    Q_SLOT void onTargetViewVerticalScrollValueChanged(const int& qValue) const;
+    Q_SLOT void onItemTargetViewVerticalScrollValueChanged(const int& qValue) const;
 
     Q_SLOT void onItemUserClicked();
 
@@ -152,17 +152,17 @@ private:
     Ui::RaptorCopyPage* _Ui = Q_NULLPTR;
     Payload _Payload;
     RaptorCopyUser* _CopyUser = Q_NULLPTR;
-    RaptorTableViewHeader* _SourceViewHeader = Q_NULLPTR;
-    RaptorTableViewHeader* _TargetViewHeader = Q_NULLPTR;
-    RaptorTableViewHeader* _QueueViewHeader = Q_NULLPTR;
-    RaptorSpaceViewModel* _QueueViewModel = Q_NULLPTR;
-    RaptorLoading* _SourceViewLoading = Q_NULLPTR;
-    RaptorLoading* _TargetViewLoading = Q_NULLPTR;
-    RaptorSpaceViewModel* _SourceViewModel = Q_NULLPTR;
-    RaptorSpaceViewModel* _TargetViewModel = Q_NULLPTR;
-    RaptorTableViewDelegate* _SourceViewDelegate = Q_NULLPTR;
-    RaptorTableViewDelegate* _TargetViewDelegate = Q_NULLPTR;
-    RaptorTableViewDelegate* _QueueViewDelegate = Q_NULLPTR;
+    RaptorTableViewHeader* _ItemSourceViewHeader = Q_NULLPTR;
+    RaptorTableViewHeader* _ItemTargetViewHeader = Q_NULLPTR;
+    RaptorTableViewHeader* _ItemQueueViewHeader = Q_NULLPTR;
+    RaptorSpaceViewModel* _ItemQueueViewModel = Q_NULLPTR;
+    RaptorLoading* _ItemSourceViewLoading = Q_NULLPTR;
+    RaptorLoading* _ItemTargetViewLoading = Q_NULLPTR;
+    RaptorSpaceViewModel* _ItemSourceViewModel = Q_NULLPTR;
+    RaptorSpaceViewModel* _ItemTargetViewModel = Q_NULLPTR;
+    RaptorTableViewDelegate* _ItemSourceViewDelegate = Q_NULLPTR;
+    RaptorTableViewDelegate* _ItemTargetViewDelegate = Q_NULLPTR;
+    RaptorTableViewDelegate* _ItemQueueViewDelegate = Q_NULLPTR;
 };
 
 #endif // RAPTORCOPYPAGE_H

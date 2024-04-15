@@ -48,16 +48,11 @@ public:
 
     static QPair<QString, QVector<RaptorFileItem> > invokeItemsWalk(const QString &qParent, const QString& qMarker = QString());
 
-    Q_INVOKABLE void invokeStop();
+    static QPair<QString, QVector<RaptorTransferItem>> invokeItemsLoad(const bool& qEmbed = true);
 
-private:
-    void invokeInstanceInit();
+    static QVector<RaptorTransferItem> invokeItemsByLimitSelect(const quint32 &qLimit, const bool& qEmbed = true);
 
-    void invokeSlotInit() const;
-
-    static QVector<RaptorTransferItem> invokeItemsByLimitSelect(const quint32 &qLimit);
-
-    static void invokeItemsSave(QVector<RaptorTransferItem> &items);
+    static void invokeItemsSave(QVector<RaptorTransferItem> &items, const bool& qEmbed = true);
 
     static void invokeItemDelete(const RaptorTransferItem &item);
 
@@ -70,8 +65,14 @@ private:
 
     static QPair<QString, QVector<RaptorTransferItem> > invokeItemsAssemble(const QVariant &qVariant);
 
-    void invokeItemDownload(const RaptorTransferItem &item);
+    Q_INVOKABLE void invokeStop();
 
+private:
+    void invokeInstanceInit();
+
+    void invokeSlotInit() const;
+
+    void invokeItemDownload(const RaptorTransferItem &item);
 
 Q_SIGNALS:
     Q_SIGNAL void itemsLoaded(const QVariant &qVariant) const;

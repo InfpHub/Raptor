@@ -34,8 +34,8 @@ void RaptorStarSuite::onItemsFetching(const QVariant& qVariant) const
 {
     const auto input = qVariant.value<RaptorInput>();
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/v2/file/list_by_custom_index_key";
-    USE_HEADER_DEFAULT(qHttpPayload)
+    qHttpPayload._Url = "https://api.alipan.com/v2/file/list_by_custom_index_key";
+    qUseHeaderDefault(qHttpPayload)
     auto qRow = QJsonObject();
     qRow["drive_id"] = RaptorStoreSuite::invokeUserGet()._Space;
     qRow["custom_index_key"] = "starred_yes";
@@ -76,7 +76,9 @@ void RaptorStarSuite::onItemsFetching(const QVariant& qVariant) const
         item._Name = iteo["name"].toString();
         if (iteo["type"].toString() == "file")
         {
-            item._Size = RaptorUtil::invokeStorageUnitConvert(iteo["size"].toVariant().toULongLong());
+            const auto qSize = iteo["size"].toVariant().toULongLong();
+            item._Byte = qSize;
+            item._Size = RaptorUtil::invokeStorageUnitConvert(qSize);
             item._Icon = RaptorUtil::invokeIconMatch(item._Name);
         }
         else
@@ -102,8 +104,8 @@ void RaptorStarSuite::onItemsByConditionFetching(const QVariant& qVariant) const
 {
     const auto input = qVariant.value<RaptorInput>();
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/adrive/v3/file/search";
-    USE_HEADER_DEFAULT(qHttpPayload)
+    qHttpPayload._Url = "https://api.alipan.com/adrive/v3/file/search";
+    qUseHeaderDefault(qHttpPayload)
     auto qCondition = QStringLiteral(R"(name match "%1" and starred match "true")").arg(input._Name);
     if (!input._Category.isEmpty() && !input._Type.isEmpty())
     {
@@ -213,8 +215,8 @@ void RaptorStarSuite::onItemsStarring(const QVariant& qVariant) const
     }
 
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/adrive/v4/batch";
-    USE_HEADER_DEFAULT(qHttpPayload)
+    qHttpPayload._Url = "https://api.alipan.com/adrive/v4/batch";
+    qUseHeaderDefault(qHttpPayload)
     auto qRow = QJsonObject();
     qRow["requests"] = qArray;
     qRow["resource"] = "file";

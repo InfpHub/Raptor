@@ -25,7 +25,7 @@
 #define RAPTORSPACEVIEWMODEL_H
 
 #include <QAbstractTableModel>
-#include <QBrush>
+#include <QCollator>
 
 #include "../../../Common/RaptorDeclare.h"
 
@@ -34,7 +34,7 @@ class RaptorSpaceViewModel Q_DECL_FINAL : public QAbstractTableModel
     Q_OBJECT
 
 public:
-    using QAbstractTableModel::QAbstractTableModel;
+    explicit RaptorSpaceViewModel(QObject *qParent = Q_NULLPTR);
 
     [[nodiscard]]
     QVariant headerData(int qSection,
@@ -63,6 +63,8 @@ public:
     [[nodiscard]]
     Qt::ItemFlags flags(const QModelIndex &qIndex) const Q_DECL_OVERRIDE;
 
+    void sort(int qColumn, Qt::SortOrder qOrder) Q_DECL_OVERRIDE;
+
     void invokeHeaderSet(const QVector<QString> &qHeader);
 
     void invokeColumnCountSet(const quint16 &qCount);
@@ -75,6 +77,27 @@ public:
 
     QVector<RaptorFileItem> invokeItemsEject();
 
+private:
+    void invokeInstanceInit();
+
+    [[nodiscard]]
+    bool invokeItemsByNameAscSort(const RaptorFileItem &item, const RaptorFileItem &iten) const;
+
+    [[nodiscard]]
+    bool invokeItemsByNameDescSort(const RaptorFileItem &item, const RaptorFileItem &iten) const;
+
+    [[nodiscard]]
+    bool invokeItemsBySizeAscSort(const RaptorFileItem &item, const RaptorFileItem &iten) const;
+
+    [[nodiscard]]
+    bool invokeItemsBySizeDescSort(const RaptorFileItem &item, const RaptorFileItem &iten) const;
+
+    [[nodiscard]]
+    bool invokeItemsByUpdatedAscSort(const RaptorFileItem &item, const RaptorFileItem &iten) const;
+
+    [[nodiscard]]
+    bool invokeItemsByUpdatedDescSort(const RaptorFileItem &item, const RaptorFileItem &iten) const;
+
 Q_SIGNALS:
     Q_SIGNAL void itemEdited(const QVariant &qVariant);
 
@@ -82,6 +105,7 @@ private:
     QVector<QString> _Headers;
     quint16 _ColumnCount;
     QVector<RaptorFileItem> _Items;
+    QCollator qCollator;
 };
 
 #endif // RAPTORSPACEVIEWMODEL_H

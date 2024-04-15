@@ -34,112 +34,112 @@
 
 #define GITHUB "@PROJECT_HOMEPAGE_URL@"
 
-#define INFORMATION_TEMPLATE R"(<span style="font-size: 12px; color: rgba(112, 192, 232, 1);">%1</span>)"
-#define SUCCESS_TEMPLATE R"(<span style="font-size: 12px; color: rgba(99, 226, 183, 1);">%1</span>)"
-#define WARNING_TEMPLATE R"(<span style="font-size: 12px; color: rgba(242, 201, 125, 1);">%1</span>)"
-#define CRITICAL_TEMPLATE R"(<span style="font-size: 12px; color: rgba(232, 128, 128, 1);">%1</span>)"
-#define CREATIVE_TEMPLATE R"(<span style="font-size: 12px; color: rgba(184, 112, 232, 1);">%1</span>)"
+#define qInformationTemplate R"(<span style="font-size: 12px; color: rgba(112, 192, 232, 1);">%1</span>)"
+#define qSuccessTemplate R"(<span style="font-size: 12px; color: rgba(99, 226, 183, 1);">%1</span>)"
+#define qWarningTemplate R"(<span style="font-size: 12px; color: rgba(242, 201, 125, 1);">%1</span>)"
+#define qCriticalTemplate R"(<span style="font-size: 12px; color: rgba(232, 128, 128, 1);">%1</span>)"
+#define qCreativeTemplate R"(<span style="font-size: 12px; color: rgba(184, 112, 232, 1);">%1</span>)"
 
-#define FREE(qPointer) \
+#define qFree(qPointer) \
         if (qPointer) \
         { \
             delete qPointer; \
             qPointer = Q_NULLPTR; \
         }
 
-#define USE_HEADER_X_CANARY(qHttpPayload) \
+#define qUseHeaderXCanary(qHttpPayload) \
         do \
         { \
-            qHttpPayload._Header.insert(RaptorHttpHeader::XCanary, "client=windows,app=adrive,version=v4.12.0"); \
+            qHttpPayload._Header.insert(RaptorHttpHeader::XCanary, "client=windows,app=adrive,version=v4.13.1"); \
         } while(0);
 
-#define USE_HEADER_REFERER(qHttpPayload) \
+#define qUseHeaderReferer(qHttpPayload) \
         do \
         { \
             qHttpPayload._Header.insert(RaptorHttpHeader::Referer, "https://www.alipan.com/"); \
         } while(0);
 
-#define USE_HEADER_X_SHARE_TOKEN(qHttpPayload, qValue) \
+#define qUseHeaderXShareToken(qHttpPayload, qValue) \
         do \
         { \
             qHttpPayload._Header.insert(RaptorHttpHeader::XShareToken, qValue); \
         } while(0);
 
-#define USE_HEADER_DEFAULT_X_DEVICE_ID(qHttpPayload) \
+#define qUseHeaderDefaultXDeviceId(qHttpPayload) \
         do \
         { \
             qHttpPayload._Header.insert(RaptorHttpHeader::XDeviceId, RaptorStoreSuite::invokeUserGet()._Session._Device); \
         } while(0);
 
-#define USE_HEADER_X_SIGNATURE(qHttpPayload) \
+#define qUseHeaderXSignature(qHttpPayload) \
         do \
         { \
             qHttpPayload._Header.insert(RaptorHttpHeader::XSignature, RaptorStoreSuite::invokeUserGet()._Session._Signature); \
         } while(0);
 
-#define USE_HEADER_DEFAULT_AUTHORIZATION(qHttpPayload) \
+#define qUseHeaderDefaultAuthorization(qHttpPayload) \
         do \
         { \
             qHttpPayload._Header.insert(RaptorHttpHeader::Authorization, RaptorHttpHeader::Bearer + RaptorStoreSuite::invokeUserGet()._AccessToken); \
         } while(0);
 
-#define USE_HEADER_APPLICATION_JSON(qHttpPayload) \
+#define qUseHeaderApplicationJson(qHttpPayload) \
         do \
         { \
             qHttpPayload._Header.insert(RaptorHttpHeader::ContentType, RaptorHttpHeader::ApplicationJson); \
         } while(0);
 
-#define USE_HEADER_APPLICATION_URL_ENCODED(qHttpPayload) \
+#define qUseHeaderApplicationUrlEncoded(qHttpPayload) \
         do \
         { \
             qHttpPayload._Header.insert(RaptorHttpHeader::ContentType, RaptorHttpHeader::ApplicationUrlEncoded); \
         } while(0);
 
-#define USE_HEADER_DEFAULT(qHttpPayload) \
-        USE_HEADER_X_CANARY(qHttpPayload) \
-        USE_HEADER_REFERER(qHttpPayload) \
-        USE_HEADER_DEFAULT_X_DEVICE_ID(qHttpPayload) \
-        USE_HEADER_X_SIGNATURE(qHttpPayload) \
-        USE_HEADER_DEFAULT_AUTHORIZATION(qHttpPayload) \
-        USE_HEADER_APPLICATION_JSON(qHttpPayload)
+#define qUseHeaderDefault(qHttpPayload) \
+        qUseHeaderXCanary(qHttpPayload) \
+        qUseHeaderReferer(qHttpPayload) \
+        qUseHeaderDefaultXDeviceId(qHttpPayload) \
+        qUseHeaderXSignature(qHttpPayload) \
+        qUseHeaderDefaultAuthorization(qHttpPayload) \
+        qUseHeaderApplicationJson(qHttpPayload)
 
-#define USE_HEADER_CUSTOM_X_DEVICE_ID(qHttpPayload, qValue) \
+#define qUseHeaderCustomXDeviceId(qHttpPayload, qValue) \
         do \
         { \
             qHttpPayload._Header.insert(RaptorHttpHeader::XDeviceId, qValue); \
         } while(0);
 
-#define USE_HEADER_CUSTOM_X_SIGNATURE(qHttpPayload, qValue) \
+#define qUseHeaderCustomXSignature(qHttpPayload, qValue) \
         do \
         { \
             qHttpPayload._Header.insert(RaptorHttpHeader::XSignature, qValue); \
         } while(0);
 
-#define USE_HEADER_CUSTOM_AUTHORIZATION(qHttpPayload, qValue) \
+#define qUseHeaderCustomAuthorization(qHttpPayload, qValue) \
         do \
         { \
             qHttpPayload._Header.insert(RaptorHttpHeader::Authorization, RaptorHttpHeader::Bearer + qValue); \
         } while(0);
 
-#define USE_QUERY_APPLICATION_NAME(qHttpPayload) \
+#define qUseQueryApplicationName(qHttpPayload) \
         do \
         { \
            qHttpPayload._Query.insert("appName", "aliyun_drive"); \
         } while(0);
 
-#define USE_QUERY_FROM_SITE(qHttpPayload) \
+#define qUseQueryFromSite(qHttpPayload) \
         do \
         { \
            qHttpPayload._Query.insert("fromSite", "52"); \
         } while(0);
 
-#define USE_QUERY_CUSTOM_TIMESTAMP(qHttpPayload, qValue) \
+#define qUseQueryCustomTimestamp(qHttpPayload, qValue) \
         do \
         { \
            qHttpPayload._Query.insert("t", qValue); \
         } while(0);
 
-#define USE_QUERY_CUSTOM_COOKIE(qHttpPayload, qValue) \
+#define qUseQueryCustomCookie(qHttpPayload, qValue) \
         do \
         { \
            qHttpPayload._Query.insert("ck", qValue); \

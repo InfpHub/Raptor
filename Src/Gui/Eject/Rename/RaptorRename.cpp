@@ -33,7 +33,7 @@ RaptorRename::RaptorRename(QWidget *qParent) : RaptorEject(qParent),
 
 RaptorRename::~RaptorRename()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 bool RaptorRename::eventFilter(QObject *qObject, QEvent *qEvent)
@@ -56,41 +56,41 @@ bool RaptorRename::eventFilter(QObject *qObject, QEvent *qEvent)
 
 void RaptorRename::invokeEject(const QVariant &qVariant)
 {
-    _SourceViewModel->invokeItemsClear();
-    _TargetViewModel->invokeItemsClear();
+    _ItemSourceViewModel->invokeItemsClear();
+    _ItemTargetViewModel->invokeItemsClear();
     const auto [qIndexList, qParent] = qVariant.value<QPair<QModelIndexList, QString> >();
     _Payload._Items.clear();
     _Payload._Parent = qParent;
     for (auto &qIndex: qIndexList)
     {
         const auto item = qIndex.data(Qt::UserRole).value<RaptorFileItem>();
-        _SourceViewModel->invokeItemAppend(item);
-        _TargetViewModel->invokeItemAppend(item);
+        _ItemSourceViewModel->invokeItemAppend(item);
+        _ItemTargetViewModel->invokeItemAppend(item);
     }
 
-    _Ui->_Title->setText(QString(CREATIVE_TEMPLATE).arg(QStringLiteral("重命名 %1 个文件").arg(qIndexList.length())));
+    _Ui->_Title->setText(QString(qCreativeTemplate).arg(QStringLiteral("重命名 %1 个文件").arg(qIndexList.length())));
     RaptorEject::invokeEject(qVariant);
 }
 
 void RaptorRename::invokeInstanceInit()
 {
     RaptorEject::invokeInstanceInit();
-    _SourceViewHeader = new RaptorTableViewHeader(Qt::Horizontal, _Ui->_SourceView);
-    _SourceViewHeader->invokeIconSet(RaptorUtil::invokeIconMatch("Legend", false, true));
-    _SourceViewModel = new RaptorSpaceViewModel(this);
+    _ItemSourceViewHeader = new RaptorTableViewHeader(Qt::Horizontal, _Ui->_ItemSourceView);
+    _ItemSourceViewHeader->invokeIconSet(RaptorUtil::invokeIconMatch("Legend", false, true));
+    _ItemSourceViewModel = new RaptorSpaceViewModel(_Ui->_ItemSourceView);
     auto qHeader = QVector<QString>();
     qHeader << QStringLiteral("源名称");
-    _SourceViewModel->invokeHeaderSet(qHeader);
-    _SourceViewModel->invokeColumnCountSet(2);
-    _TargetViewHeader = new RaptorTableViewHeader(Qt::Horizontal, _Ui->_TargetView);
-    _TargetViewHeader->invokeIconSet(RaptorUtil::invokeIconMatch("Legend", false, true));
-    _TargetViewModel = new RaptorSpaceViewModel(this);
+    _ItemSourceViewModel->invokeHeaderSet(qHeader);
+    _ItemSourceViewModel->invokeColumnCountSet(2);
+    _ItemTargetViewHeader = new RaptorTableViewHeader(Qt::Horizontal, _Ui->_ItemTargetView);
+    _ItemTargetViewHeader->invokeIconSet(RaptorUtil::invokeIconMatch("Legend", false, true));
+    _ItemTargetViewModel = new RaptorSpaceViewModel(_Ui->_ItemTargetView);
     qHeader.clear();
     qHeader << QStringLiteral("新名称");
-    _TargetViewModel->invokeHeaderSet(qHeader);
-    _TargetViewModel->invokeColumnCountSet(2);
-    _SourceViewDelegate = new RaptorTableViewDelegate(this);
-    _TargetViewDelegate = new RaptorTableViewDelegate(this);
+    _ItemTargetViewModel->invokeHeaderSet(qHeader);
+    _ItemTargetViewModel->invokeColumnCountSet(2);
+    _ItemSourceViewDelegate = new RaptorTableViewDelegate(this);
+    _ItemTargetViewDelegate = new RaptorTableViewDelegate(this);
 }
 
 void RaptorRename::invokeUiInit()
@@ -99,36 +99,36 @@ void RaptorRename::invokeUiInit()
     installEventFilter(this);
     _Ui->_Close->setIcon(QIcon(RaptorUtil::invokeIconMatch("Close", false, true)));
     _Ui->_Close->setIconSize(QSize(10, 10));
-    _Ui->_SourceView->setModel(_SourceViewModel);
-    _Ui->_SourceView->setHorizontalHeader(_SourceViewHeader);
-    _Ui->_SourceView->setItemDelegate(_SourceViewDelegate);
-    _Ui->_SourceView->setContextMenuPolicy(Qt::NoContextMenu);
-    _Ui->_SourceView->horizontalHeader()->setFixedHeight(26);
-    _Ui->_SourceView->horizontalHeader()->setMinimumSectionSize(30);
-    _Ui->_SourceView->horizontalHeader()->setDefaultSectionSize(30);
-    _Ui->_SourceView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
-    _Ui->_SourceView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
-    _Ui->_SourceView->verticalHeader()->setDefaultSectionSize(26);
-    _Ui->_SourceView->verticalHeader()->setHidden(true);
-    _Ui->_SourceView->setShowGrid(false);
-    _Ui->_SourceView->setColumnWidth(0, 30);
-    _Ui->_SourceView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    _Ui->_SourceView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    _Ui->_TargetView->setModel(_TargetViewModel);
-    _Ui->_TargetView->setHorizontalHeader(_TargetViewHeader);
-    _Ui->_TargetView->setItemDelegate(_TargetViewDelegate);
-    _Ui->_TargetView->setContextMenuPolicy(Qt::NoContextMenu);
-    _Ui->_TargetView->horizontalHeader()->setFixedHeight(26);
-    _Ui->_TargetView->horizontalHeader()->setMinimumSectionSize(30);
-    _Ui->_TargetView->horizontalHeader()->setDefaultSectionSize(30);
-    _Ui->_TargetView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
-    _Ui->_TargetView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
-    _Ui->_TargetView->verticalHeader()->setDefaultSectionSize(26);
-    _Ui->_TargetView->verticalHeader()->setHidden(true);
-    _Ui->_TargetView->setShowGrid(false);
-    _Ui->_TargetView->setColumnWidth(0, 30);
-    _Ui->_TargetView->setEditTriggers(QAbstractItemView::DoubleClicked);
-    _Ui->_TargetView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    _Ui->_ItemSourceView->setModel(_ItemSourceViewModel);
+    _Ui->_ItemSourceView->setHorizontalHeader(_ItemSourceViewHeader);
+    _Ui->_ItemSourceView->setItemDelegate(_ItemSourceViewDelegate);
+    _Ui->_ItemSourceView->setContextMenuPolicy(Qt::NoContextMenu);
+    _Ui->_ItemSourceView->horizontalHeader()->setFixedHeight(26);
+    _Ui->_ItemSourceView->horizontalHeader()->setMinimumSectionSize(30);
+    _Ui->_ItemSourceView->horizontalHeader()->setDefaultSectionSize(30);
+    _Ui->_ItemSourceView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
+    _Ui->_ItemSourceView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    _Ui->_ItemSourceView->verticalHeader()->setDefaultSectionSize(26);
+    _Ui->_ItemSourceView->verticalHeader()->setHidden(true);
+    _Ui->_ItemSourceView->setShowGrid(false);
+    _Ui->_ItemSourceView->setColumnWidth(0, 30);
+    _Ui->_ItemSourceView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    _Ui->_ItemSourceView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    _Ui->_ItemTargetView->setModel(_ItemTargetViewModel);
+    _Ui->_ItemTargetView->setHorizontalHeader(_ItemTargetViewHeader);
+    _Ui->_ItemTargetView->setItemDelegate(_ItemTargetViewDelegate);
+    _Ui->_ItemTargetView->setContextMenuPolicy(Qt::NoContextMenu);
+    _Ui->_ItemTargetView->horizontalHeader()->setFixedHeight(26);
+    _Ui->_ItemTargetView->horizontalHeader()->setMinimumSectionSize(30);
+    _Ui->_ItemTargetView->horizontalHeader()->setDefaultSectionSize(30);
+    _Ui->_ItemTargetView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
+    _Ui->_ItemTargetView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    _Ui->_ItemTargetView->verticalHeader()->setDefaultSectionSize(26);
+    _Ui->_ItemTargetView->verticalHeader()->setHidden(true);
+    _Ui->_ItemTargetView->setShowGrid(false);
+    _Ui->_ItemTargetView->setColumnWidth(0, 30);
+    _Ui->_ItemTargetView->setEditTriggers(QAbstractItemView::DoubleClicked);
+    _Ui->_ItemTargetView->setSelectionBehavior(QAbstractItemView::SelectRows);
     _Ui->_OK->setText(QStringLiteral("确定"));
     _Ui->_Cancel->setText(QStringLiteral("取消"));
 }
@@ -141,7 +141,7 @@ void RaptorRename::invokeSlotInit()
             this,
             &RaptorRename::onCloseClicked);
 
-    connect(_TargetViewModel,
+    connect(_ItemTargetViewModel,
             &RaptorSpaceViewModel::itemEdited,
             this,
             &RaptorRename::onTargetViewModelItemEdited);

@@ -48,19 +48,19 @@ public:
 
     Q_INVOKABLE void invokeStop() const;
 
+    Q_INVOKABLE void invokeAriaHostParse() const;
+
 private:
     void invokeInstanceInit();
 
     void invokeSlotInit() const;
-
-    static void invokeHeartbeatExplore(const QHostInfo &qHostInfo);
 
 Q_SIGNALS:
     Q_SIGNAL void itemCopyWriterHaveFound(const QVariant &qVariant) const;
 
     Q_SIGNAL void itemQrCodeEncoded(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemWebSocketConnectTested(const QVariant &qVariant) const;
+    Q_SIGNAL void itemAriaConnectTested(const QVariant &qVariant) const;
 
     Q_SIGNAL void itemProxyConnectTested(const QVariant &qVariant) const;
 
@@ -71,10 +71,16 @@ public Q_SLOT:
 
     Q_SLOT void onItemQrCodeEncoding(const QVariant &qVariant) const;
 
+    Q_SLOT void onItemAriaConnectTesting(const QVariant &qVariant) const;
+
     Q_SLOT void onItemProxyConnectTesting(const QVariant &qVariant) const;
 
 private Q_SLOTS:
-    Q_SLOT void onHeartbeatTimerTimeout();
+    Q_SLOT void onHeartbeatTimerTimeout() const;
+
+    Q_SLOT void onHeartbeatExploring(const QHostInfo &qHostInfo) const;
+
+    Q_SLOT void onAriaHostParsing(const QHostInfo &qHostInfo) const;
 
 private:
     QTimer *_HeartbeatTimer = Q_NULLPTR;

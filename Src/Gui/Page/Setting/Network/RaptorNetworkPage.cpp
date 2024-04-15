@@ -35,7 +35,7 @@ RaptorNetworkPage::RaptorNetworkPage(QWidget *qParent) : QWidget(qParent),
 
 RaptorNetworkPage::~RaptorNetworkPage()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 bool RaptorNetworkPage::eventFilter(QObject *qObject, QEvent *qEvent)
@@ -106,10 +106,10 @@ void RaptorNetworkPage::invokeUiInit()
                                                                 Setting::Network::ProxyPort).toString());
     _Ui->_ProxyPort->setValidator(new QRegularExpressionValidator(QRegularExpression{"[0-9]+$"}, this));
     _Ui->_ProxyPort->setContextMenuPolicy(Qt::NoContextMenu);
-    _Ui->_ProxyUserNameTip->setText(QStringLiteral("账号:"));
-    _Ui->_ProxyUserName->setText(RaptorSettingSuite::invokeItemFind(Setting::Section::Network,
-                                                                    Setting::Network::ProxyUserName).toString());
-    _Ui->_ProxyUserName->setContextMenuPolicy(Qt::NoContextMenu);
+    _Ui->_ProxyUsernameTip->setText(QStringLiteral("账号:"));
+    _Ui->_ProxyUsername->setText(RaptorSettingSuite::invokeItemFind(Setting::Section::Network,
+                                                                    Setting::Network::ProxyUsername).toString());
+    _Ui->_ProxyUsername->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_ProxyPasswordTip->setText(QStringLiteral("密码:"));
     _Ui->_ProxyPassword->setText(RaptorSettingSuite::invokeItemFind(Setting::Section::Network,
                                                                     Setting::Network::ProxyPassword).toString());
@@ -184,10 +184,10 @@ void RaptorNetworkPage::invokeSlotInit() const
             this,
             &RaptorNetworkPage::onProxyPortTextChanged);
 
-    connect(_Ui->_ProxyUserName,
+    connect(_Ui->_ProxyUsername,
             &QLineEdit::textChanged,
             this,
-            &RaptorNetworkPage::onProxyUserNameTextChanged);
+            &RaptorNetworkPage::onProxyUsernameTextChanged);
 
     connect(_Ui->_ProxyPassword,
             &QLineEdit::textChanged,
@@ -230,7 +230,7 @@ void RaptorNetworkPage::onItemProxyConnectTested(const QVariant &qVariant) const
         return;
     }
 
-    RaptorToast::invokeSuccessEject("目标主机可连接!");
+    RaptorToast::invokeSuccessEject(QStringLiteral("目标主机可连接!"));
 }
 
 void RaptorNetworkPage::onDebounceTimerTimeout() const
@@ -363,9 +363,9 @@ void RaptorNetworkPage::onProxyPortTextChanged(const QString &qValue) const
     _DebounceTimer->start();
 }
 
-void RaptorNetworkPage::onProxyUserNameTextChanged(const QString &qValue) const
+void RaptorNetworkPage::onProxyUsernameTextChanged(const QString &qValue) const
 {
-    _DebounceTimer->setProperty(Setting::Network::ProxyUserName,
+    _DebounceTimer->setProperty(Setting::Network::ProxyUsername,
                                 QVariant::fromValue<QPair<QString, QVariant> >(
                                     qMakePair(Setting::Section::Network, QVariant::fromValue<QString>(qValue))));
     _DebounceTimer->start();
@@ -433,7 +433,7 @@ void RaptorNetworkPage::onProxyTestClicked() const
         input._Type = Setting::Network::SOCKS5;
     }
 
-    input._Name = _Ui->_ProxyUserName->text();
+    input._Name = _Ui->_ProxyUsername->text();
     input._Password = _Ui->_ProxyPassword->text();
     input._Variant = QVariant::fromValue<QPair<QString, QString> >(qMakePair(qHost, qPort));
     _Ui->_ProxyTest->setEnabled(false);

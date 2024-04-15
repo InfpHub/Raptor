@@ -106,7 +106,7 @@ private:
     RaptorMenu *_ItemViewContextMenu = Q_NULLPTR;
     RaptorTableViewHeader* _ItemViewHeader = Q_NULLPTR;
     RaptorCleanViewModel* _ItemViewModel = Q_NULLPTR;
-    RaptorLoading* _Loading = Q_NULLPTR;
+    RaptorLoading* _ItemViewLoading = Q_NULLPTR;
     RaptorTableViewDelegate* _ItemViewDelegate = Q_NULLPTR;
 };
 

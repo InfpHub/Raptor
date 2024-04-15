@@ -35,7 +35,7 @@ RaptorUploadPage::RaptorUploadPage(QWidget *qParent) : QWidget(qParent),
 
 RaptorUploadPage::~RaptorUploadPage()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 void RaptorUploadPage::invokeInstanceInit()
@@ -89,7 +89,7 @@ void RaptorUploadPage::invokeUiInit() const
     _Ui->_SkipNoRapid->setChecked(RaptorSettingSuite::invokeItemFind(Setting::Section::Upload,
                                                                      Setting::Upload::SkipNoRapid).toBool());
     _Ui->_SkipNoRapid->setText(QStringLiteral("跳过无法秒传的文件"));
-    _Ui->_ConcurrentTip->setText(QStringLiteral("并发:"));
+    _Ui->_ConcurrentTip->setText(QStringLiteral("同时上传:"));
     _Ui->_ConcurrentSlider->setValue(RaptorSettingSuite::invokeItemFind(Setting::Section::Upload,
                                                                         Setting::Upload::Concurrent).toInt());
     _Ui->_Concurrent->setText(RaptorSettingSuite::invokeItemFind(Setting::Section::Upload,
@@ -170,7 +170,7 @@ void RaptorUploadPage::onFilterRemoveClicked() const
     const auto item = qIndex.data(Qt::UserRole).value<RaptorSettingItem>();
     if (const auto qOperate = RaptorMessageBox::invokeWarningEject(QStringLiteral("移除过滤规则"),
                                                                    QStringLiteral(R"(即将移除过滤规则 %1，是否继续？)").arg(
-                                                                       QString(INFORMATION_TEMPLATE).arg(
+                                                                       QString(qInformationTemplate).arg(
                                                                            item._Name)));
         qOperate == RaptorMessageBox::No)
     {

@@ -337,7 +337,7 @@
                                                         <number>12</number>
                                                     </property>
                                                     <item row="2" column="0">
-                                                        <widget class="QLabel" name="_ProxyUserNameTip">
+                                                        <widget class="QLabel" name="_ProxyUsernameTip">
                                                             <property name="minimumSize">
                                                                 <size>
                                                                     <width>0</width>
@@ -359,7 +359,7 @@
                                                         </widget>
                                                     </item>
                                                     <item row="2" column="1">
-                                                        <widget class="QLineEdit" name="_ProxyUserName">
+                                                        <widget class="QLineEdit" name="_ProxyUsername">
                                                             <property name="minimumSize">
                                                                 <size>
                                                                     <width>0</width>

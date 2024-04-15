@@ -39,7 +39,19 @@ RaptorSettingSuite *RaptorSettingSuite::invokeSingletonGet()
 QVariant RaptorSettingSuite::invokeItemFind(const QString &qSection,
                                             const QString &qKey)
 {
+    if (qSection == Setting::Section::Ui && qKey == Setting::Ui::Font)
+    {
+        const auto qFontName = QFontDatabase::systemFont(QFontDatabase::GeneralFont).family();
+        _Config[qSection][qKey] = qFontName;
+        return qFontName;
+    }
+
     return _Config[qSection][qKey];
+}
+
+QVariant RaptorSettingSuite::invokeImmutableItemFind(const QString &qSection, const QString &qKey)
+{
+    return _ImmutableConfig[qSection][qKey];
 }
 
 void RaptorSettingSuite::invokeItemSave(const QString &qSection,
@@ -167,4 +179,6 @@ void RaptorSettingSuite::invokeLogicInit()
             }
         }
     }
+
+    _ImmutableConfig = _Config;
 }

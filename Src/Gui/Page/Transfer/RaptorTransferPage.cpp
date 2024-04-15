@@ -35,7 +35,7 @@ RaptorTransferPage::RaptorTransferPage(QWidget* qParent) : QWidget(qParent),
 
 RaptorTransferPage::~RaptorTransferPage()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 RaptorDownloadingPage* RaptorTransferPage::invokeDownloadingPageGet() const
@@ -189,6 +189,16 @@ void RaptorTransferPage::invokeItemsLocate(const QModelIndexList& qIndexList)
     {
         RaptorToast::invokeInformationEject(QStringLiteral("尚未选择任何文件，无法继续!"));
         return;
+    }
+
+    if (RaptorSettingSuite::invokeImmutableItemFind(Setting::Section::Download,
+        Setting::Download::PrimaryEngine).toString() == Setting::Download::Aria)
+    {
+        if (!RaptorStoreSuite::invokeAriaIsLocalHostGet())
+        {
+            RaptorToast::invokeWarningEject(QStringLiteral("无法定位下载到远程计算机的文件。"));
+            return;
+        }
     }
 
     if (qIndexList.length() == 1)

@@ -53,8 +53,8 @@ QPair<QString, QModelIndexList> RaptorTrashSuite::invokeItemsTrash(const QModelI
     }
 
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/adrive/v4/batch";
-    USE_HEADER_DEFAULT(qHttpPayload)
+    qHttpPayload._Url = "https://api.alipan.com/adrive/v4/batch";
+    qUseHeaderDefault(qHttpPayload)
     auto qRow = QJsonObject();
     qRow["requests"] = qArray;
     qRow["resource"] = "file";
@@ -76,19 +76,72 @@ QPair<QString, QModelIndexList> RaptorTrashSuite::invokeItemsTrash(const QModelI
     return qMakePair(QString(), qIndexList);
 }
 
+QPair<QString, QModelIndexList> RaptorTrashSuite::invokeItemsDelete(const QModelIndexList &qIndexList)
+{
+    auto qArray = QJsonArray();
+    for (const auto &qIndex: qIndexList)
+    {
+        auto qId = QString();
+        if (qIndex.data(Qt::UserRole).canConvert<RaptorFileItem>())
+        {
+            qId = qIndex.data(Qt::UserRole).value<RaptorFileItem>()._Id;
+        } else if (qIndex.data(Qt::UserRole).canConvert<RaptorTrashItem>())
+        {
+            qId = qIndex.data(Qt::UserRole).value<RaptorTrashItem>()._Id;
+        }
+
+        auto qBody = QJsonObject();
+        qBody["drive_id"] = RaptorStoreSuite::invokeUserGet()._Space;
+        qBody["file_id"] = qId;
+
+        auto qHeader = QJsonObject();
+        qHeader["Content-Type"] = RaptorHttpHeader::ApplicationJson;
+
+        auto qRow = QJsonObject();
+        qRow["body"] = qBody;
+        qRow["headers"] = qHeader;
+        qRow["id"] = qId;
+        qRow["method"] = "POST";
+        qRow["url"] = "/file/delete";
+        qArray << qRow;
+    }
+
+    auto qHttpPayload = RaptorHttpPayload();
+    qHttpPayload._Url = "https://api.alipan.com/adrive/v4/batch";
+    qUseHeaderDefault(qHttpPayload)
+    auto qRow = QJsonObject();
+    qRow["requests"] = qArray;
+    qRow["resource"] = "file";
+    qHttpPayload._Body = QJsonDocument(qRow);
+    const auto [qError, qStatus, qBody] = RaptorHttpSuite::invokePost(qHttpPayload);
+    if (!qError.isEmpty())
+    {
+        qCritical() << qError;
+        return qMakePair(qError, qIndexList);
+    }
+
+    const auto qDocument = QJsonDocument::fromJson(qBody);
+    if (qStatus != RaptorHttpStatus::OK)
+    {
+        qCritical() << qDocument.toJson();
+        return qMakePair(QString("%1: %2").arg(qDocument["code"].toString(), qDocument["message"].toString()), qIndexList);
+    }
+
+    return qMakePair(QString(), qIndexList);
+}
+
 void RaptorTrashSuite::onItemsFetching(const QVariant &qVariant) const
 {
     const auto input = qVariant.value<RaptorInput>();
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/adrive/v2/recyclebin/list";
-    USE_HEADER_DEFAULT(qHttpPayload)
+    qHttpPayload._Url = "https://api.alipan.com/adrive/v2/recyclebin/list";
+    qUseHeaderDefault(qHttpPayload)
     auto qRow = QJsonObject();
     qRow["drive_id"] = RaptorStoreSuite::invokeUserGet()._Space;
     qRow["limit"] = 100;
     qRow["marker"] = input._Marker;
     qRow["order_by"] = "name";
     qRow["order_direction"] = "DESC";
-    qRow["marker"] = input._Marker;
     qHttpPayload._Body = QJsonDocument(qRow);
     auto output = RaptorOutput();
     const auto [qError, qStatus, qBody] = RaptorHttpSuite::invokePost(qHttpPayload);
@@ -128,7 +181,9 @@ void RaptorTrashSuite::onItemsFetching(const QVariant &qVariant) const
         item._SHA1 = iteo["content_hash"].toString();
         if (iteo["type"].toString() == "file")
         {
-            item._Size = RaptorUtil::invokeStorageUnitConvert(iteo["size"].toVariant().toULongLong());
+            const auto qSize = iteo["size"].toVariant().toULongLong();
+            item._Byte = qSize;
+            item._Size = RaptorUtil::invokeStorageUnitConvert(qSize);
             item._Icon = RaptorUtil::invokeIconMatch(item._Name);
         } else
         {
@@ -188,8 +243,8 @@ void RaptorTrashSuite::onItemsRecovering(const QVariant &qVariant) const
     }
 
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/adrive/v4/batch";
-    USE_HEADER_DEFAULT(qHttpPayload)
+    qHttpPayload._Url = "https://api.alipan.com/adrive/v4/batch";
+    qUseHeaderDefault(qHttpPayload)
     auto qRow = QJsonObject();
     qRow["requests"] = qArray;
     qRow["resource"] = "file";
@@ -223,64 +278,19 @@ void RaptorTrashSuite::onItemsRecovering(const QVariant &qVariant) const
 void RaptorTrashSuite::onItemsDeleting(const QVariant &qVariant) const
 {
     const auto input = qVariant.value<RaptorInput>();
-    auto qArray = QJsonArray();
-    for (const auto &qIndex: input._Indexes)
-    {
-        const auto item = qIndex.data(Qt::UserRole).value<RaptorTrashItem>();
-        auto qBody = QJsonObject();
-        qBody["drive_id"] = RaptorStoreSuite::invokeUserGet()._Space;
-        qBody["file_id"] = item._Id;
-
-        auto qHeader = QJsonObject();
-        qHeader["Content-Type"] = RaptorHttpHeader::ApplicationJson;
-
-        auto qRow = QJsonObject();
-        qRow["body"] = qBody;
-        qRow["headers"] = qHeader;
-        qRow["id"] = item._Id;
-        qRow["method"] = "POST";
-        qRow["url"] = "/file/delete";
-        qArray << qRow;
-    }
-
-    auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/adrive/v4/batch";
-    USE_HEADER_DEFAULT(qHttpPayload)
-    auto qRow = QJsonObject();
-    qRow["requests"] = qArray;
-    qRow["resource"] = "file";
-    qHttpPayload._Body = QJsonDocument(qRow);
+    const auto [qError, qIndexList] = invokeItemsDelete(input._Indexes);
     auto output = RaptorOutput();
-    const auto [qError, qStatus, qBody] = RaptorHttpSuite::invokePost(qHttpPayload);
-    if (!qError.isEmpty())
-    {
-        qCritical() << qError;
-        output._State = false;
-        output._Message = qError;
-        Q_EMIT itemsDeleted(QVariant::fromValue<RaptorOutput>(output));
-        return;
-    }
-
-    const auto qDocument = QJsonDocument::fromJson(qBody);
-    if (qStatus != RaptorHttpStatus::OK)
-    {
-        qCritical() << qDocument.toJson();
-        output._State = false;
-        output._Message = QString("%1: %2").arg(qDocument["code"].toString(), qDocument["message"].toString());
-        Q_EMIT itemsDeleted(QVariant::fromValue<RaptorOutput>(output));
-        return;
-    }
-
-    output._State = true;
-    output._Data = QVariant::fromValue<QModelIndexList>(input._Indexes);
+    output._State = qError.isEmpty();
+    output._Message = qError;
+    output._Data = QVariant::fromValue<QModelIndexList>(qIndexList);
     Q_EMIT itemsDeleted(QVariant::fromValue<RaptorOutput>(output));
 }
 
 void RaptorTrashSuite::onItemsClearing() const
 {
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/v2/recyclebin/clear";
-    USE_HEADER_DEFAULT(qHttpPayload)
+    qHttpPayload._Url = "https://api.alipan.com/v2/recyclebin/clear";
+    qUseHeaderDefault(qHttpPayload)
     auto qRow = QJsonObject();
     qRow["drive_id"] = RaptorStoreSuite::invokeUserGet()._Space;
     qHttpPayload._Body = QJsonDocument(qRow);

@@ -35,7 +35,7 @@ RaptorOtherPage::RaptorOtherPage(QWidget* qParent) : QWidget(qParent),
 
 RaptorOtherPage::~RaptorOtherPage()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 void RaptorOtherPage::invokeInstanceInit()

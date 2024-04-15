@@ -74,7 +74,7 @@ public:
 
     static QString invokeCompileTimestampCompute();
 
-    static QSize invokePrimaryDesktopGeometryCompute();
+    static QSize invokePrimaryScreenSizeGet();
 
     static void invokeItemLocate(const QString &qPath);
 
@@ -95,6 +95,8 @@ public:
     static QQueue<QPair<qint64, qint64> > invokeItemRangeCompute(const qint64 &qValue, const quint16& qCount);
 
     static QString invokeUUIDGenerate();
+
+    static QString invokeLeafIdGenerate();
 
     static QString invokePasswordGenerate();
 

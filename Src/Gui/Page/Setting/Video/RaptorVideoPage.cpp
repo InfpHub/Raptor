@@ -35,19 +35,19 @@ RaptorVideoPage::RaptorVideoPage(QWidget *qParent) : QWidget(qParent),
 
 RaptorVideoPage::~RaptorVideoPage()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 void RaptorVideoPage::invokeInstanceInit()
 {
-    _EngineViewDelegate = new RaptorTableViewDelegate(this);
-    _EngineViewHeader = new RaptorTableViewHeader(Qt::Horizontal, _Ui->_EngineView);
-    _EngineViewHeader->invokeIconSet(RaptorUtil::invokeIconMatch("Legend", false, true));
-    _EngineViewModel = new RaptorSettingViewModel(this);
+    _ThirdPartyEngineViewDelegate = new RaptorTableViewDelegate(this);
+    _ThirdPartyEngineViewHeader = new RaptorTableViewHeader(Qt::Horizontal, _Ui->_ThirdPartyEngineView);
+    _ThirdPartyEngineViewHeader->invokeIconSet(RaptorUtil::invokeIconMatch("Legend", false, true));
+    _ThirdPartyEngineViewModel = new RaptorSettingViewModel(this);
     auto qHeader = QVector<QString>();
     qHeader << QStringLiteral("名称") << QStringLiteral("路径");
-    _EngineViewModel->invokeHeaderSet(qHeader);
-    _EngineViewModel->invokeColumnCountSet(3);
+    _ThirdPartyEngineViewModel->invokeHeaderSet(qHeader);
+    _ThirdPartyEngineViewModel->invokeColumnCountSet(3);
 
     _QualityGroup = new QButtonGroup(this);
     _QualityGroup->addButton(_Ui->_QualitySD);
@@ -68,38 +68,38 @@ void RaptorVideoPage::invokeInstanceInit()
 
 void RaptorVideoPage::invokeUiInit() const
 {
-    _Ui->_EngineTip->setText(QStringLiteral("引擎:"));
-    _Ui->_EngineView->setModel(_EngineViewModel);
-    _Ui->_EngineView->setHorizontalHeader(_EngineViewHeader);
-    _Ui->_EngineView->setItemDelegate(_EngineViewDelegate);
-    _Ui->_EngineView->setContextMenuPolicy(Qt::NoContextMenu);
-    _Ui->_EngineView->horizontalHeader()->setFixedHeight(26);
-    _Ui->_EngineView->horizontalHeader()->setMinimumSectionSize(30);
-    _Ui->_EngineView->horizontalHeader()->setDefaultSectionSize(30);
-    _Ui->_EngineView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
-    _Ui->_EngineView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Fixed);
-    _Ui->_EngineView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
-    _Ui->_EngineView->verticalHeader()->setDefaultSectionSize(26);
-    _Ui->_EngineView->verticalHeader()->setHidden(true);
-    _Ui->_EngineView->setShowGrid(false);
-    _Ui->_EngineView->setColumnWidth(0, 30);
-    _Ui->_EngineView->setColumnWidth(1, 80);
-    _Ui->_EngineView->setSelectionMode(QAbstractItemView::SingleSelection);
-    _Ui->_EngineView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    _Ui->_ThirdPartyEngineTip->setText(QStringLiteral("引擎:"));
+    _Ui->_ThirdPartyEngineView->setModel(_ThirdPartyEngineViewModel);
+    _Ui->_ThirdPartyEngineView->setHorizontalHeader(_ThirdPartyEngineViewHeader);
+    _Ui->_ThirdPartyEngineView->setItemDelegate(_ThirdPartyEngineViewDelegate);
+    _Ui->_ThirdPartyEngineView->setContextMenuPolicy(Qt::NoContextMenu);
+    _Ui->_ThirdPartyEngineView->horizontalHeader()->setFixedHeight(26);
+    _Ui->_ThirdPartyEngineView->horizontalHeader()->setMinimumSectionSize(30);
+    _Ui->_ThirdPartyEngineView->horizontalHeader()->setDefaultSectionSize(30);
+    _Ui->_ThirdPartyEngineView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
+    _Ui->_ThirdPartyEngineView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Fixed);
+    _Ui->_ThirdPartyEngineView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+    _Ui->_ThirdPartyEngineView->verticalHeader()->setDefaultSectionSize(26);
+    _Ui->_ThirdPartyEngineView->verticalHeader()->setHidden(true);
+    _Ui->_ThirdPartyEngineView->setShowGrid(false);
+    _Ui->_ThirdPartyEngineView->setColumnWidth(0, 30);
+    _Ui->_ThirdPartyEngineView->setColumnWidth(1, 80);
+    _Ui->_ThirdPartyEngineView->setSelectionMode(QAbstractItemView::SingleSelection);
+    _Ui->_ThirdPartyEngineView->setSelectionBehavior(QAbstractItemView::SelectRows);
     const auto qEngines = RaptorSettingSuite::invokeItemFind(Setting::Section::Video,
-                                                             Setting::Video::Engine).value<QVector<
+                                                             Setting::Video::ThirdPartyEngine).value<QVector<
         RaptorSettingItem> >();
     const auto qEngine = RaptorSettingSuite::invokeItemFind(Setting::Section::Video,
-                                                            Setting::Video::ActiveEngine).toString();
+                                                            Setting::Video::ThirdPartyActiveEngine).toString();
     for (auto i = 0; i < qEngines.length(); ++i)
     {
         auto qEnginf = qEngines[i];
         auto [_Icon, _Name, _Path] = qEnginf;
         qEnginf._Icon = RaptorUtil::invokeIconMatch(_Name, false, true);
-        _EngineViewModel->invokeItemAppend(qEnginf);
+        _ThirdPartyEngineViewModel->invokeItemAppend(qEnginf);
         if (qEngine == _Name)
         {
-            _Ui->_EngineView->setCurrentIndex(_Ui->_EngineView->model()->index(i, 0));
+            _Ui->_ThirdPartyEngineView->setCurrentIndex(_Ui->_ThirdPartyEngineView->model()->index(i, 0));
         }
     }
 
@@ -141,10 +141,10 @@ void RaptorVideoPage::invokeSlotInit() const
             this,
             &RaptorVideoPage::onDebounceTimerTimeout);
 
-    connect(_EngineViewModel,
+    connect(_ThirdPartyEngineViewModel,
             &RaptorSettingViewModel::itemEdited,
             this,
-            &RaptorVideoPage::onEngineViewModelItemEdited);
+            &RaptorVideoPage::onThirdPartyEngineViewModelItemEdited);
 
     connect(_Ui->_QualitySD,
             &QPushButton::clicked,
@@ -171,10 +171,10 @@ void RaptorVideoPage::invokeSlotInit() const
             this,
             &RaptorVideoPage::onQualityOriginClicked);
 
-    connect(_Ui->_EngineView,
+    connect(_Ui->_ThirdPartyEngineView,
             &QTableView::doubleClicked,
             this,
-            &RaptorVideoPage::onEngineViewDoubleClicked);
+            &RaptorVideoPage::onThirdPartyEngineViewDoubleClicked);
 
     connect(_Ui->_StreamQuick,
             &QPushButton::clicked,
@@ -207,7 +207,7 @@ void RaptorVideoPage::onDebounceTimerTimeout() const
     }
 }
 
-void RaptorVideoPage::onEngineViewModelItemEdited(const QVariant &qVariant) const
+void RaptorVideoPage::onThirdPartyEngineViewModelItemEdited(const QVariant &qVariant) const
 {
     const auto [_State, _Message, _Data] = qVariant.value<RaptorOutput>();
     if (!_State)
@@ -218,7 +218,7 @@ void RaptorVideoPage::onEngineViewModelItemEdited(const QVariant &qVariant) cons
 
     const auto item = _Data.value<QModelIndex>().data(Qt::UserRole).value<RaptorSettingItem>();
     auto qEngines = RaptorSettingSuite::invokeItemFind(Setting::Section::Video,
-                                                       Setting::Video::Engine).value<QVector<
+                                                       Setting::Video::ThirdPartyEngine).value<QVector<
         RaptorSettingItem> >();
     for (auto &iten: qEngines)
     {
@@ -229,17 +229,17 @@ void RaptorVideoPage::onEngineViewModelItemEdited(const QVariant &qVariant) cons
         }
     }
 
-    _DebounceTimer->setProperty(Setting::Video::Engine,
+    _DebounceTimer->setProperty(Setting::Video::ThirdPartyEngine,
                                 QVariant::fromValue<QPair<QString, QVariant> >(qMakePair(
                                     Setting::Section::Video,
                                     QVariant::fromValue<QVector<RaptorSettingItem> >(qEngines)))
     );
     _DebounceTimer->start();
     RaptorToast::invokeSuccessEject(
-        QStringLiteral(R"(播放引擎 %1 已更新!)").arg(QString(INFORMATION_TEMPLATE).arg(item._Name)));
+        QStringLiteral(R"(播放引擎 %1 已更新!)").arg(QString(qInformationTemplate).arg(item._Name)));
 }
 
-void RaptorVideoPage::onEngineViewDoubleClicked(const QModelIndex &qIndex) const
+void RaptorVideoPage::onThirdPartyEngineViewDoubleClicked(const QModelIndex &qIndex) const
 {
     if (qIndex.column() == 2)
     {
@@ -249,15 +249,15 @@ void RaptorVideoPage::onEngineViewDoubleClicked(const QModelIndex &qIndex) const
     const auto item = qIndex.data(Qt::UserRole).value<RaptorSettingItem>();
     if (const auto qOperate = RaptorMessageBox::invokeInformationEject(QStringLiteral("切换播放引擎"),
                                                                        QStringLiteral(R"(即将切换播放引擎到 %1，是否继续？)").arg(
-                                                                           QString(INFORMATION_TEMPLATE).arg(
+                                                                           QString(qInformationTemplate).arg(
                                                                                item._Name)));
         qOperate == RaptorMessageBox::No)
     {
         return;
     }
 
-    _Ui->_EngineView->setCurrentIndex(qIndex);
-    _DebounceTimer->setProperty(Setting::Video::ActiveEngine,
+    _Ui->_ThirdPartyEngineView->setCurrentIndex(qIndex);
+    _DebounceTimer->setProperty(Setting::Video::ThirdPartyActiveEngine,
                                 QVariant::fromValue<QPair<QString, QVariant> >(
                                     qMakePair(Setting::Section::Video, QVariant::fromValue<QString>(item._Name))));
     _DebounceTimer->start();

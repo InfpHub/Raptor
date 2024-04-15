@@ -69,8 +69,8 @@ void RaptorUploadingWorker::invokeInstanceInit()
 QPair<QString, RaptorFileItem> RaptorUploadingWorker::invokeItemByIdFetch(const QString &qId) const
 {
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/adrive/v1/file/get_path";
-    USE_HEADER_DEFAULT(qHttpPayload)
+    qHttpPayload._Url = "https://api.alipan.com/adrive/v1/file/get_path";
+    qUseHeaderDefault(qHttpPayload)
     auto qRow = QJsonObject();
     qRow["drive_id"] = _Item._Space;
     qRow["file_id"] = qId;
@@ -103,8 +103,8 @@ QPair<QString, RaptorFileItem> RaptorUploadingWorker::invokeItemByIdFetch(const 
 void RaptorUploadingWorker::invokeItemRapid()
 {
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/adrive/v2/file/createWithFolders";
-    USE_HEADER_DEFAULT(qHttpPayload)
+    qHttpPayload._Url = "https://api.alipan.com/adrive/v2/file/createWithFolders";
+    qUseHeaderDefault(qHttpPayload)
     auto qRow = QJsonObject();
     qRow["check_name_mode"] = "auto_rename";
     qRow["create_scene"] = "file_upload";
@@ -300,8 +300,8 @@ void RaptorUploadingWorker::invokeItemUpload()
 
         auto qHttpPayload = RaptorHttpPayload();
         qHttpPayload._Url = item._Url;
-        USE_HEADER_X_CANARY(qHttpPayload)
-        USE_HEADER_DEFAULT_AUTHORIZATION(qHttpPayload)
+        qUseHeaderXCanary(qHttpPayload)
+        qUseHeaderDefaultAuthorization(qHttpPayload)
         qHttpPayload._Content = qContent;
         if (const auto [qStatus, qBody] = invokeItemPartialUpload(qHttpPayload);
             qStatus == RaptorHttpStatus::BadRequest)
@@ -387,8 +387,8 @@ void RaptorUploadingWorker::invokeItemUpload()
 QPair<QString, QQueue<RaptorPartial> > RaptorUploadingWorker::invokeItemUploadUrlFetch() const
 {
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/v2/file/get_upload_url";
-    USE_HEADER_DEFAULT(qHttpPayload)
+    qHttpPayload._Url = "https://api.alipan.com/v2/file/get_upload_url";
+    qUseHeaderDefault(qHttpPayload)
     auto qRow = QJsonObject();
     qRow["drive_id"] = _Item._Space;
     qRow["file_id"] = _Item._LeafId;
@@ -427,8 +427,8 @@ QPair<QString, QQueue<RaptorPartial> > RaptorUploadingWorker::invokeItemUploadUr
 QPair<QString, quint32> RaptorUploadingWorker::invokeItemUploadedPartialFetch() const
 {
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/v2/file/list_uploaded_parts";
-    USE_HEADER_DEFAULT(qHttpPayload)
+    qHttpPayload._Url = "https://api.alipan.com/v2/file/list_uploaded_parts";
+    qUseHeaderDefault(qHttpPayload)
     auto qRow = QJsonObject();
     qRow["drive_id"] = _Item._Space;
     qRow["file_id"] = _Item._LeafId;
@@ -611,15 +611,15 @@ QPair<quint16, QByteArray> RaptorUploadingWorker::invokeItemPartialUpload(const 
                                                                    Setting::Network::ProxyPort).toUInt();
         curl_easy_setopt(_Curl, CURLOPT_PROXY, qProxyHost.toStdString().c_str());
         curl_easy_setopt(_Curl, CURLOPT_PROXYPORT, qProxyPort);
-        if (const auto qProxyUserName = RaptorSettingSuite::invokeItemFind(Setting::Section::Network,
-                                                                           Setting::Network::ProxyUserName).toString();
-            !qProxyUserName.isNull())
+        if (const auto qProxyUsername = RaptorSettingSuite::invokeItemFind(Setting::Section::Network,
+                                                                           Setting::Network::ProxyUsername).toString();
+            !qProxyUsername.isEmpty())
         {
-            curl_easy_setopt(_Curl, CURLOPT_PROXYUSERNAME, qProxyUserName.toStdString().c_str());
+            curl_easy_setopt(_Curl, CURLOPT_PROXYUSERNAME, qProxyUsername.toStdString().c_str());
         }
         if (const auto qProxyPassword = RaptorSettingSuite::invokeItemFind(Setting::Section::Network,
                                                                            Setting::Network::ProxyPassword).toString();
-            !qProxyPassword.isNull())
+            !qProxyPassword.isEmpty())
         {
             curl_easy_setopt(_Curl, CURLOPT_PROXYPASSWORD, qProxyPassword.toStdString().c_str());
         }
@@ -671,7 +671,7 @@ QPair<quint16, QByteArray> RaptorUploadingWorker::invokeItemPartialUpload(const 
     auto qStatus = quint32();
     curl_easy_perform(_Curl);
     curl_easy_getinfo(_Curl, CURLINFO_RESPONSE_CODE, &qStatus);
-    FREE(qStream)
+    qFree(qStream)
     curl_slist_free_all(qHeader);
     curl_url_cleanup(qCurlUrl);
     curl_easy_cleanup(_Curl);
@@ -681,8 +681,8 @@ QPair<quint16, QByteArray> RaptorUploadingWorker::invokeItemPartialUpload(const 
 void RaptorUploadingWorker::invokeItemComplete(RaptorTransferItem &item)
 {
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/v2/file/complete";
-    USE_HEADER_DEFAULT(qHttpPayload)
+    qHttpPayload._Url = "https://api.alipan.com/v2/file/complete";
+    qUseHeaderDefault(qHttpPayload)
     auto qRow = QJsonObject();
     qRow["drive_id"] = item._Space;
     qRow["upload_id"] = item._WorkerId;

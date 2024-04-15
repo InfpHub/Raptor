@@ -35,7 +35,7 @@ RaptorImport::RaptorImport(QWidget *qParent) : RaptorEject(qParent),
 
 RaptorImport::~RaptorImport()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 bool RaptorImport::eventFilter(QObject *qObject, QEvent *qEvent)
@@ -70,8 +70,8 @@ void RaptorImport::invokeEject(const QVariant &qVariant)
     _Variant = qVariant;
     _Ui->_Title->setText(
         QStringLiteral("导入分享到 %1").arg(
-            QString(CREATIVE_TEMPLATE).arg(_Variant.value<QPair<QString, QString> >().second)));
-    _Loading->invokeStateSet(RaptorLoading::State::Finished);
+            QString(qCreativeTemplate).arg(_Variant.value<QPair<QString, QString> >().second)));
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Finished);
     _ItemViewModel->invokeItemsClear();
     _Ui->_Link->clear();
     _Ui->_Password->clear();
@@ -98,7 +98,7 @@ void RaptorImport::invokeInstanceInit()
     _ItemViewModel->invokeHeaderSet(qHeader);
     _ItemViewModel->invokeColumnCountSet(3);
 
-    _Loading = new RaptorLoading(_Ui->_ItemView);
+    _ItemViewLoading = new RaptorLoading(_Ui->_ItemView);
 }
 
 void RaptorImport::invokeUiInit()
@@ -111,7 +111,7 @@ void RaptorImport::invokeUiInit()
     _Ui->_Link->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_PasswordTip->setText(QStringLiteral("提取码:"));
     _Ui->_Password->setContextMenuPolicy(Qt::NoContextMenu);
-    _Ui->_PasswordPanelTip->setText(QString(INFORMATION_TEMPLATE).arg(QStringLiteral("如无提取码或快传则无需填写")));
+    _Ui->_PasswordPanelTip->setText(QString(qInformationTemplate).arg(QStringLiteral("如无提取码或快传则无需填写")));
     _Ui->_TypeTip->setText(QStringLiteral("类型:"));
     _Ui->_Many->setText(QStringLiteral("分享"));
     _Ui->_One->setText(QStringLiteral("快传"));
@@ -145,10 +145,10 @@ void RaptorImport::invokeUiInit()
 void RaptorImport::invokeSlotInit()
 {
     RaptorEject::invokeSlotInit();
-    connect(_Loading,
+    connect(_ItemViewLoading,
             &RaptorLoading::stateChanged,
             this,
-            &RaptorImport::onLoadingStateChanged);
+            &RaptorImport::onItemViewLoadingStateChanged);
 
     connect(_Ui->_Close,
             &QPushButton::clicked,
@@ -213,7 +213,7 @@ void RaptorImport::invokeIconDrawing() const
 
 void RaptorImport::onItemParsed(const QVariant &qVariant)
 {
-    _Loading->invokeStateSet(RaptorLoading::State::Finished);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Finished);
     const auto [_State, _Message, _Data] = qVariant.value<RaptorOutput>();
     if (!_State)
     {
@@ -233,7 +233,7 @@ void RaptorImport::onItemParsed(const QVariant &qVariant)
     _Ui->_Body->setCurrentWidget(_Ui->_ItemWrapper);
 }
 
-void RaptorImport::onLoadingStateChanged(const RaptorLoading::State &state) const
+void RaptorImport::onItemViewLoadingStateChanged(const RaptorLoading::State &state) const
 {
     _Ui->_Import->setEnabled(state == RaptorLoading::State::Finished);
     _Ui->_ItemName->clear();
@@ -275,7 +275,7 @@ void RaptorImport::onParseClicked()
     input._Id = _Variant.value<QPair<QString, QString> >().first;
     if (_Ui->_Many->isChecked())
     {
-        // 链接：https://www.aliyundrive.com/s/6tZVWTj5fUz
+        // 链接：https://www.alipan.com/s/6tZVWTj5fUz
         // 链接：https://www.alipan.com/s/6tZVWTj5fUz
         // 提取码: h7p7
         const auto qLinkRegularExpressionMatch = QRegularExpression(
@@ -303,7 +303,7 @@ void RaptorImport::onParseClicked()
     } else if (_Ui->_One->isChecked())
     {
         // https://www.alipan.com/t/0Pcs5mqiU2mW2WV9PPfy
-        if (qLink.length() != 45 && qLink.left(27) != "https://www.aliyundrive.com/s/" &&
+        if (qLink.length() != 45 && qLink.left(27) != "https://www.alipan.com/s/" &&
             qLink.length() != 40 && qLink.left(22) != "https://www.alipan.com/s/")
         {
             RaptorToast::invokeCriticalEject(QStringLiteral("非法链接!"));
@@ -342,7 +342,7 @@ void RaptorImport::onItemViewDoubleClicked(const QModelIndex &qIndex)
     if (const auto item = qIndex.data(Qt::UserRole).value<RaptorFileItem>();
         item._Type == "folder")
     {
-        _Loading->invokeStateSet(RaptorLoading::State::Loading);
+        _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
         _Payload._Parent = item._Id;
         _Payload._Stack.push(item);
         _Payload._Marker.clear();
@@ -373,7 +373,7 @@ void RaptorImport::onItemViewSelectionChanged(const QItemSelection &qSelected,
 
 void RaptorImport::onItemRootClicked()
 {
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     _ItemViewModel->invokeItemsClear();
     _Payload._Parent = "root";
     _Payload._Stack.clear();
@@ -389,7 +389,7 @@ void RaptorImport::onItemBackClicked()
 {
     if (!_Payload._Stack.isEmpty())
     {
-        _Loading->invokeStateSet(RaptorLoading::State::Loading);
+        _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
         _ItemViewModel->invokeItemsClear();
         const auto item = _Payload._Stack.pop();
         if (_Payload._Stack.isEmpty())

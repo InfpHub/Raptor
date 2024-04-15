@@ -28,8 +28,10 @@
 #include <QObject>
 
 #include "../Gui/World/RaptorWorld.h"
+#include "../Suite/Aria/RaptorAriaSuite.h"
 #include "../Suite/Authentication/RaptorAuthenticationSuite.h"
 #include "../Suite/Clean/RaptorCleanSuite.h"
+#include "../Suite/Media/RaptorMediaSuite.h"
 #include "../Suite/Copilot/RaptorCopilotSuite.h"
 #include "../Suite/File/RaptorFileSuite.h"
 #include "../Suite/Downloading/RaptorDownloadingSuite.h"
@@ -49,7 +51,7 @@ class RaptorEngine Q_DECL_FINAL : public QObject
     Q_OBJECT
 
 public:
-    explicit RaptorEngine(QObject* qParent = Q_NULLPTR);
+    explicit RaptorEngine(QObject *qParent = Q_NULLPTR);
 
     ~RaptorEngine() Q_DECL_OVERRIDE;
 
@@ -65,27 +67,29 @@ private:
     static void invokeFontRegister();
 
     static void invokeMessageCallback(QtMsgType qType,
-                                      const QMessageLogContext& qContext,
-                                      const QString& qMessage);
+                                      const QMessageLogContext &qContext,
+                                      const QString &qMessage);
 
 private:
-    QThread* _SuiteThread = Q_NULLPTR;
-    RaptorPersistenceSuite* _PersistenceSuite = Q_NULLPTR;
-    RaptorAuthenticationSuite* _AuthenticationSuite = Q_NULLPTR;
-    RaptorFileSuite* _FileSuite = Q_NULLPTR;
-    RaptorDownloadingSuite* _DownloadingSuite = Q_NULLPTR;
-    RaptorDownloadedSuite* _DownloadedSuite = Q_NULLPTR;
-    RaptorUploadingSuite* _UploadingSuite = Q_NULLPTR;
-    RaptorUploadedSuite* _UploadedSuite = Q_NULLPTR;
-    RaptorShareSuite* _ShareSuite = Q_NULLPTR;
-    RaptorStarSuite* _StarSuite = Q_NULLPTR;
-    RaptorStoreSuite* _StoreSuite = Q_NULLPTR;
-    RaptorTrashSuite* _TrashSuite = Q_NULLPTR;
-    RaptorCopySuite* _CopySuite = Q_NULLPTR;
-    RaptorSettingSuite* _SettingSuite = Q_NULLPTR;
-    RaptorCopilotSuite* _CopilotSuite = Q_NULLPTR;
-    RaptorCleanSuite* _CleanSuite = Q_NULLPTR;
-    RaptorWorld* _World = Q_NULLPTR;
+    QThread *_SuiteThread = Q_NULLPTR;
+    RaptorSettingSuite *_SettingSuite = Q_NULLPTR;
+    RaptorPersistenceSuite *_PersistenceSuite = Q_NULLPTR;
+    RaptorAriaSuite *_AriaSuite = Q_NULLPTR;
+    RaptorAuthenticationSuite *_AuthenticationSuite = Q_NULLPTR;
+    RaptorFileSuite *_FileSuite = Q_NULLPTR;
+    RaptorDownloadingSuite *_DownloadingSuite = Q_NULLPTR;
+    RaptorDownloadedSuite *_DownloadedSuite = Q_NULLPTR;
+    RaptorUploadingSuite *_UploadingSuite = Q_NULLPTR;
+    RaptorUploadedSuite *_UploadedSuite = Q_NULLPTR;
+    RaptorShareSuite *_ShareSuite = Q_NULLPTR;
+    RaptorStarSuite *_StarSuite = Q_NULLPTR;
+    RaptorStoreSuite *_StoreSuite = Q_NULLPTR;
+    RaptorTrashSuite *_TrashSuite = Q_NULLPTR;
+    RaptorMediaSuite* _MediaSuite = Q_NULLPTR;
+    RaptorCopySuite *_CopySuite = Q_NULLPTR;
+    RaptorCopilotSuite *_CopilotSuite = Q_NULLPTR;
+    RaptorCleanSuite *_CleanSuite = Q_NULLPTR;
+    RaptorWorld *_World = Q_NULLPTR;
 };
 
 #endif // RAPTORENGINE_H

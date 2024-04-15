@@ -89,17 +89,9 @@ void RaptorTableView::invokeBackgroundPaint()
     }
 
     auto qColor = QColor();
-    auto qTheme = property(Setting::Ui::Theme).toString();
-    if (qTheme.isEmpty())
-    {
-        // 该属性为空则设置一次即可
-        // 避免在切换主题而程序没有重启的情况下基于最新的主题进行绘制
-        qTheme = RaptorSettingSuite::invokeItemFind(Setting::Section::Ui,
-                                                    Setting::Ui::Theme).toString();
-        setProperty(Setting::Ui::Theme, qTheme);
-    }
-
-    if (qTheme == Setting::Ui::Auto)
+    if (const auto qTheme = RaptorSettingSuite::invokeImmutableItemFind(Setting::Section::Ui,
+                                                                        Setting::Ui::Theme).toString();
+        qTheme == Setting::Ui::Auto)
     {
         if (RaptorUtil::invokeSystemDarkThemeConfirm())
         {

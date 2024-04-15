@@ -35,7 +35,7 @@ RaptorToast::RaptorToast(QWidget* qParent) : QWidget(qParent),
 
 RaptorToast::~RaptorToast()
 {
-    FREE(_Ui)
+    qFree(_Ui)
     _Instance = Q_NULLPTR;
 }
 

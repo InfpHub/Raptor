@@ -23,6 +23,11 @@
 
 #include "RaptorCleanViewModel.h"
 
+RaptorCleanViewModel::RaptorCleanViewModel(QObject *qParent) : QAbstractTableModel(qParent)
+{
+    invokeInstanceInit();
+}
+
 QVariant RaptorCleanViewModel::headerData(int qSection,
                                           Qt::Orientation qOrientation,
                                           int qRole) const
@@ -129,6 +134,56 @@ bool RaptorCleanViewModel::removeRows(int qRow,
     return true;
 }
 
+void RaptorCleanViewModel::sort(int qColumn, Qt::SortOrder qOrder)
+{
+    if (qColumn == 0)
+    {
+        return;
+    }
+
+    beginResetModel();
+    switch (qColumn)
+    {
+        case 1:
+        {
+            if (qOrder == Qt::AscendingOrder)
+            {
+                std::sort(_Items.begin(), _Items.end(), std::bind(invokeItemsByNameAscSort, this, std::placeholders::_1, std::placeholders::_2));
+            } else
+            {
+                std::sort(_Items.begin(), _Items.end(), std::bind(invokeItemsByNameDescSort, this, std::placeholders::_1, std::placeholders::_2));
+            }
+            break;
+        }
+        case 2:
+        {
+            if (qOrder == Qt::AscendingOrder)
+            {
+                std::sort(_Items.begin(), _Items.end(), std::bind(invokeItemsByDirAscSort, this, std::placeholders::_1, std::placeholders::_2));
+            } else
+            {
+                std::sort(_Items.begin(), _Items.end(), std::bind(invokeItemsByDirDescSort, this, std::placeholders::_1, std::placeholders::_2));
+            }
+            break;
+        }
+        case 3:
+        {
+            if (qOrder == Qt::AscendingOrder)
+            {
+                std::sort(_Items.begin(), _Items.end(), std::bind(invokeItemsBySizeAscSort, this, std::placeholders::_1, std::placeholders::_2));
+            } else
+            {
+                std::sort(_Items.begin(), _Items.end(), std::bind(invokeItemsBySizeDescSort, this, std::placeholders::_1, std::placeholders::_2));
+            }
+            break;
+        }
+        default:
+            break;
+    }
+
+    endResetModel();
+}
+
 void RaptorCleanViewModel::invokeHeaderSet(const QVector<QString> &qHeader)
 {
     _Headers = qHeader;
@@ -168,4 +223,41 @@ void RaptorCleanViewModel::invokeItemsClear()
 QVector<RaptorFileItem> RaptorCleanViewModel::invokeItemsEject()
 {
     return _Items;
+}
+
+void RaptorCleanViewModel::invokeInstanceInit()
+{
+    qCollator = QCollator(QLocale::Chinese);
+    qCollator.setNumericMode(false);
+    qCollator.setIgnorePunctuation(true);
+}
+
+bool RaptorCleanViewModel::invokeItemsByNameAscSort(const RaptorFileItem &item, const RaptorFileItem &iten) const
+{
+    return qCollator.compare(item._Name, iten._Name) < 0;
+}
+
+bool RaptorCleanViewModel::invokeItemsByNameDescSort(const RaptorFileItem &item, const RaptorFileItem &iten) const
+{
+    return qCollator.compare(item._Name, iten._Name) > 0;
+}
+
+bool RaptorCleanViewModel::invokeItemsByDirAscSort(const RaptorFileItem &item, const RaptorFileItem &iten) const
+{
+    return qCollator.compare(item._Dir, iten._Dir) < 0;
+}
+
+bool RaptorCleanViewModel::invokeItemsByDirDescSort(const RaptorFileItem &item, const RaptorFileItem &iten) const
+{
+    return qCollator.compare(item._Dir, iten._Dir) > 0;
+}
+
+bool RaptorCleanViewModel::invokeItemsBySizeAscSort(const RaptorFileItem &item, const RaptorFileItem &iten) const
+{
+    return item._Byte < iten._Byte;
+}
+
+bool RaptorCleanViewModel::invokeItemsBySizeDescSort(const RaptorFileItem &item, const RaptorFileItem &iten) const
+{
+    return item._Byte > iten._Byte;
 }

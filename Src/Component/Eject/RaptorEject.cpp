@@ -23,20 +23,22 @@
 
 #include "RaptorEject.h"
 
-RaptorEject::RaptorEject(QWidget* qParent) : QDialog(qParent)
+#include "../../Suite/Store/RaptorStoreSuite.h"
+
+RaptorEject::RaptorEject(QWidget *qParent) : QDialog(qParent)
 {
     invokeInstanceInit();
     invokeUiInit();
     invokeSlotInit();
 }
 
-bool RaptorEject::eventFilter(QObject* qObject, QEvent* qEvent)
+bool RaptorEject::eventFilter(QObject *qObject, QEvent *qEvent)
 {
     if (qObject == this)
     {
         if (qEvent->type() == QEvent::Close)
         {
-            const auto qCloseEvent = static_cast<QCloseEvent*>(qEvent);
+            const auto qCloseEvent = static_cast<QCloseEvent *>(qEvent);
             if (windowOpacity() != 0.)
             {
                 const auto qWidget = parentWidget();
@@ -47,53 +49,53 @@ bool RaptorEject::eventFilter(QObject* qObject, QEvent* qEvent)
 
                 switch (_Direction)
                 {
-                case Direction::T2B:
-                    _StartAnimatioo->setStartValue(QPoint(
-                        qWidget->x() + (qWidget->width() - width()) / 2,
-                        qWidget->y() + (qWidget->height() - height()) / 2
-                    ));
+                    case Direction::T2B:
+                        _StartAnimatioo->setStartValue(QPoint(
+                            qWidget->x() + (qWidget->width() - width()) / 2,
+                            qWidget->y() + (qWidget->height() - height()) / 2
+                        ));
 
-                    _StartAnimatioo->setEndValue(QPoint(
-                        parentWidget()->x() + (qWidget->width() - width()) / 2,
-                        qWidget->y() + (qWidget->height() - height()) / 2 - height() / 2
-                    ));
-                    break;
-                case Direction::L2R:
-                    _StartAnimatioo->setStartValue(QPoint(
-                        qWidget->x() + (qWidget->width() - width()) / 2,
-                        qWidget->y() + (qWidget->height() - height()) / 2
-                    ));
+                        _StartAnimatioo->setEndValue(QPoint(
+                            parentWidget()->x() + (qWidget->width() - width()) / 2,
+                            qWidget->y() + (qWidget->height() - height()) / 2 - height() / 2
+                        ));
+                        break;
+                    case Direction::L2R:
+                        _StartAnimatioo->setStartValue(QPoint(
+                            qWidget->x() + (qWidget->width() - width()) / 2,
+                            qWidget->y() + (qWidget->height() - height()) / 2
+                        ));
 
-                    _StartAnimatioo->setEndValue(QPoint(
-                        parentWidget()->x() + (qWidget->width() - width()) / 2 - width() / 2,
-                        qWidget->y() + (qWidget->height() - height()) / 2
-                    ));
-                    break;
-                case Direction::B2T:
-                    _StartAnimatioo->setStartValue(QPoint(
-                        qWidget->x() + (qWidget->width() - width()) / 2,
-                        qWidget->y() + (qWidget->height() - height()) / 2
-                    ));
+                        _StartAnimatioo->setEndValue(QPoint(
+                            parentWidget()->x() + (qWidget->width() - width()) / 2 - width() / 2,
+                            qWidget->y() + (qWidget->height() - height()) / 2
+                        ));
+                        break;
+                    case Direction::B2T:
+                        _StartAnimatioo->setStartValue(QPoint(
+                            qWidget->x() + (qWidget->width() - width()) / 2,
+                            qWidget->y() + (qWidget->height() - height()) / 2
+                        ));
 
-                    _StartAnimatioo->setEndValue(QPoint(
-                        parentWidget()->x() + (qWidget->width() - width()) / 2,
-                        qWidget->y() + (qWidget->height() - height()) / 2 +
-                        height() / 2
-                    ));
-                    break;
-                case Direction::R2L:
-                    _StartAnimatioo->setEndValue(QPoint(
-                        parentWidget()->x() + (qWidget->width() - width()) / 2 + width() / 2,
-                        qWidget->y() + (qWidget->height() - height()) / 2
-                    ));
+                        _StartAnimatioo->setEndValue(QPoint(
+                            parentWidget()->x() + (qWidget->width() - width()) / 2,
+                            qWidget->y() + (qWidget->height() - height()) / 2 +
+                            height() / 2
+                        ));
+                        break;
+                    case Direction::R2L:
+                        _StartAnimatioo->setEndValue(QPoint(
+                            parentWidget()->x() + (qWidget->width() - width()) / 2 + width() / 2,
+                            qWidget->y() + (qWidget->height() - height()) / 2
+                        ));
 
-                    _StartAnimatioo->setStartValue(QPoint(
-                        qWidget->x() + (qWidget->width() - width()) / 2,
-                        qWidget->y() + (qWidget->height() - height()) / 2
-                    ));
-                    break;
-                default:
-                    break;
+                        _StartAnimatioo->setStartValue(QPoint(
+                            qWidget->x() + (qWidget->width() - width()) / 2,
+                            qWidget->y() + (qWidget->height() - height()) / 2
+                        ));
+                        break;
+                    default:
+                        break;
                 }
 
                 _Direction = Direction::Random;
@@ -104,6 +106,7 @@ bool RaptorEject::eventFilter(QObject* qObject, QEvent* qEvent)
                 _StartAnimation->setEndValue(0);
                 _StartAnimation->setDuration(300);
                 _StartAnimation->setEasingCurve(qEasingCurve);
+                QMetaObject::invokeMethod(RaptorStoreSuite::invokeWorldGet(), "invokeMaskPaint", Q_ARG(bool, false));
                 _StartAnimationGroup->start();
                 qCloseEvent->ignore();
                 return true;
@@ -126,51 +129,51 @@ int RaptorEject::exec()
 
     switch (_Direction)
     {
-    case Direction::T2B:
-        _StartAnimatioo->setStartValue(QPoint(
-            parentWidget()->x() + (qWidget->width() - width()) / 2,
-            qWidget->y() + (qWidget->height() - height()) / 2 - height() / 2
-        ));
+        case Direction::T2B:
+            _StartAnimatioo->setStartValue(QPoint(
+                parentWidget()->x() + (qWidget->width() - width()) / 2,
+                qWidget->y() + (qWidget->height() - height()) / 2 - height() / 2
+            ));
 
-        _StartAnimatioo->setEndValue(QPoint(
-            qWidget->x() + (qWidget->width() - width()) / 2,
-            qWidget->y() + (qWidget->height() - height()) / 2
-        ));
-        break;
-    case Direction::L2R:
-        _StartAnimatioo->setStartValue(QPoint(
-            parentWidget()->x() + (qWidget->width() - width()) / 2 - width() / 2,
-            qWidget->y() + (qWidget->height() - height()) / 2
-        ));
+            _StartAnimatioo->setEndValue(QPoint(
+                qWidget->x() + (qWidget->width() - width()) / 2,
+                qWidget->y() + (qWidget->height() - height()) / 2
+            ));
+            break;
+        case Direction::L2R:
+            _StartAnimatioo->setStartValue(QPoint(
+                parentWidget()->x() + (qWidget->width() - width()) / 2 - width() / 2,
+                qWidget->y() + (qWidget->height() - height()) / 2
+            ));
 
-        _StartAnimatioo->setEndValue(QPoint(
-            qWidget->x() + (qWidget->width() - width()) / 2,
-            qWidget->y() + (qWidget->height() - height()) / 2
-        ));
-        break;
-    case Direction::B2T:
-        _StartAnimatioo->setStartValue(QPoint(
-            parentWidget()->x() + (qWidget->width() - width()) / 2,
-            qWidget->y() + (qWidget->height() - height()) / 2 + height() / 2
-        ));
+            _StartAnimatioo->setEndValue(QPoint(
+                qWidget->x() + (qWidget->width() - width()) / 2,
+                qWidget->y() + (qWidget->height() - height()) / 2
+            ));
+            break;
+        case Direction::B2T:
+            _StartAnimatioo->setStartValue(QPoint(
+                parentWidget()->x() + (qWidget->width() - width()) / 2,
+                qWidget->y() + (qWidget->height() - height()) / 2 + height() / 2
+            ));
 
-        _StartAnimatioo->setEndValue(QPoint(
-            qWidget->x() + (qWidget->width() - width()) / 2,
-            qWidget->y() + (qWidget->height() - height()) / 2
-        ));
-        break;
-    case Direction::R2L:
-        _StartAnimatioo->setStartValue(QPoint(
-            parentWidget()->x() + (qWidget->width() - width()) / 2 + width() / 2,
-            qWidget->y() + (qWidget->height() - height()) / 2
-        ));
-        _StartAnimatioo->setEndValue(QPoint(
-            qWidget->x() + (qWidget->width() - width()) / 2,
-            qWidget->y() + (qWidget->height() - height()) / 2
-        ));
-        break;
-    default:
-        break;
+            _StartAnimatioo->setEndValue(QPoint(
+                qWidget->x() + (qWidget->width() - width()) / 2,
+                qWidget->y() + (qWidget->height() - height()) / 2
+            ));
+            break;
+        case Direction::R2L:
+            _StartAnimatioo->setStartValue(QPoint(
+                parentWidget()->x() + (qWidget->width() - width()) / 2 + width() / 2,
+                qWidget->y() + (qWidget->height() - height()) / 2
+            ));
+            _StartAnimatioo->setEndValue(QPoint(
+                qWidget->x() + (qWidget->width() - width()) / 2,
+                qWidget->y() + (qWidget->height() - height()) / 2
+            ));
+            break;
+        default:
+            break;
     }
 
     _Direction = Direction::Random;
@@ -181,11 +184,12 @@ int RaptorEject::exec()
     _StartAnimation->setEndValue(1);
     _StartAnimation->setDuration(300);
     _StartAnimation->setEasingCurve(qEasingCurve);
+    QMetaObject::invokeMethod(RaptorStoreSuite::invokeWorldGet(), "invokeMaskPaint", Q_ARG(bool, true));
     _StartAnimationGroup->start();
     return QDialog::exec();
 }
 
-void RaptorEject::invokeEject(const QVariant& qVariant)
+void RaptorEject::invokeEject(const QVariant &qVariant)
 {
     exec();
 }
@@ -203,8 +207,8 @@ void RaptorEject::invokeInstanceInit()
 void RaptorEject::invokeUiInit()
 {
     setWindowFlags(Qt::Dialog |
-        Qt::FramelessWindowHint |
-        Qt::NoDropShadowWindowHint);
+                   Qt::FramelessWindowHint |
+                   Qt::NoDropShadowWindowHint);
     setWindowModality(Qt::WindowModal);
     setAttribute(Qt::WA_TranslucentBackground);
     installEventFilter(this);
@@ -218,7 +222,7 @@ void RaptorEject::invokeSlotInit()
             &RaptorEject::onStartAnimationGroupFinished);
 }
 
-void RaptorEject::invokeCloseCallbackSet(const std::function<void()>& qCallback)
+void RaptorEject::invokeCloseCallbackSet(const std::function<void()> &qCallback)
 {
     _CloseCallback = qCallback;
 }

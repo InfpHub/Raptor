@@ -181,8 +181,8 @@
                                             <property name="childrenCollapsible">
                                                 <bool>false</bool>
                                             </property>
-                                            <widget class="QTableView" name="_SourceView"/>
-                                            <widget class="QTableView" name="_TargetView"/>
+                                            <widget class="QTableView" name="_ItemSourceView"/>
+                                            <widget class="QTableView" name="_ItemTargetView"/>
                                         </widget>
                                     </item>
                                 </layout>

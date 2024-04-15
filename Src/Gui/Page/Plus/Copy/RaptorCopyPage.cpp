@@ -35,12 +35,12 @@ RaptorCopyPage::RaptorCopyPage(QWidget *qParent) : QWidget(qParent),
 
 RaptorCopyPage::~RaptorCopyPage()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 bool RaptorCopyPage::eventFilter(QObject *qObject, QEvent *qEvent)
 {
-    if (qObject == _Ui->_SourceView)
+    if (qObject == _Ui->_ItemSourceView)
     {
         if (qEvent->type() == QEvent::KeyPress)
         {
@@ -53,15 +53,15 @@ bool RaptorCopyPage::eventFilter(QObject *qObject, QEvent *qEvent)
         }
     }
 
-    if (qObject == _Ui->_SourceView->viewport())
+    if (qObject == _Ui->_ItemSourceView->viewport())
     {
         if (qEvent->type() == QEvent::MouseButtonPress)
         {
-            onSourceViewClicked();
+            onItemSourceViewClicked();
         }
     }
 
-    if (qObject == _Ui->_TargetView)
+    if (qObject == _Ui->_ItemTargetView)
     {
         if (qEvent->type() == QEvent::KeyPress)
         {
@@ -74,11 +74,11 @@ bool RaptorCopyPage::eventFilter(QObject *qObject, QEvent *qEvent)
         }
     }
 
-    if (qObject == _Ui->_TargetView->viewport())
+    if (qObject == _Ui->_ItemTargetView->viewport())
     {
         if (qEvent->type() == QEvent::MouseButtonPress)
         {
-            onTargetViewClicked();
+            onItemTargetViewClicked();
         }
     }
 
@@ -111,15 +111,15 @@ void RaptorCopyPage::invokeRefresh()
     auto input = RaptorInput();
     if (invokeSourceViewIsActiveConfirm())
     {
-        _SourceViewLoading->invokeStateSet(RaptorLoading::State::Loading);
-        _SourceViewModel->invokeItemsClear();
+        _ItemSourceViewLoading->invokeStateSet(RaptorLoading::State::Loading);
+        _ItemSourceViewModel->invokeItemsClear();
         _Payload._Marker.first.clear();
         input._Variant = QVariant::fromValue<RaptorAuthenticationItem>(_Payload._User.first);
         input._Parent = _Payload._Parent.first;
     } else
     {
-        _TargetViewLoading->invokeStateSet(RaptorLoading::State::Loading);
-        _TargetViewModel->invokeItemsClear();
+        _ItemTargetViewLoading->invokeStateSet(RaptorLoading::State::Loading);
+        _ItemTargetViewModel->invokeItemsClear();
         _Payload._Marker.second.clear();
         input._Type = _Ui->_ItemToShowAll->isChecked() ? QString() : "folder";
         input._Variant = QVariant::fromValue<RaptorAuthenticationItem>(_Payload._User.second);
@@ -151,16 +151,16 @@ void RaptorCopyPage::invokeItemSearch()
     auto input = RaptorInput();
     if (invokeSourceViewIsActiveConfirm())
     {
-        _SourceViewLoading->invokeStateSet(RaptorLoading::State::Loading);
-        _SourceViewModel->invokeItemsClear();
+        _ItemSourceViewLoading->invokeStateSet(RaptorLoading::State::Loading);
+        _ItemSourceViewModel->invokeItemsClear();
         _Payload._Parent.first = "root";
         _Payload._Stack.first.clear();
         _Payload._Marker.first.clear();
         input._Variant = QVariant::fromValue<RaptorAuthenticationItem>(_Payload._User.first);
     } else
     {
-        _TargetViewLoading->invokeStateSet(RaptorLoading::State::Loading);
-        _TargetViewModel->invokeItemsClear();
+        _ItemTargetViewLoading->invokeStateSet(RaptorLoading::State::Loading);
+        _ItemTargetViewModel->invokeItemsClear();
         _Payload._Parent.second = "root";
         _Payload._Stack.second.clear();
         _Payload._Marker.second.clear();
@@ -173,7 +173,7 @@ void RaptorCopyPage::invokeItemSearch()
 
 void RaptorCopyPage::invokeItemsCopy()
 {
-    if (_QueueViewModel->rowCount() != 0)
+    if (_ItemQueueViewModel->rowCount() != 0)
     {
         RaptorToast::invokeWarningEject(QStringLiteral("有拷贝任务正在进行!"));
         return;
@@ -191,7 +191,7 @@ void RaptorCopyPage::invokeItemsCopy()
         return;
     }
 
-    const auto qIndexList = _Ui->_SourceView->selectionModel()->selectedRows();
+    const auto qIndexList = _Ui->_ItemSourceView->selectionModel()->selectedRows();
     if (qIndexList.empty())
     {
         RaptorToast::invokeWarningEject(QStringLiteral("尚未选择任何文件，无法继续!"));
@@ -209,7 +209,7 @@ void RaptorCopyPage::invokeItemsCopy()
         input._Id = item._Id;
     }
 
-    if (const auto qIndexLisu = _Ui->_TargetView->selectionModel()->selectedRows();
+    if (const auto qIndexLisu = _Ui->_ItemTargetView->selectionModel()->selectedRows();
         qIndexLisu.length() == 1)
     {
         if (const auto item = qIndexLisu[0].data(Qt::UserRole).value<RaptorFileItem>();
@@ -222,10 +222,10 @@ void RaptorCopyPage::invokeItemsCopy()
 
     if (const auto qOperate = RaptorMessageBox::invokeInformationEject(QStringLiteral("拷贝文件"),
                                                                        QStringLiteral("从 %1 拷贝 %2 个文件到 %3 的 %4, 是否继续?").arg(
-                                                                           QString(INFORMATION_TEMPLATE).arg(_Payload._User.first._Nickname),
-                                                                           QString(SUCCESS_TEMPLATE).arg(QString::number(input._Indexes.length())),
-                                                                           QString(INFORMATION_TEMPLATE).arg(_Payload._User.second._Nickname),
-                                                                           QString(CREATIVE_TEMPLATE).arg(qName)));
+                                                                           QString(qInformationTemplate).arg(_Payload._User.first._NickName),
+                                                                           QString(qSuccessTemplate).arg(QString::number(input._Indexes.length())),
+                                                                           QString(qInformationTemplate).arg(_Payload._User.second._NickName),
+                                                                           QString(qCreativeTemplate).arg(qName)));
         qOperate == RaptorMessageBox::No)
     {
         return;
@@ -234,7 +234,7 @@ void RaptorCopyPage::invokeItemsCopy()
     for (const auto &qIndex: qIndexList)
     {
         const auto item = qIndex.data(Qt::UserRole).value<RaptorFileItem>();
-        _QueueViewModel->invokeItemAppend(item);
+        _ItemQueueViewModel->invokeItemAppend(item);
     }
 
     _Ui->_ItemQueueView->viewport()->update();
@@ -251,7 +251,7 @@ void RaptorCopyPage::invokeItemCancel() const
         return;
     }
 
-    if (_QueueViewModel->rowCount() == 0)
+    if (_ItemQueueViewModel->rowCount() == 0)
     {
         RaptorToast::invokeInformationEject(QStringLiteral("没有正在进行的拷贝任务哦~"));
         return;
@@ -270,73 +270,79 @@ void RaptorCopyPage::invokeItemCancel() const
 void RaptorCopyPage::invokeInstanceInit()
 {
     _CopyUser = new RaptorCopyUser(RaptorStoreSuite::invokeWorldGet());
-    _SourceViewHeader = new RaptorTableViewHeader(Qt::Horizontal, this);
-    _SourceViewHeader->invokeIconSet(RaptorUtil::invokeIconMatch("Legend", false, true));
-    _TargetViewHeader = new RaptorTableViewHeader(Qt::Horizontal, this);
-    _TargetViewHeader->invokeIconSet(RaptorUtil::invokeIconMatch("Legend", false, true));
-    _QueueViewHeader = new RaptorTableViewHeader(Qt::Horizontal, this);
-    _QueueViewHeader->invokeIconSet(RaptorUtil::invokeIconMatch("Legend", false, true));
-    _SourceViewModel = new RaptorSpaceViewModel(this);
+    _ItemSourceViewHeader = new RaptorTableViewHeader(Qt::Horizontal, this);
+    _ItemSourceViewHeader->invokeIconSet(RaptorUtil::invokeIconMatch("Legend", false, true));
+    _ItemTargetViewHeader = new RaptorTableViewHeader(Qt::Horizontal, this);
+    _ItemTargetViewHeader->invokeIconSet(RaptorUtil::invokeIconMatch("Legend", false, true));
+    _ItemQueueViewHeader = new RaptorTableViewHeader(Qt::Horizontal, this);
+    _ItemQueueViewHeader->invokeIconSet(RaptorUtil::invokeIconMatch("Legend", false, true));
+    _ItemSourceViewModel = new RaptorSpaceViewModel(_Ui->_ItemSourceView);
     auto qHeader = QVector<QString>();
     qHeader << QStringLiteral("名称") << QStringLiteral("大小");
-    _SourceViewModel->invokeHeaderSet(qHeader);
-    _SourceViewModel->invokeColumnCountSet(3);
-    _TargetViewModel = new RaptorSpaceViewModel(this);
-    _TargetViewModel->invokeHeaderSet(qHeader);
-    _TargetViewModel->invokeColumnCountSet(3);
-    _SourceViewDelegate = new RaptorTableViewDelegate(this);
-    _TargetViewDelegate = new RaptorTableViewDelegate(this);
-    _QueueViewDelegate = new RaptorTableViewDelegate(this);
-    _QueueViewModel = new RaptorSpaceViewModel(this);
+    _ItemSourceViewModel->invokeHeaderSet(qHeader);
+    _ItemSourceViewModel->invokeColumnCountSet(3);
+    _ItemTargetViewModel = new RaptorSpaceViewModel(_Ui->_ItemTargetView);
+    _ItemTargetViewModel->invokeHeaderSet(qHeader);
+    _ItemTargetViewModel->invokeColumnCountSet(3);
+    _ItemSourceViewDelegate = new RaptorTableViewDelegate(this);
+    _ItemTargetViewDelegate = new RaptorTableViewDelegate(this);
+    _ItemQueueViewDelegate = new RaptorTableViewDelegate(this);
+    _ItemQueueViewModel = new RaptorSpaceViewModel(_Ui->_ItemQueueView);
     qHeader.pop_back();
-    _QueueViewModel->invokeHeaderSet(qHeader);
-    _QueueViewModel->invokeColumnCountSet(2);
-    _SourceViewLoading = new RaptorLoading(_Ui->_SourceView);
-    _TargetViewLoading = new RaptorLoading(_Ui->_TargetView);
+    _ItemQueueViewModel->invokeHeaderSet(qHeader);
+    _ItemQueueViewModel->invokeColumnCountSet(2);
+    _ItemSourceViewLoading = new RaptorLoading(_Ui->_ItemSourceView);
+    _ItemTargetViewLoading = new RaptorLoading(_Ui->_ItemTargetView);
 }
 
 void RaptorCopyPage::invokeUiInit()
 {
     _Ui->_Splitter->setStretchFactor(0, 9);
     _Ui->_Splitter->setStretchFactor(1, 1);
-    _Ui->_SourceView->installEventFilter(this);
-    _Ui->_SourceView->viewport()->installEventFilter(this);
-    _Ui->_SourceView->setModel(_SourceViewModel);
-    _Ui->_SourceView->setHorizontalHeader(_SourceViewHeader);
-    _Ui->_SourceView->setItemDelegate(_SourceViewDelegate);
-    _Ui->_SourceView->setContextMenuPolicy(Qt::NoContextMenu);
-    _Ui->_SourceView->horizontalHeader()->setFixedHeight(26);
-    _Ui->_SourceView->horizontalHeader()->setMinimumSectionSize(30);
-    _Ui->_SourceView->horizontalHeader()->setDefaultSectionSize(30);
-    _Ui->_SourceView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
-    _Ui->_SourceView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
-    _Ui->_SourceView->verticalHeader()->setDefaultSectionSize(26);
-    _Ui->_SourceView->verticalHeader()->setHidden(true);
-    _Ui->_SourceView->setShowGrid(false);
-    _Ui->_SourceView->setColumnWidth(0, 30);
-    _Ui->_SourceView->setColumnWidth(2, 110);
-    _Ui->_SourceView->setColumnWidth(3, 110);
-    _Ui->_SourceView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    _Ui->_SourceView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    _Ui->_TargetView->installEventFilter(this);
-    _Ui->_TargetView->viewport()->installEventFilter(this);
-    _Ui->_TargetView->setModel(_TargetViewModel);
-    _Ui->_TargetView->setHorizontalHeader(_TargetViewHeader);
-    _Ui->_TargetView->setItemDelegate(_TargetViewDelegate);
-    _Ui->_TargetView->setContextMenuPolicy(Qt::NoContextMenu);
-    _Ui->_TargetView->horizontalHeader()->setFixedHeight(26);
-    _Ui->_TargetView->horizontalHeader()->setMinimumSectionSize(30);
-    _Ui->_TargetView->horizontalHeader()->setDefaultSectionSize(30);
-    _Ui->_TargetView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
-    _Ui->_TargetView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
-    _Ui->_TargetView->verticalHeader()->setDefaultSectionSize(26);
-    _Ui->_TargetView->verticalHeader()->setHidden(true);
-    _Ui->_TargetView->setShowGrid(false);
-    _Ui->_TargetView->setColumnWidth(0, 30);
-    _Ui->_TargetView->setColumnWidth(2, 110);
-    _Ui->_TargetView->setColumnWidth(3, 110);
-    _Ui->_TargetView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    _Ui->_TargetView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    _Ui->_ItemSourceView->installEventFilter(this);
+    _Ui->_ItemSourceView->viewport()->installEventFilter(this);
+    _Ui->_ItemSourceView->setModel(_ItemSourceViewModel);
+    _Ui->_ItemSourceView->setHorizontalHeader(_ItemSourceViewHeader);
+    _Ui->_ItemSourceView->setItemDelegate(_ItemSourceViewDelegate);
+    _Ui->_ItemSourceView->setContextMenuPolicy(Qt::NoContextMenu);
+    _Ui->_ItemSourceView->horizontalHeader()->setSortIndicatorShown(true);
+    _Ui->_ItemSourceView->horizontalHeader()->setSectionsClickable(true);
+    _Ui->_ItemSourceView->horizontalHeader()->setFixedHeight(26);
+    _Ui->_ItemSourceView->horizontalHeader()->setMinimumSectionSize(30);
+    _Ui->_ItemSourceView->horizontalHeader()->setDefaultSectionSize(30);
+    _Ui->_ItemSourceView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
+    _Ui->_ItemSourceView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    _Ui->_ItemSourceView->verticalHeader()->setDefaultSectionSize(26);
+    _Ui->_ItemSourceView->verticalHeader()->setHidden(true);
+    _Ui->_ItemSourceView->setShowGrid(false);
+    _Ui->_ItemSourceView->setColumnWidth(0, 30);
+    _Ui->_ItemSourceView->setColumnWidth(2, 110);
+    _Ui->_ItemSourceView->setColumnWidth(3, 110);
+    _Ui->_ItemSourceView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    _Ui->_ItemSourceView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    _Ui->_ItemSourceView->setSortingEnabled(true);
+    _Ui->_ItemTargetView->installEventFilter(this);
+    _Ui->_ItemTargetView->viewport()->installEventFilter(this);
+    _Ui->_ItemTargetView->setModel(_ItemTargetViewModel);
+    _Ui->_ItemTargetView->setHorizontalHeader(_ItemTargetViewHeader);
+    _Ui->_ItemTargetView->setItemDelegate(_ItemTargetViewDelegate);
+    _Ui->_ItemTargetView->setContextMenuPolicy(Qt::NoContextMenu);
+    _Ui->_ItemTargetView->horizontalHeader()->setSortIndicatorShown(true);
+    _Ui->_ItemTargetView->horizontalHeader()->setSectionsClickable(true);
+    _Ui->_ItemTargetView->horizontalHeader()->setFixedHeight(26);
+    _Ui->_ItemTargetView->horizontalHeader()->setMinimumSectionSize(30);
+    _Ui->_ItemTargetView->horizontalHeader()->setDefaultSectionSize(30);
+    _Ui->_ItemTargetView->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
+    _Ui->_ItemTargetView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    _Ui->_ItemTargetView->verticalHeader()->setDefaultSectionSize(26);
+    _Ui->_ItemTargetView->verticalHeader()->setHidden(true);
+    _Ui->_ItemTargetView->setShowGrid(false);
+    _Ui->_ItemTargetView->setColumnWidth(0, 30);
+    _Ui->_ItemTargetView->setColumnWidth(2, 110);
+    _Ui->_ItemTargetView->setColumnWidth(3, 110);
+    _Ui->_ItemTargetView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    _Ui->_ItemTargetView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    _Ui->_ItemTargetView->setSortingEnabled(true);
     _Ui->_ItemUserTip->setText(QStringLiteral("用户:"));
     _Ui->_ItemUser->setText(QStringLiteral("选择"));
     _Ui->_ItemViewTip->setText(QStringLiteral("日志:"));
@@ -346,9 +352,9 @@ void RaptorCopyPage::invokeUiInit()
     _Ui->_ItemShowLog->setText(QStringLiteral("显示队列视图"));
     _Ui->_ItemShowLog->setChecked(true);
     _Ui->_ItemToShowAll->setText(QStringLiteral("显示所有(仅目标盘视图)"));
-    _Ui->_ItemQueueView->setModel(_QueueViewModel);
-    _Ui->_ItemQueueView->setHorizontalHeader(_QueueViewHeader);
-    _Ui->_ItemQueueView->setItemDelegate(_QueueViewDelegate);
+    _Ui->_ItemQueueView->setModel(_ItemQueueViewModel);
+    _Ui->_ItemQueueView->setHorizontalHeader(_ItemQueueViewHeader);
+    _Ui->_ItemQueueView->setItemDelegate(_ItemQueueViewDelegate);
     _Ui->_ItemQueueView->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_ItemQueueView->horizontalHeader()->setFixedHeight(26);
     _Ui->_ItemQueueView->horizontalHeader()->setMinimumSectionSize(30);
@@ -368,25 +374,25 @@ void RaptorCopyPage::invokeUiInit()
 
 void RaptorCopyPage::invokeSlotInit() const
 {
-    connect(_Ui->_SourceView,
+    connect(_Ui->_ItemSourceView,
             &QTableView::doubleClicked,
             this,
-            &RaptorCopyPage::onSourceViewDoubleClicked);
+            &RaptorCopyPage::onItemSourceViewDoubleClicked);
 
-    connect(_Ui->_TargetView,
+    connect(_Ui->_ItemTargetView,
             &QTableView::doubleClicked,
             this,
-            &RaptorCopyPage::onTargetViewDoubleClicked);
+            &RaptorCopyPage::onItemTargetViewDoubleClicked);
 
-    connect(_Ui->_SourceView->verticalScrollBar(),
+    connect(_Ui->_ItemSourceView->verticalScrollBar(),
             &QScrollBar::valueChanged,
             this,
-            &RaptorCopyPage::onSourceViewVerticalScrollValueChanged);
+            &RaptorCopyPage::onItemSourceViewVerticalScrollValueChanged);
 
-    connect(_Ui->_TargetView->verticalScrollBar(),
+    connect(_Ui->_ItemTargetView->verticalScrollBar(),
             &QScrollBar::valueChanged,
             this,
-            &RaptorCopyPage::onTargetViewVerticalScrollValueChanged);
+            &RaptorCopyPage::onItemTargetViewVerticalScrollValueChanged);
 
     connect(_Ui->_ItemUser,
             &QPushButton::clicked,
@@ -416,12 +422,12 @@ void RaptorCopyPage::invokeSlotInit() const
 
 bool RaptorCopyPage::invokeSourceViewIsActiveConfirm() const
 {
-    return _Ui->_SourceView->property("active").toBool();
+    return _Ui->_ItemSourceView->property("active").toBool();
 }
 
 bool RaptorCopyPage::invokeTargetViewIsActiveConfirm() const
 {
-    return _Ui->_TargetView->property("active").toBool();
+    return _Ui->_ItemTargetView->property("active").toBool();
 }
 
 void RaptorCopyPage::onItemAccessTokenRefreshed(const QVariant &qVariant)
@@ -465,9 +471,9 @@ void RaptorCopyPage::onItemLogouting(const QVariant &qVariant) const
         return;
     }
 
-    _SourceViewModel->invokeItemsClear();
-    _TargetViewModel->invokeItemsClear();
-    _QueueViewModel->invokeItemsClear();
+    _ItemSourceViewModel->invokeItemsClear();
+    _ItemTargetViewModel->invokeItemsClear();
+    _ItemQueueViewModel->invokeItemsClear();
     _Ui->_ItemLog->clear();
     _Ui->_ItemBack->setEnabled(false);
     _Ui->_ItemRoot->setEnabled(false);
@@ -486,21 +492,21 @@ void RaptorCopyPage::onItemSpaceChanging()
 
 void RaptorCopyPage::onItemsFetched(const QVariant &qVariant)
 {
-    _SourceViewLoading->invokeStateSet(RaptorLoading::State::Finished);
+    _ItemSourceViewLoading->invokeStateSet(RaptorLoading::State::Finished);
     if (!RaptorStoreSuite::invokeUserIsValidConfirm())
     {
-        _Ui->_SourceView->invokeServerCodeSet(RaptorTableView::Forbidden);
-        _Ui->_SourceView->invokeTitleSet(QStringLiteral("403 尚未登录"));
-        _Ui->_SourceView->invokeSummarySet(QStringLiteral("总有些门对你是关闭的"));
-        _Ui->_SourceView->invokeIndicatorSet(QStringLiteral("去登录"));
-        _Ui->_SourceView->invokeBackgroundPaintableSet(true);
-        _Ui->_SourceView->update();
-        _Ui->_TargetView->invokeServerCodeSet(RaptorTableView::Forbidden);
-        _Ui->_TargetView->invokeTitleSet(QStringLiteral("403 尚未登录"));
-        _Ui->_TargetView->invokeSummarySet(QStringLiteral("总有些门对你是关闭的"));
-        _Ui->_TargetView->invokeIndicatorSet(QStringLiteral("去登录"));
-        _Ui->_TargetView->invokeBackgroundPaintableSet(true);
-        _Ui->_TargetView->update();
+        _Ui->_ItemSourceView->invokeServerCodeSet(RaptorTableView::Forbidden);
+        _Ui->_ItemSourceView->invokeTitleSet(QStringLiteral("403 尚未登录"));
+        _Ui->_ItemSourceView->invokeSummarySet(QStringLiteral("总有些门对你是关闭的"));
+        _Ui->_ItemSourceView->invokeIndicatorSet(QStringLiteral("去登录"));
+        _Ui->_ItemSourceView->invokeBackgroundPaintableSet(true);
+        _Ui->_ItemSourceView->update();
+        _Ui->_ItemTargetView->invokeServerCodeSet(RaptorTableView::Forbidden);
+        _Ui->_ItemTargetView->invokeTitleSet(QStringLiteral("403 尚未登录"));
+        _Ui->_ItemTargetView->invokeSummarySet(QStringLiteral("总有些门对你是关闭的"));
+        _Ui->_ItemTargetView->invokeIndicatorSet(QStringLiteral("去登录"));
+        _Ui->_ItemTargetView->invokeBackgroundPaintableSet(true);
+        _Ui->_ItemTargetView->update();
         return;
     }
 
@@ -515,24 +521,24 @@ void RaptorCopyPage::onItemsFetched(const QVariant &qVariant)
     if (const auto item = input._Variant.value<RaptorAuthenticationItem>();
         item == _Payload._User.first)
     {
-        _SourceViewLoading->invokeStateSet(RaptorLoading::State::Finished);
+        _ItemSourceViewLoading->invokeStateSet(RaptorLoading::State::Finished);
         if (_Payload._Parent.first != input._Parent && _Payload._Keyword.isEmpty())
         {
             return;
         }
 
         _Payload._Marker.first = input._Marker;
-        _SourceViewModel->invokeItemsAppend(items);
+        _ItemSourceViewModel->invokeItemsAppend(items);
     } else if (item == _Payload._User.second)
     {
-        _TargetViewLoading->invokeStateSet(RaptorLoading::State::Finished);
+        _ItemTargetViewLoading->invokeStateSet(RaptorLoading::State::Finished);
         if (_Payload._Parent.second != input._Parent && _Payload._Keyword.isEmpty())
         {
             return;
         }
 
         _Payload._Marker.second = input._Marker;
-        _TargetViewModel->invokeItemsAppend(items);
+        _ItemTargetViewModel->invokeItemsAppend(items);
     }
 }
 
@@ -542,25 +548,25 @@ void RaptorCopyPage::onItemCopied(const QVariant &qVariant) const
     const auto item = _Data.value<RaptorFileItem>();
     if (!_State)
     {
-        _Ui->_ItemLog->append(QString(CRITICAL_TEMPLATE).arg(QStringLiteral("拷贝失败: %1 -> %2").arg(_Message, item._Name)));
+        _Ui->_ItemLog->append(QString(qCriticalTemplate).arg(QStringLiteral("拷贝失败: %1 -> %2").arg(_Message, item._Name)));
     } else
     {
-        _Ui->_ItemLog->append(QString(SUCCESS_TEMPLATE).arg(QStringLiteral("已拷贝: %1").arg(item._Name)));
+        _Ui->_ItemLog->append(QString(qSuccessTemplate).arg(QStringLiteral("已拷贝: %1").arg(item._Name)));
     }
 
-    for (auto i = 0; i < _QueueViewModel->rowCount(); ++i)
+    for (auto i = 0; i < _ItemQueueViewModel->rowCount(); ++i)
     {
-        const auto qIndex = _QueueViewModel->index(i, 0);
+        const auto qIndex = _ItemQueueViewModel->index(i, 0);
         if (const auto iten = qIndex.data(Qt::UserRole).value<RaptorFileItem>();
             item == iten)
         {
-            _QueueViewModel->removeRow(qIndex.row());
+            _ItemQueueViewModel->removeRow(qIndex.row());
             break;
         }
     }
 
     _Ui->_ItemQueueView->viewport()->update();
-    if (_QueueViewModel->rowCount() == 0)
+    if (_ItemQueueViewModel->rowCount() == 0)
     {
         _Ui->_ItemUser->setEnabled(true);
     }
@@ -575,7 +581,7 @@ void RaptorCopyPage::onItemsCancelled(const QVariant &qVariant) const
         return;
     }
 
-    _QueueViewModel->invokeItemsClear();
+    _ItemQueueViewModel->invokeItemsClear();
     RaptorToast::invokeInformationEject(QStringLiteral("已取消拷贝。"));
 }
 
@@ -593,17 +599,17 @@ void RaptorCopyPage::onSearchEditTextChanged(const QString &qText)
     _Payload._Keyword = qText;
 }
 
-void RaptorCopyPage::onSourceViewClicked() const
+void RaptorCopyPage::onItemSourceViewClicked() const
 {
-    _Ui->_TargetView->setProperty("active", false);
-    _Ui->_SourceView->setProperty("active", true);
-    _Ui->_SourceView->style()->unpolish(_Ui->_SourceView);
-    _Ui->_SourceView->style()->polish(_Ui->_SourceView);
-    _Ui->_TargetView->style()->unpolish(_Ui->_TargetView);
-    _Ui->_TargetView->style()->polish(_Ui->_TargetView);
+    _Ui->_ItemTargetView->setProperty("active", false);
+    _Ui->_ItemSourceView->setProperty("active", true);
+    _Ui->_ItemSourceView->style()->unpolish(_Ui->_ItemSourceView);
+    _Ui->_ItemSourceView->style()->polish(_Ui->_ItemSourceView);
+    _Ui->_ItemTargetView->style()->unpolish(_Ui->_ItemTargetView);
+    _Ui->_ItemTargetView->style()->polish(_Ui->_ItemTargetView);
 }
 
-void RaptorCopyPage::onSourceViewDoubleClicked(const QModelIndex &qIndex)
+void RaptorCopyPage::onItemSourceViewDoubleClicked(const QModelIndex &qIndex)
 {
     if (!RaptorStoreSuite::invokeUserIsValidConfirm())
     {
@@ -613,11 +619,11 @@ void RaptorCopyPage::onSourceViewDoubleClicked(const QModelIndex &qIndex)
     if (const auto item = qIndex.data(Qt::UserRole).value<RaptorFileItem>();
         item._Type == "folder")
     {
-        _SourceViewLoading->invokeStateSet(RaptorLoading::State::Loading);
+        _ItemSourceViewLoading->invokeStateSet(RaptorLoading::State::Loading);
         _Payload._Parent.first = item._Id;
         _Payload._Stack.first.push(item);
         _Payload._Marker.first.clear();
-        _SourceViewModel->invokeItemsClear();
+        _ItemSourceViewModel->invokeItemsClear();
         auto input = RaptorInput();
         input._Parent = item._Id;
         input._Variant = QVariant::fromValue<RaptorAuthenticationItem>(_Payload._User.first);
@@ -625,17 +631,17 @@ void RaptorCopyPage::onSourceViewDoubleClicked(const QModelIndex &qIndex)
     }
 }
 
-void RaptorCopyPage::onTargetViewClicked() const
+void RaptorCopyPage::onItemTargetViewClicked() const
 {
-    _Ui->_SourceView->setProperty("active", false);
-    _Ui->_TargetView->setProperty("active", true);
-    _Ui->_SourceView->style()->polish(_Ui->_SourceView);
-    _Ui->_TargetView->style()->polish(_Ui->_TargetView);
-    _Ui->_SourceView->update();
-    _Ui->_TargetView->update();
+    _Ui->_ItemSourceView->setProperty("active", false);
+    _Ui->_ItemTargetView->setProperty("active", true);
+    _Ui->_ItemSourceView->style()->polish(_Ui->_ItemSourceView);
+    _Ui->_ItemTargetView->style()->polish(_Ui->_ItemTargetView);
+    _Ui->_ItemSourceView->update();
+    _Ui->_ItemTargetView->update();
 }
 
-void RaptorCopyPage::onTargetViewDoubleClicked(const QModelIndex &qIndex)
+void RaptorCopyPage::onItemTargetViewDoubleClicked(const QModelIndex &qIndex)
 {
     if (!RaptorStoreSuite::invokeUserIsValidConfirm())
     {
@@ -645,11 +651,11 @@ void RaptorCopyPage::onTargetViewDoubleClicked(const QModelIndex &qIndex)
     if (const auto item = qIndex.data(Qt::UserRole).value<RaptorFileItem>();
         item._Type == "folder")
     {
-        _TargetViewLoading->invokeStateSet(RaptorLoading::State::Loading);
+        _ItemTargetViewLoading->invokeStateSet(RaptorLoading::State::Loading);
         _Payload._Parent.second = item._Id;
         _Payload._Stack.second.push(item);
         _Payload._Marker.second.clear();
-        _TargetViewModel->invokeItemsClear();
+        _ItemTargetViewModel->invokeItemsClear();
         auto input = RaptorInput();
         input._Parent = item._Id;
         input._Variant = QVariant::fromValue<RaptorAuthenticationItem>(_Payload._User.second);
@@ -657,7 +663,7 @@ void RaptorCopyPage::onTargetViewDoubleClicked(const QModelIndex &qIndex)
     }
 }
 
-void RaptorCopyPage::onSourceViewVerticalScrollValueChanged(const int &qValue) const
+void RaptorCopyPage::onItemSourceViewVerticalScrollValueChanged(const int &qValue) const
 {
     if (!RaptorStoreSuite::invokeUserIsValidConfirm())
     {
@@ -675,12 +681,12 @@ void RaptorCopyPage::onSourceViewVerticalScrollValueChanged(const int &qValue) c
         return;
     }
 
-    if (qValue != _Ui->_SourceView->verticalScrollBar()->maximum())
+    if (qValue != _Ui->_ItemSourceView->verticalScrollBar()->maximum())
     {
         return;
     }
 
-    _SourceViewLoading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemSourceViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     auto input = RaptorInput();
     if (!_Payload._Keyword.isEmpty())
     {
@@ -696,7 +702,7 @@ void RaptorCopyPage::onSourceViewVerticalScrollValueChanged(const int &qValue) c
     Q_EMIT itemsByParentIdFetching(QVariant::fromValue<RaptorInput>(input));
 }
 
-void RaptorCopyPage::onTargetViewVerticalScrollValueChanged(const int &qValue) const
+void RaptorCopyPage::onItemTargetViewVerticalScrollValueChanged(const int &qValue) const
 {
     if (!RaptorStoreSuite::invokeUserIsValidConfirm())
     {
@@ -714,12 +720,12 @@ void RaptorCopyPage::onTargetViewVerticalScrollValueChanged(const int &qValue) c
         return;
     }
 
-    if (qValue != _Ui->_TargetView->verticalScrollBar()->maximum())
+    if (qValue != _Ui->_ItemTargetView->verticalScrollBar()->maximum())
     {
         return;
     }
 
-    _TargetViewLoading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemTargetViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     auto input = RaptorInput();
     if (!_Payload._Keyword.isEmpty())
     {
@@ -743,17 +749,18 @@ void RaptorCopyPage::onItemUserClicked()
     }
 
     Q_EMIT itemsLoading();
-    _Payload._User = _CopyUser->invokeEject();
+    const auto qUser = _CopyUser->invokeEject();
     if (_Payload._User.first.isEmpty() || _Payload._User.second.isEmpty())
     {
         return;
     }
 
-    if (_Payload._User.first == _Payload._User.second)
+    if (qUser.first == _Payload._User.first && qUser.second == _Payload._User.second)
     {
         return;
     }
 
+    _Payload._User = _CopyUser->invokeEject();
     Q_EMIT itemsAccessTokenRefreshing(QVariant::fromValue<QPair<RaptorAuthenticationItem, RaptorAuthenticationItem> >(_Payload._User));
 }
 
@@ -796,9 +803,9 @@ void RaptorCopyPage::onItemBackClicked()
         if (auto qStack = _Payload._Stack.first;
             !qStack.isEmpty())
         {
-            _SourceViewLoading->invokeStateSet(RaptorLoading::State::Loading);
+            _ItemSourceViewLoading->invokeStateSet(RaptorLoading::State::Loading);
             const auto item = qStack.pop();
-            _SourceViewModel->invokeItemsClear();
+            _ItemSourceViewModel->invokeItemsClear();
             _Payload._Parent.first = item._Parent;
             _Payload._Marker.first.clear();
             input._Id = item._Id;
@@ -810,9 +817,9 @@ void RaptorCopyPage::onItemBackClicked()
         if (auto qStack = _Payload._Stack.second;
             !qStack.isEmpty())
         {
-            _TargetViewLoading->invokeStateSet(RaptorLoading::State::Loading);
+            _ItemTargetViewLoading->invokeStateSet(RaptorLoading::State::Loading);
             const auto item = qStack.pop();
-            _TargetViewModel->invokeItemsClear();
+            _ItemTargetViewModel->invokeItemsClear();
             _Payload._Parent.second = item._Parent;
             _Payload._Marker.second.clear();
             input._Id = item._Id;
@@ -846,8 +853,8 @@ void RaptorCopyPage::onItemRootClicked()
             return;
         }
 
-        _SourceViewLoading->invokeStateSet(RaptorLoading::State::Loading);
-        _SourceViewModel->invokeItemsClear();
+        _ItemSourceViewLoading->invokeStateSet(RaptorLoading::State::Loading);
+        _ItemSourceViewModel->invokeItemsClear();
         _Payload._Parent.first = "root";
         _Payload._Stack.first.clear();
         _Payload._Marker.first.clear();
@@ -860,8 +867,8 @@ void RaptorCopyPage::onItemRootClicked()
             return;
         }
 
-        _TargetViewLoading->invokeStateSet(RaptorLoading::State::Loading);
-        _TargetViewModel->invokeItemsClear();
+        _ItemTargetViewLoading->invokeStateSet(RaptorLoading::State::Loading);
+        _ItemTargetViewModel->invokeItemsClear();
         _Payload._Parent.second = "root";
         _Payload._Stack.second.clear();
         _Payload._Marker.second.clear();

@@ -80,7 +80,7 @@ private Q_SLOTS:
 
 private:
     Ui::RaptorDevice *_Ui = Q_NULLPTR;
-    RaptorLoading *_Loading = Q_NULLPTR;
+    RaptorLoading *_ItemViewLoading = Q_NULLPTR;
     RaptorTableViewHeader *_ItemViewHeader = Q_NULLPTR;
     RaptorDeviceViewModel *_ItemViewModel = Q_NULLPTR;
     RaptorTableViewDelegate *_ItemViewDelegate = Q_NULLPTR;

@@ -21,9 +21,10 @@
  *
  */
 
-#ifndef RAPTORTRASHPAGE_H
-#define RAPTORTRASHPAGE_H
+#ifndef RAPTORMEDIAPAGE_H
+#define RAPTORMEDIAPAGE_H
 
+#include <QButtonGroup>
 #include <QScrollBar>
 #include <QWidget>
 
@@ -34,25 +35,25 @@
 #include "../../../Component/TableView/RaptorTableView.h"
 #include "../../../Delegate/Page/Common/RaptorTableViewDelegate.h"
 #include "../../../Header/Page/Common/RaptorTableViewHeader.h"
-#include "../../../Model/Page/Trash/RaptorTrashViewModel.h"
+#include "../../../Model/Page/Media/RaptorMediaViewModel.h"
 
 QT_BEGIN_NAMESPACE
 
 namespace Ui
 {
-    class RaptorTrashPage;
+    class RaptorMediaPage;
 }
 
 QT_END_NAMESPACE
 
-class RaptorTrashPage Q_DECL_FINAL : public QWidget
+class RaptorMediaPage Q_DECL_FINAL : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit RaptorTrashPage(QWidget* qParent = Q_NULLPTR);
+    explicit RaptorMediaPage(QWidget* qParent = Q_NULLPTR);
 
-    ~RaptorTrashPage() Q_DECL_OVERRIDE;
+    ~RaptorMediaPage() Q_DECL_OVERRIDE;
 
     bool eventFilter(QObject* qObject, QEvent* qEvent) Q_DECL_OVERRIDE;
 
@@ -70,14 +71,11 @@ private:
 
     void invokeSlotInit() const;
 
+    [[nodiscard]]
+    QString invokeTypeFilter() const;
+
 Q_SIGNALS:
     Q_SIGNAL void itemsFetching(const QVariant& qVariant) const;
-
-    Q_SIGNAL void itemsDeleting(const QVariant& qVariant) const;
-
-    Q_SIGNAL void itemsRecovering(const QVariant& qVariant) const;
-
-    Q_SIGNAL void itemsClearing() const;
 
 public Q_SLOTS:
     Q_SLOT void onItemCopyWriterHaveFound(const QVariant& qVariant) const;
@@ -86,34 +84,30 @@ public Q_SLOTS:
 
     Q_SLOT void onItemLogouting(const QVariant& qVariant) const;
 
-    Q_SLOT void onItemSpaceChanging();
-
     Q_SLOT void onItemSwitching(const QVariant& qVariant) const;
 
     Q_SLOT void onItemsFetched(const QVariant& qVariant);
 
-    Q_SLOT void onItemsRecovered(const QVariant& qVariant) const;
-
-    Q_SLOT void onItemsDeleted(const QVariant& qVariant) const;
-
-    Q_SLOT void onItemsCleared(const QVariant& qVariant) const;
+    Q_SLOT void onItemsHided(const QVariant& qVariant) const;
 
 private Q_SLOTS:
-    Q_SLOT void onLoadingStateChanged(const RaptorLoading::State& state) const;
-
-    Q_SLOT void onRecoverClicked() const;
-
-    Q_SLOT void onDeleteClicked() const;
-
-    Q_SLOT void onClearClicked() const;
+    Q_SLOT void onItemViewLoadingStateChanged(const RaptorLoading::State& state) const;
 
     Q_SLOT void onRefreshClicked();
+
+    Q_SLOT void onTabPrevClicked() const;
+
+    Q_SLOT void onTabAllToggled(const bool &qChecked);
+
+    Q_SLOT void onTabShowToggled(const bool &qChecked);
+
+    Q_SLOT void onTabHideToggled(const bool &qChecked);
+
+    Q_SLOT void onTabNextClicked() const;
 
     Q_SLOT void onItemViewIndicatorClicked(const RaptorTableView::Code& qCode) const;
 
     Q_SLOT void onItemViewClicked(const QModelIndex& qIndex) const;
-
-    Q_SLOT void onItemViewCustomContextMenuRequested(const QPoint &qPoint) const;
 
     Q_SLOT void onItemViewSelectionChanged(const QItemSelection& qSelected,
                                            const QItemSelection& qDeselected) const;
@@ -121,13 +115,14 @@ private Q_SLOTS:
     Q_SLOT void onItemViewVerticalScrollValueChanged(const int& qValue) const;
 
 private:
-    Ui::RaptorTrashPage* _Ui = Q_NULLPTR;
+    Ui::RaptorMediaPage* _Ui = Q_NULLPTR;
+    QButtonGroup* _TabGroup = Q_NULLPTR;
     RaptorMenu *_ItemViewContextMenu = Q_NULLPTR;
     RaptorTableViewDelegate* _ItemViewDelegate = Q_NULLPTR;
     RaptorTableViewHeader* _ItemViewHeader = Q_NULLPTR;
-    RaptorTrashViewModel* _ItemViewModel = Q_NULLPTR;
-    RaptorLoading* _Loading = Q_NULLPTR;
+    RaptorMediaViewModel* _ItemViewModel = Q_NULLPTR;
+    RaptorLoading* _ItemViewLoading = Q_NULLPTR;
     Payload _Payload;
 };
 
-#endif // RAPTORTRASHPAGE_H
+#endif // RAPTORMEDIAPAGE_H

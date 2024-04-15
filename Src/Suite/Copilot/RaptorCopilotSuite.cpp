@@ -44,6 +44,12 @@ void RaptorCopilotSuite::invokeStop() const
     }
 }
 
+void RaptorCopilotSuite::invokeAriaHostParse() const
+{
+    QHostInfo::lookupHost(RaptorSettingSuite::invokeImmutableItemFind(Setting::Section::Download,
+                                                                      Setting::Download::AriaHost).toString(), this, onAriaHostParsing);
+}
+
 void RaptorCopilotSuite::invokeInstanceInit()
 {
     _HeartbeatTimer = new QTimer(this);
@@ -62,7 +68,7 @@ void RaptorCopilotSuite::invokeSlotInit() const
 void RaptorCopilotSuite::onItemCopyWriterFinding() const
 {
     auto qSQLQuery = RaptorPersistenceSuite::invokeQueryGenerate();
-    const auto qSQL = R"(SELECT Content FROM CopyWriter ORDER BY RANDOM() LIMIT 8)";
+    const auto qSQL = R"(SELECT Content FROM CopyWriter ORDER BY RANDOM() LIMIT 9)";
     qSQLQuery.exec(qSQL);
     auto itens = QVector<RaptorCopyWriter>();
     while (qSQLQuery.next())
@@ -78,7 +84,7 @@ void RaptorCopilotSuite::onItemCopyWriterFinding() const
     }
 
     auto items = QStringList();
-    items << "RaptorSpacePage" << "RaptorTransferPage" << "RaptorSharePage" << "RaptorStarPage" << "RaptorTrashPage" << "RaptorPlusPage" << "RaptorStoryPage" << "RaptorSettingPage";
+    items << "RaptorSpacePage" << "RaptorTransferPage" << "RaptorSharePage" << "RaptorStarPage" << "RaptorTrashPage" << "RaptorMediaPage" << "RaptorPlusPage" << "RaptorStoryPage" << "RaptorSettingPage";
     auto itos = QVector<quint32>(items.length());
     std::iota(itos.begin(), itos.end(), 1);
     std::shuffle(itos.begin(), itos.end(), std::mt19937(std::random_device()()));
@@ -96,7 +102,7 @@ void RaptorCopilotSuite::onItemCopyWriterFinding() const
 void RaptorCopilotSuite::onItemNoticeFetching() const
 {
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = QStringLiteral("%1/NOTICE").arg(GITHUB);
+    qHttpPayload._Url = QStringLiteral("%1/blob/master/NOTICE").arg(GITHUB);
     const auto [qError, qStatus, qBody] = RaptorHttpSuite::invokeGet(qHttpPayload);
     if (!qError.isEmpty())
     {
@@ -132,6 +138,7 @@ void RaptorCopilotSuite::onItemNoticeFetching() const
 
     if (qSQLQuery.next())
     {
+        // TODO 优化通知
         if (const auto qState = qSQLQuery.value("State").toInt();
             qState == 1)
         {
@@ -167,7 +174,7 @@ void RaptorCopilotSuite::onItemNoticeFetching() const
                                       Qt::AutoConnection,
                                       Q_ARG(bool, true),
                                       Q_ARG(QString, QString::fromStdString(qId)),
-                                      Q_ARG(QString, QString(CREATIVE_TEMPLATE).arg(QStringLiteral("Hi %1。新版本 %2.%3.%4 可用").arg(RaptorStoreSuite::invokeUserGet()._Nickname, QString::number(qMajor), QString::number(qMinor)), QString::number(qPatch))),
+                                      Q_ARG(QString, QString(qCreativeTemplate).arg(QStringLiteral("Hi %1。新版本 %2.%3.%4 可用").arg(RaptorStoreSuite::invokeUserGet()._NickName, QString::number(qMajor), QString::number(qMinor)), QString::number(qPatch))),
                                       Q_ARG(QString, QString::fromStdString(qContent)));
         }
     }
@@ -244,6 +251,34 @@ void RaptorCopilotSuite::onItemQrCodeEncoding(const QVariant &qVariant) const
     Q_EMIT itemQrCodeEncoded(QVariant::fromValue<RaptorOutput>(output));
 }
 
+void RaptorCopilotSuite::onItemAriaConnectTesting(const QVariant &qVariant) const
+{
+    const auto input = qVariant.value<RaptorInput>();
+    const auto [qAriaHost, qAriaPort] = input._Variant.value<QPair<QString, QString> >();
+    auto qEndPoint = QString();
+    if (input._State)
+    {
+        qEndPoint = QStringLiteral("wss://%1:%2/jsonrpc").arg(qAriaHost, qAriaPort);
+    } else
+    {
+        qEndPoint = QStringLiteral("ws://%1:%2/jsonrpc").arg(qAriaHost, qAriaPort);
+    }
+
+    auto output = RaptorOutput();
+    if (const auto qError = RaptorHttpSuite::invokeItemWebSocketConnectTest(qEndPoint);
+        !qError.isEmpty())
+    {
+        qCritical() << qError;
+        output._State = false;
+        output._Message = qError;
+        Q_EMIT itemAriaConnectTested(QVariant::fromValue<RaptorOutput>(output));
+        return;
+    }
+
+    output._State = true;
+    Q_EMIT itemAriaConnectTested(QVariant::fromValue<RaptorOutput>(output));
+}
+
 void RaptorCopilotSuite::onItemProxyConnectTesting(const QVariant &qVariant) const
 {
     const auto input = qVariant.value<RaptorInput>();
@@ -267,7 +302,7 @@ void RaptorCopilotSuite::onItemProxyConnectTesting(const QVariant &qVariant) con
     Q_EMIT itemProxyConnectTested(QVariant::fromValue<RaptorOutput>(output));
 }
 
-void RaptorCopilotSuite::invokeHeartbeatExplore(const QHostInfo &qHostInfo)
+void RaptorCopilotSuite::onHeartbeatExploring(const QHostInfo &qHostInfo) const
 {
     if (qHostInfo.error() != QHostInfo::NoError)
     {
@@ -279,7 +314,19 @@ void RaptorCopilotSuite::invokeHeartbeatExplore(const QHostInfo &qHostInfo)
     }
 }
 
-void RaptorCopilotSuite::onHeartbeatTimerTimeout()
+void RaptorCopilotSuite::onAriaHostParsing(const QHostInfo &qHostInfo) const
 {
-    QHostInfo::lookupHost("aliyundrive.com", this, invokeHeartbeatExplore);
+    for (const auto &item: qHostInfo.addresses())
+    {
+        if (item == QHostAddress::LocalHost)
+        {
+            RaptorStoreSuite::invokeAriaIsLocalHostSet(true);
+            break;
+        }
+    }
+}
+
+void RaptorCopilotSuite::onHeartbeatTimerTimeout() const
+{
+    QHostInfo::lookupHost("alipan.com", this, onHeartbeatExploring);
 }

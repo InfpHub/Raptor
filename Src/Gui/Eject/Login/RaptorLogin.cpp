@@ -35,7 +35,7 @@ RaptorLogin::RaptorLogin(QWidget* qParent) : RaptorEject(qParent),
 
 RaptorLogin::~RaptorLogin()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 bool RaptorLogin::eventFilter(QObject* qObject, QEvent* qEvent)
@@ -139,12 +139,12 @@ void RaptorLogin::onItemQrCodeEncoded(const QVariant& qVariant) const
     _QrCodeStatusTimer->start();
 }
 
-void RaptorLogin::onItemQrCodeStatusFetched(const QVariant& qVariant)
+void RaptorLogin::onItemQrCodeStatusFetched(const QVariant& qVariant) const
 {
     const auto [_State, _Message, _Data] = qVariant.value<RaptorOutput>();
     if (!_State)
     {
-        _Ui->_QrCodeStatus->setText(_Message);
+        _Ui->_QrCodeStatus->setText(QString(qCreativeTemplate).arg(_Message));
         RaptorToast::invokeCriticalEject(_Message);
         return;
     }
@@ -152,16 +152,16 @@ void RaptorLogin::onItemQrCodeStatusFetched(const QVariant& qVariant)
     switch (_Data.value<RaptorQrCodeStatus>())
     {
     case RaptorQrCodeStatus::New:
-        _Ui->_QrCodeStatus->setText(QString(INFORMATION_TEMPLATE).arg(QStringLiteral("等待扫描...")));
+        _Ui->_QrCodeStatus->setText(QString(qInformationTemplate).arg(QStringLiteral("等待扫描...")));
         break;
     case RaptorQrCodeStatus::Scanned:
-        _Ui->_QrCodeStatus->setText(QString(CREATIVE_TEMPLATE).arg(QStringLiteral("已扫描，请在移动端确认登录。")));
+        _Ui->_QrCodeStatus->setText(QString(qCreativeTemplate).arg(QStringLiteral("已扫描，请在移动端确认登录。")));
         break;
     case RaptorQrCodeStatus::Confirmed:
-        _Ui->_QrCodeStatus->setText(QString(SUCCESS_TEMPLATE).arg(QStringLiteral("登陆成功。")));
+        _Ui->_QrCodeStatus->setText(QString(qSuccessTemplate).arg(QStringLiteral("登陆成功。")));
         break;
     case RaptorQrCodeStatus::Canceled:
-        _Ui->_QrCodeStatus->setText(QString(WARNING_TEMPLATE).arg(QStringLiteral("登录已取消。要想再次登录，请点击二维码以刷新。")));
+        _Ui->_QrCodeStatus->setText(QString(qWarningTemplate).arg(QStringLiteral("登录已取消。要想再次登录，请点击二维码以刷新。")));
         _QrCodeStatusTimer->stop();
         break;
     case RaptorQrCodeStatus::Expired:
@@ -170,7 +170,7 @@ void RaptorLogin::onItemQrCodeStatusFetched(const QVariant& qVariant)
             return;
         }
 
-        _Ui->_QrCodeStatus->setText(QString(CREATIVE_TEMPLATE).arg(QStringLiteral("二维码已过期。要想再次登录，请点击二维码以刷新。")));
+        _Ui->_QrCodeStatus->setText(QString(qCreativeTemplate).arg(QStringLiteral("二维码已过期。要想再次登录，请点击二维码以刷新。")));
         break;
     default:
         break;

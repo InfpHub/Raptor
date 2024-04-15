@@ -186,8 +186,8 @@ void RaptorUploadingSuite::invokeItemDelete(const RaptorTransferItem& item,
         qArray << qDocument;
 
         auto qHttpPayload = RaptorHttpPayload();
-        qHttpPayload._Url = "https://api.aliyundrive.com/adrive/v4/batch";
-        USE_HEADER_DEFAULT(qHttpPayload)
+        qHttpPayload._Url = "https://api.alipan.com/adrive/v4/batch";
+        qUseHeaderDefault(qHttpPayload)
         auto qRow = QJsonObject();
         qRow["requests"] = qArray;
         qRow["resource"] = "file";
@@ -212,8 +212,8 @@ void RaptorUploadingSuite::invokeItemDelete(const RaptorTransferItem& item,
 QString RaptorUploadingSuite::invokeItemCreate(RaptorTransferItem& item)
 {
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/adrive/v2/file/createWithFolders";
-    USE_HEADER_DEFAULT(qHttpPayload)
+    qHttpPayload._Url = "https://api.alipan.com/adrive/v2/file/createWithFolders";
+    qUseHeaderDefault(qHttpPayload)
     auto qRow = QJsonObject();
     qRow["check_name_mode"] = "refuse";
     qRow["drive_id"] = item._Space;
@@ -538,7 +538,7 @@ void RaptorUploadingSuite::onItemsUploading(const QVariant& qVariant)
     output._State = true;
     output._Data = QVariant::fromValue<QVector<RaptorTransferItem>>(itess);
     Q_EMIT itemsQueuing(QVariant::fromValue<RaptorOutput>(output));
-    if (const auto qConcurrent = RaptorSettingSuite::invokeItemFind(Setting::Section::Upload,
+    if (const auto qConcurrent = RaptorSettingSuite::invokeImmutableItemFind(Setting::Section::Upload,
                                                                     Setting::Upload::Concurrent).toInt();
         _ItemsQueue.length() < qConcurrent)
     {
@@ -641,7 +641,7 @@ void RaptorUploadingSuite::onItemsResuming(const QVariant& qVariant)
     {
         const auto item = qIndex.data(Qt::UserRole).value<RaptorTransferItem>();
         invokeItemUpdate(item, 0);
-        if (const auto qConcurrent = RaptorSettingSuite::invokeItemFind(Setting::Section::Upload,
+        if (const auto qConcurrent = RaptorSettingSuite::invokeImmutableItemFind(Setting::Section::Upload,
                                                                         Setting::Upload::Concurrent).toInt();
             _ItemsQueue.length() >= qConcurrent)
         {
@@ -697,7 +697,7 @@ void RaptorUploadingSuite::onItemPaused(const QVariant& qVariant)
         return;
     }
 
-    if (const auto qConcurrent = RaptorSettingSuite::invokeItemFind(Setting::Section::Upload,
+    if (const auto qConcurrent = RaptorSettingSuite::invokeImmutableItemFind(Setting::Section::Upload,
                                                                     Setting::Upload::Concurrent).toInt();
         _ItemsQueue.length() < qConcurrent)
     {
@@ -732,7 +732,7 @@ void RaptorUploadingSuite::onItemCancelled(const QVariant& qVariant)
         return;
     }
 
-    if (const auto qConcurrent = RaptorSettingSuite::invokeItemFind(Setting::Section::Upload,
+    if (const auto qConcurrent = RaptorSettingSuite::invokeImmutableItemFind(Setting::Section::Upload,
                                                                     Setting::Upload::Concurrent).toInt();
         _ItemsQueue.length() < qConcurrent)
     {
@@ -772,7 +772,7 @@ void RaptorUploadingSuite::onItemCompleted(const QVariant& qVariant)
         return;
     }
 
-    if (const auto qConcurrent = RaptorSettingSuite::invokeItemFind(Setting::Section::Upload,
+    if (const auto qConcurrent = RaptorSettingSuite::invokeImmutableItemFind(Setting::Section::Upload,
                                                                     Setting::Upload::Concurrent).toInt();
         _ItemsQueue.length() < qConcurrent)
     {
@@ -809,7 +809,7 @@ void RaptorUploadingSuite::onItemErrored(const QVariant& qVariant)
         return;
     }
 
-    if (const auto qConcurrent = RaptorSettingSuite::invokeItemFind(Setting::Section::Upload,
+    if (const auto qConcurrent = RaptorSettingSuite::invokeImmutableItemFind(Setting::Section::Upload,
                                                                     Setting::Upload::Concurrent).toInt();
         _ItemsQueue.length() < qConcurrent)
     {

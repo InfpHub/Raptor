@@ -31,10 +31,13 @@
 
 #include "../Eject/Device/RaptorDevice.h"
 #include "../Eject/Login/RaptorLogin.h"
+#include "../Eject/Mask/RaptorMask.h"
 #include "../Eject/Notice/RaptorNotice.h"
 #include "../Eject/User/RaptorUser.h"
 #include "../Page/Plus/RaptorPlusPage.h"
+#include "../Page/Media/RaptorMediaPage.h"
 #include "../Page/Setting/RaptorSettingPage.h"
+#include "../Page/Setting/Download/RaptorDownloadPage.h"
 #include "../Page/Setting/Network/RaptorNetworkPage.h"
 #include "../Page/Share/RaptorSharePage.h"
 #include "../Page/Space/RaptorSpacePage.h"
@@ -123,6 +126,9 @@ public:
     RaptorTrashPage *invokeTrashPageGet() const;
 
     [[nodiscard]]
+    RaptorMediaPage *invokeMediaPageGet() const;
+
+    [[nodiscard]]
     RaptorPlusPage *invokePlusPageGet() const;
 
     [[nodiscard]]
@@ -144,6 +150,9 @@ public:
     RaptorSettingPage *invokeSettingPageGet() const;
 
     [[nodiscard]]
+    RaptorDownloadPage *invokeDownloadPageGet() const;
+
+    [[nodiscard]]
     RaptorNetworkPage *invokeNetworkPageGet() const;
 
     Q_INVOKABLE void invokeSuccessEject(const QString &qMessage) const;
@@ -161,6 +170,10 @@ public:
 
     Q_INVOKABLE void invokeGoToSpacePage() const;
 
+    Q_INVOKABLE void invokeAriaStatusSet(const QString &qValue) const;
+
+    Q_INVOKABLE void invokeMaskPaint(const bool& qValue) const;
+
 private:
     void invokeInstanceInit();
 
@@ -170,7 +183,7 @@ private:
 
     void invokeLogoPaint() const;
 
-    void invokeBackgroundPaint();
+    void invokeBackgroundPaint() const;
 
     void invokeAvatarPaint() const;
 
@@ -221,7 +234,9 @@ private Q_SLOTS:
 
     Q_SLOT void onTrashClicked() const;
 
-    Q_SLOT void onExtraClicked() const;
+    Q_SLOT void onMediaClicked() const;
+
+    Q_SLOT void onPlusClicked() const;
 
     Q_SLOT void onStoryClicked() const;
 
@@ -255,6 +270,7 @@ private:
     static Q_DECL_CONSTEXPR auto _WorldLayoutMargin = 12;
     Ui::RaptorWorld *_Ui = Q_NULLPTR;
     QScopedPointer<QSvgRenderer> _SvgRender = QScopedPointer(new QSvgRenderer());
+    RaptorMask* _Mask = Q_NULLPTR;
     RaptorDevice *_Device = Q_NULLPTR;
     RaptorLogin *_Login = Q_NULLPTR;
     RaptorNotice *_Notice = Q_NULLPTR;

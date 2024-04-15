@@ -35,7 +35,7 @@ RaptorUploadedPage::RaptorUploadedPage(QWidget* qParent) : QWidget(qParent),
 
 RaptorUploadedPage::~RaptorUploadedPage()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 bool RaptorUploadedPage::eventFilter(QObject* qObject, QEvent* qEvent)

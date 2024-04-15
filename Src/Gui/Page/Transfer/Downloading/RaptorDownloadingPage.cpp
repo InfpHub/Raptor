@@ -35,7 +35,7 @@ RaptorDownloadingPage::RaptorDownloadingPage(QWidget* qParent) : QWidget(qParent
 
 RaptorDownloadingPage::~RaptorDownloadingPage()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 bool RaptorDownloadingPage::eventFilter(QObject* qObject, QEvent* qEvent)
@@ -173,7 +173,7 @@ void RaptorDownloadingPage::invokeUiInit()
     _Ui->_ItemEstimatedTimeTip->setText(QStringLiteral("剩余时间:"));
     _Ui->_ItemSpeedTip->setText(QStringLiteral("速度:"));
     _Ui->_Item3rdPartyEvoke->setText(QStringLiteral("唤起 %1").arg(RaptorSettingSuite::invokeItemFind(Setting::Section::Download,
-                                                                                                    Setting::Download::ActiveEngine).toString()));
+                                                                                                    Setting::Download::ThirdPartyActiveEngine).toString()));
 }
 
 void RaptorDownloadingPage::invokeSlotInit() const
@@ -413,7 +413,7 @@ void RaptorDownloadingPage::onItem3rdPartyEvoke() const
     }
 
     if (const auto qEngine = RaptorSettingSuite::invokeItemFind(Setting::Section::Download,
-                                                                Setting::Download::ActiveEngine).toString();
+                                                                Setting::Download::ThirdPartyActiveEngine).toString();
         qEngine.isEmpty())
     {
         RaptorToast::invokeWarningEject(QStringLiteral("尚未设置活跃的第三方下载引擎。无法继续!"));

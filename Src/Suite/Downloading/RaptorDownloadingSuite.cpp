@@ -39,8 +39,8 @@ RaptorDownloadingSuite *RaptorDownloadingSuite::invokeSingletonGet()
 QPair<QString, QVector<RaptorFileItem> > RaptorDownloadingSuite::invokeItemsWalk(const QString &qParent, const QString &qMarker)
 {
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/v2/file/walk";
-    USE_HEADER_DEFAULT(qHttpPayload)
+    qHttpPayload._Url = "https://api.alipan.com/v2/file/walk";
+    qUseHeaderDefault(qHttpPayload)
     auto qRow = QJsonObject();
     qRow["drive_id"] = RaptorStoreSuite::invokeUserGet()._Space;
     qRow["parent_file_id"] = qParent;
@@ -113,38 +113,71 @@ QPair<QString, QVector<RaptorFileItem> > RaptorDownloadingSuite::invokeItemsWalk
     return qMakePair(QString(), items);
 }
 
-void RaptorDownloadingSuite::invokeStop()
-{
-    _ItemsStatusTimer->stop();
-    for (const auto &item: _ItemsQueue)
-    {
-        Q_EMIT itemPausing(QVariant::fromValue<RaptorTransferItem>(item));
-    }
-}
-
-void RaptorDownloadingSuite::invokeInstanceInit()
-{
-    _ItemsThreadPool = new QThreadPool(this);
-    _ItemsStatusTimer = new QTimer(this);
-    _ItemsStatusTimer->setInterval(500);
-}
-
-void RaptorDownloadingSuite::invokeSlotInit() const
-{
-    connect(_ItemsStatusTimer,
-            &QTimer::timeout,
-            this,
-            &RaptorDownloadingSuite::onItemStatusTimerTimeout);
-}
-
-QVector<RaptorTransferItem> RaptorDownloadingSuite::invokeItemsByLimitSelect(const quint32 &qLimit)
+QPair<QString, QVector<RaptorTransferItem> > RaptorDownloadingSuite::invokeItemsLoad(const bool &qEmbed)
 {
     auto qSQLQuery = RaptorPersistenceSuite::invokeQueryGenerate();
     const auto qSQL = R"(
-        SELECT * FROM Downloading WHERE State = 0 AND UserId = :UserId LIMIT :Limit
+        SELECT * FROM Downloading WHERE UserId = :UserId AND Embed = :Embed
     )";
     qSQLQuery.prepare(qSQL);
     qSQLQuery.bindValue(":UserId", RaptorStoreSuite::invokeUserGet()._LeafId);
+    qSQLQuery.bindValue(":Embed", qEmbed ? 1 : 0);
+    qSQLQuery.exec();
+    auto items = QVector<RaptorTransferItem>();
+    if (qSQLQuery.lastError().isValid())
+    {
+        const auto qError = qSQLQuery.lastError().text();
+        qCritical() << qError;
+        return qMakePair(qError, items);
+    }
+
+    while (qSQLQuery.next())
+    {
+        auto item = RaptorTransferItem();
+        item._LeafId = qSQLQuery.value("LeafId").toString();
+        item._Id = qSQLQuery.value("Id").toString();
+        item._Name = qSQLQuery.value("Name").toString();
+        item._Created = qSQLQuery.value("Created").toString();
+        item._Size = qSQLQuery.value("Size").toString();
+        item._Path = qSQLQuery.value("Path").toString();
+        item._Byte = qSQLQuery.value("Byte").toULongLong();
+        const auto qPartial = QJsonDocument::fromJson(qSQLQuery.value("Partial").toString().toUtf8()).array();
+        auto qTransferred = static_cast<quint64>(0);
+        for (const auto &iten: qPartial)
+        {
+            const auto iteo = iten.toObject();
+            auto itep = RaptorPartial();
+            itep._LeafId = iteo["LeafId"].toString();
+            itep._Name = iteo["Name"].toString();
+            itep._Offset = iteo["Offset"].toVariant().toLongLong();
+            itep._End = iteo["End"].toVariant().toLongLong();
+            itep._Transferred = iteo["Transferred"].toVariant().toLongLong();
+            itep._Path = iteo["Path"].toString();
+            item._Partials.enqueue(itep);
+            qTransferred += itep._Transferred;
+        }
+
+        item._Transferred = qEmbed ? qTransferred : qSQLQuery.value("Transferred").toULongLong();
+        item._SHA1 = qSQLQuery.value("SHA1").toString();
+        item._Icon = RaptorUtil::invokeIconMatch(item._Name);
+        item._Status = item._Transferred == 0 ? QStringLiteral("队列中") : QStringLiteral("已暂停");
+        item._Limit = qSQLQuery.value("Limit").toLongLong();
+        item._Parallel = qSQLQuery.value("Parallel").toUInt();
+        items << item;
+    }
+
+    return qMakePair(QString(), items);
+}
+
+QVector<RaptorTransferItem> RaptorDownloadingSuite::invokeItemsByLimitSelect(const quint32 &qLimit, const bool &qEmbed)
+{
+    auto qSQLQuery = RaptorPersistenceSuite::invokeQueryGenerate();
+    const auto qSQL = R"(
+        SELECT * FROM Downloading WHERE State = 0 AND Embed = :Embed AND UserId = :UserId LIMIT :Limit
+    )";
+    qSQLQuery.prepare(qSQL);
+    qSQLQuery.bindValue(":UserId", RaptorStoreSuite::invokeUserGet()._LeafId);
+    qSQLQuery.bindValue(":Embed", qEmbed ? 1 : 0);
     qSQLQuery.bindValue(":Limit", qLimit);
     qSQLQuery.exec();
     auto items = QVector<RaptorTransferItem>();
@@ -173,34 +206,19 @@ QVector<RaptorTransferItem> RaptorDownloadingSuite::invokeItemsByLimitSelect(con
     return items;
 }
 
-void RaptorDownloadingSuite::invokeItemsSave(QVector<RaptorTransferItem> &items)
+void RaptorDownloadingSuite::invokeItemsSave(QVector<RaptorTransferItem> &items, const bool &qEmbed)
 {
     RaptorPersistenceSuite::invokeTransaction();
     auto qSQLQuery = RaptorPersistenceSuite::invokeQueryGenerate();
     const auto qSQL = R"(
-        INSERT INTO Downloading ("Id", "Name", "Created", "Path", "Size", "Byte", "SHA1", "UserId", "Limit", "State", "Parallel")
-        VALUES (:Id, :Name, :Created, :Path, :Size, :Byte, :SHA1, :UserId, :Limit, :State, :Parallel)
+        INSERT INTO Downloading ("LeafId", "Id", "Name", "Created", "Path", "Size", "Byte", "SHA1", "UserId", "Limit", "State", "Parallel", "Embed")
+        VALUES (:LeafId, :Id, :Name, :Created, :Path, :Size, :Byte, :SHA1, :UserId, :Limit, :State, :Parallel, :Embed)
     )";
     for (auto &item: items)
     {
-        if (const auto qFileInfo = QFileInfo(QStringLiteral("%1/%2").arg(item._Path, item._Name));
-            qFileInfo.exists())
-        {
-            if (RaptorSettingSuite::invokeItemFind(Setting::Section::Download,
-                                                   Setting::Download::AutoRename).toBool())
-            {
-                item._Name = QStringLiteral("RC[%1]-%2").arg(RaptorUtil::invokeUUIDGenerate().left(5), item._Name);
-            } else
-            {
-                if (!QFile::remove(qFileInfo.absoluteFilePath()))
-                {
-                    qCritical() << QStringLiteral("无法移除文件，跳过 %1 下载!").arg(item._Name);
-                    continue;
-                }
-            }
-        }
-
+        item._LeafId = RaptorUtil::invokeLeafIdGenerate();
         qSQLQuery.prepare(qSQL);
+        qSQLQuery.bindValue(":LeafId", item._LeafId);
         qSQLQuery.bindValue(":Id", item._Id);
         qSQLQuery.bindValue(":Name", item._Name);
         qSQLQuery.bindValue(":Created", item._Created);
@@ -212,14 +230,12 @@ void RaptorDownloadingSuite::invokeItemsSave(QVector<RaptorTransferItem> &items)
         qSQLQuery.bindValue(":Limit", item._Limit);
         qSQLQuery.bindValue(":State", 0);
         qSQLQuery.bindValue(":Parallel", item._Parallel);
+        qSQLQuery.bindValue(":Embed", qEmbed ? 1 : 0);
         qSQLQuery.exec();
         if (qSQLQuery.lastError().isValid())
         {
             qCritical() << qSQLQuery.lastError().text();
         }
-
-        qSQLQuery.next();
-        item._LeafId = qSQLQuery.lastInsertId().toString();
     }
 
     RaptorPersistenceSuite::invokeCommit();
@@ -254,10 +270,11 @@ void RaptorDownloadingSuite::invokeItemUpdate(const RaptorTransferItem &item,
 {
     auto qSQLQuery = RaptorPersistenceSuite::invokeQueryGenerate();
     const auto qSQL = R"(
-        UPDATE Downloading SET Partial = :Partial, State = :State WHERE LeafId = :LeafId AND UserId = :UserId
+        UPDATE Downloading SET Partial = :Partial, Transferred = :Transferred, State = :State WHERE LeafId = :LeafId AND UserId = :UserId
     )";
 
     auto qArray = QJsonArray();
+    auto qTransferred = static_cast<quint64>(0);
     for (const auto &iten: item._Partials)
     {
         auto qBody = QJsonObject();
@@ -268,10 +285,12 @@ void RaptorDownloadingSuite::invokeItemUpdate(const RaptorTransferItem &item,
         qBody["End"] = iten._End;
         qBody["Path"] = iten._Path;
         qArray << qBody;
+        qTransferred += iten._Transferred;
     }
 
     qSQLQuery.prepare(qSQL);
     qSQLQuery.bindValue(":Partial", QJsonDocument(qArray).toJson());
+    qSQLQuery.bindValue(":Transferred", qTransferred == 0 ? item._Transferred : qTransferred);
     qSQLQuery.bindValue(":State", qState);
     qSQLQuery.bindValue(":LeafId", item._LeafId);
     qSQLQuery.bindValue(":UserId", RaptorStoreSuite::invokeUserGet()._LeafId);
@@ -401,6 +420,30 @@ QPair<QString, QVector<RaptorTransferItem> > RaptorDownloadingSuite::invokeItems
     return qMakePair(QString(), items);
 }
 
+void RaptorDownloadingSuite::invokeStop()
+{
+    _ItemsStatusTimer->stop();
+    for (const auto &item: _ItemsQueue)
+    {
+        Q_EMIT itemPausing(QVariant::fromValue<RaptorTransferItem>(item));
+    }
+}
+
+void RaptorDownloadingSuite::invokeInstanceInit()
+{
+    _ItemsThreadPool = new QThreadPool(this);
+    _ItemsStatusTimer = new QTimer(this);
+    _ItemsStatusTimer->setInterval(500);
+}
+
+void RaptorDownloadingSuite::invokeSlotInit() const
+{
+    connect(_ItemsStatusTimer,
+            &QTimer::timeout,
+            this,
+            &RaptorDownloadingSuite::onItemStatusTimerTimeout);
+}
+
 void RaptorDownloadingSuite::invokeItemDownload(const RaptorTransferItem &item)
 {
     const auto qWorker = new RaptorDownloadingWorker(item);
@@ -444,62 +487,10 @@ void RaptorDownloadingSuite::invokeItemDownload(const RaptorTransferItem &item)
 
 void RaptorDownloadingSuite::onItemsLoading() const
 {
-    auto qSQLQuery = RaptorPersistenceSuite::invokeQueryGenerate();
-    const auto qSQL = R"(
-        SELECT * FROM Downloading WHERE UserId = :UserId
-    )";
-    qSQLQuery.prepare(qSQL);
-    qSQLQuery.bindValue(":UserId", RaptorStoreSuite::invokeUserGet()._LeafId);
-    qSQLQuery.exec();
-    if (qSQLQuery.lastError().isValid())
-    {
-        auto qError = qSQLQuery.lastError().text();
-        qCritical() << qError;
-        auto output = RaptorOutput();
-        output._State = false;
-        output._Message = qError;
-        Q_EMIT itemsLoaded(QVariant::fromValue<RaptorOutput>(output));
-        return;
-    }
-
-    auto items = QVector<RaptorTransferItem>();
-    while (qSQLQuery.next())
-    {
-        auto item = RaptorTransferItem();
-        item._LeafId = qSQLQuery.value("LeafId").toString();
-        item._Id = qSQLQuery.value("Id").toString();
-        item._Name = qSQLQuery.value("Name").toString();
-        item._Created = qSQLQuery.value("Created").toString();
-        item._Size = qSQLQuery.value("Size").toString();
-        item._Path = qSQLQuery.value("Path").toString();
-        item._Byte = qSQLQuery.value("Byte").toULongLong();
-        auto Transferred = static_cast<qint64>(0);
-        const auto qPartial = QJsonDocument::fromJson(qSQLQuery.value("Partial").toString().toUtf8()).array();
-        for (const auto &iten: qPartial)
-        {
-            const auto iteo = iten.toObject();
-            auto itep = RaptorPartial();
-            itep._LeafId = iteo["LeafId"].toString();
-            itep._Name = iteo["Name"].toString();
-            itep._Offset = iteo["Offset"].toVariant().toLongLong();
-            itep._End = iteo["End"].toVariant().toLongLong();
-            itep._Transferred = iteo["Transferred"].toVariant().toLongLong();
-            itep._Path = iteo["Path"].toString();
-            item._Partials.enqueue(itep);
-            Transferred += itep._Transferred;
-        }
-
-        item._Transferred = Transferred;
-        item._SHA1 = qSQLQuery.value("SHA1").toString();
-        item._Icon = RaptorUtil::invokeIconMatch(item._Name);
-        item._Status = item._Transferred == 0 ? QStringLiteral("队列中") : QStringLiteral("已暂停");
-        item._Limit = qSQLQuery.value("Limit").toLongLong();
-        item._Parallel = qSQLQuery.value("Parallel").toUInt();
-        items << item;
-    }
-
+    const auto [qError, items] = invokeItemsLoad();
     auto output = RaptorOutput();
-    output._State = true;
+    output._State = qError.isEmpty();
+    output._Message = qError;
     output._Data = QVariant::fromValue<QVector<RaptorTransferItem> >(items);
     Q_EMIT itemsLoaded(QVariant::fromValue<RaptorOutput>(output));
 }
@@ -546,8 +537,8 @@ void RaptorDownloadingSuite::onItemsDownloading(const QVariant &qVariant)
         _ItemsStatusTimer->start();
     }
 
-    if (const auto qConcurrent = RaptorSettingSuite::invokeItemFind(Setting::Section::Download,
-                                                                    Setting::Download::Concurrent).toInt();
+    if (const auto qConcurrent = RaptorSettingSuite::invokeImmutableItemFind(Setting::Section::Download,
+                                                                             Setting::Download::Concurrent).toInt();
         _ItemsQueue.length() < qConcurrent)
     {
         const auto qLimit = _ItemsQueue.length() - qConcurrent;
@@ -558,7 +549,7 @@ void RaptorDownloadingSuite::onItemsDownloading(const QVariant &qVariant)
             return;
         }
 
-        for (auto &iten: itens)
+        for (const auto &iten: itens)
         {
             if (_ItemsQueue.contains(iten))
             {
@@ -605,8 +596,8 @@ void RaptorDownloadingSuite::onItemsResuming(const QVariant &qVariant)
     {
         const auto item = qIndex.data(Qt::UserRole).value<RaptorTransferItem>();
         invokeItemUpdate(item, 0);
-        if (const auto qConcurrent = RaptorSettingSuite::invokeItemFind(Setting::Section::Download,
-                                                                        Setting::Download::Concurrent).toInt();
+        if (const auto qConcurrent = RaptorSettingSuite::invokeImmutableItemFind(Setting::Section::Download,
+                                                                                 Setting::Download::Concurrent).toInt();
             _ItemsQueue.length() >= qConcurrent)
         {
             continue;
@@ -669,8 +660,8 @@ void RaptorDownloadingSuite::onItemPaused(const QVariant &qVariant)
         return;
     }
 
-    if (const auto qConcurrent = RaptorSettingSuite::invokeItemFind(Setting::Section::Download,
-                                                                    Setting::Download::Concurrent).toInt();
+    if (const auto qConcurrent = RaptorSettingSuite::invokeImmutableItemFind(Setting::Section::Download,
+                                                                             Setting::Download::Concurrent).toInt();
         _ItemsQueue.length() < qConcurrent)
     {
         auto qLimit = _ItemsQueue.length() - qConcurrent;
@@ -711,8 +702,8 @@ void RaptorDownloadingSuite::onItemCancelled(const QVariant &qVariant)
         return;
     }
 
-    if (const auto qConcurrent = RaptorSettingSuite::invokeItemFind(Setting::Section::Download,
-                                                                    Setting::Download::Concurrent).toInt();
+    if (const auto qConcurrent = RaptorSettingSuite::invokeImmutableItemFind(Setting::Section::Download,
+                                                                             Setting::Download::Concurrent).toInt();
         _ItemsQueue.length() < qConcurrent)
     {
         const auto qLimit = _ItemsQueue.length() - qConcurrent;
@@ -751,8 +742,8 @@ void RaptorDownloadingSuite::onItemCompleted(const QVariant &qVariant)
         return;
     }
 
-    if (const auto qConcurrent = RaptorSettingSuite::invokeItemFind(Setting::Section::Download,
-                                                                    Setting::Download::Concurrent).toInt();
+    if (const auto qConcurrent = RaptorSettingSuite::invokeImmutableItemFind(Setting::Section::Download,
+                                                                             Setting::Download::Concurrent).toInt();
         _ItemsQueue.length() < qConcurrent)
     {
         const auto qLimit = _ItemsQueue.length() - qConcurrent;
@@ -788,8 +779,8 @@ void RaptorDownloadingSuite::onItemErrored(const QVariant &qVariant)
         return;
     }
 
-    if (const auto qConcurrent = RaptorSettingSuite::invokeItemFind(Setting::Section::Download,
-                                                                    Setting::Download::Concurrent).toInt();
+    if (const auto qConcurrent = RaptorSettingSuite::invokeImmutableItemFind(Setting::Section::Download,
+                                                                             Setting::Download::Concurrent).toInt();
         _ItemsQueue.length() < qConcurrent)
     {
         const auto qLimit = _ItemsQueue.length() - qConcurrent;

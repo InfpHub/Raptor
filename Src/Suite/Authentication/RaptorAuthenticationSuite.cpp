@@ -104,7 +104,7 @@ QPair<QString, RaptorAuthenticationItem> RaptorAuthenticationSuite::invokeItemBy
     item._Space = qSQLQuery.value("Space").toString();
     item._Private = qSQLQuery.value("Private").toString();
     item._Public = qSQLQuery.value("Public").toString();
-    item._Nickname = qSQLQuery.value("Nickname").toString();
+    item._NickName = qSQLQuery.value("NickName").toString();
     item._AccessToken = qSQLQuery.value("AccessToken").toString();
     item._RefreshToken = qSQLQuery.value("RefreshToken").toString();
     item._Active = true;
@@ -120,14 +120,14 @@ void RaptorAuthenticationSuite::invokeItemSave(const RaptorAuthenticationItem &i
     auto qSQLQuery = RaptorPersistenceSuite::invokeQueryGenerate();
     qSQLQuery.exec(R"(UPDATE User Set State = NULL)");
     const auto qSQL = R"(
-        INSERT INTO User ("LeafId", "Space", "Device", "Nickname", "Avatar", "AccessToken", "RefreshToken", "State", "Private", "PrivateKey", "PublicKey", "Public", "Signature")
-        VALUES (:LeafId, :Space, :Device, :Nickname, :Avatar, :AccessToken, :RefreshToken, :State, :Private, :PrivateKey, :PublicKey, :Public, :Signature)
+        INSERT INTO User ("LeafId", "Space", "Device", "NickName", "Avatar", "AccessToken", "RefreshToken", "State", "Private", "PrivateKey", "PublicKey", "Public", "Signature")
+        VALUES (:LeafId, :Space, :Device, :NickName, :Avatar, :AccessToken, :RefreshToken, :State, :Private, :PrivateKey, :PublicKey, :Public, :Signature)
     )";
     qSQLQuery.prepare(qSQL);
     qSQLQuery.bindValue(":LeafId", item._LeafId);
     qSQLQuery.bindValue(":Space", item._Space);
     qSQLQuery.bindValue(":Device", item._Session._Device);
-    qSQLQuery.bindValue(":Nickname", item._Nickname);
+    qSQLQuery.bindValue(":NickName", item._NickName);
     qSQLQuery.bindValue(":Avatar", item._Avatar);
     qSQLQuery.bindValue(":AccessToken", item._AccessToken);
     qSQLQuery.bindValue(":RefreshToken", item._RefreshToken);
@@ -148,11 +148,12 @@ void RaptorAuthenticationSuite::invokeItemUpdate(const RaptorAuthenticationItem 
 {
     auto qSQLQuery = RaptorPersistenceSuite::invokeQueryGenerate();
     const auto qSQL = R"(
-        UPDATE User SET Avatar = :Avatar, AccessToken = :AccessToken, RefreshToken = :RefreshToken
+        UPDATE User SET Avatar = :Avatar, NickName = :NickName, AccessToken = :AccessToken, RefreshToken = :RefreshToken
         WHERE LeafId = :LeafId
     )";
     qSQLQuery.prepare(qSQL);
     qSQLQuery.bindValue(":Avatar", item._Avatar);
+    qSQLQuery.bindValue(":NickName", item._NickName);
     qSQLQuery.bindValue(":AccessToken", item._AccessToken);
     qSQLQuery.bindValue(":RefreshToken", item._RefreshToken);
     qSQLQuery.bindValue(":LeafId", item._LeafId);
@@ -166,8 +167,8 @@ void RaptorAuthenticationSuite::invokeItemUpdate(const RaptorAuthenticationItem 
 QString RaptorAuthenticationSuite::invokeItemAccessTokenRefresh(RaptorAuthenticationItem &item) const
 {
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/v2/account/token";
-    USE_HEADER_DEFAULT(qHttpPayload)
+    qHttpPayload._Url = "https://auth.alipan.com/v2/account/token";
+    qUseHeaderDefault(qHttpPayload)
     auto qRow = QJsonObject();
     qRow["grant_type"] = "refresh_token";
     qRow["refresh_token"] = item._RefreshToken;
@@ -188,7 +189,7 @@ QString RaptorAuthenticationSuite::invokeItemAccessTokenRefresh(RaptorAuthentica
 
     if (qDocument["status"].toString() != "enabled")
     {
-        const auto qErros = QStringLiteral("用户 %1 已被禁用!").arg(item._Nickname);
+        const auto qErros = QStringLiteral("用户 %1 已被禁用!").arg(item._NickName);
         qCritical() << qErros;
         return qErros;
     }
@@ -200,16 +201,55 @@ QString RaptorAuthenticationSuite::invokeItemAccessTokenRefresh(RaptorAuthentica
         _ItemAccessTokenTimer->start(qExpire * 1000);
     }
 
+    item._NickName = qDocument["nick_name"].toString();
     item._AccessToken = qDocument["access_token"].toString();
     item._RefreshToken = qDocument["refresh_token"].toString();
     invokeItemDetailFetch(item, qDocument["avatar"].toString());
     return QString();
 }
 
+std::tuple<QString, quint8, quint8, QVector<RaptorDeviceItem> > RaptorAuthenticationSuite::invokeItemDevicesFetch(const QString &qValue)
+{
+    auto qHttpPayload = RaptorHttpPayload();
+    qHttpPayload._Url = "https://api.alipan.com/users/v2/users/device_list";
+    qUseHeaderCustomAuthorization(qHttpPayload, qValue)
+    qUseHeaderApplicationJson(qHttpPayload)
+    qHttpPayload._Body = QJsonDocument(QJsonObject());
+    auto items = QVector<RaptorDeviceItem>();
+    const auto [qError, qStatus, qBody] = RaptorHttpSuite::invokePost(qHttpPayload);
+    if (!qError.isEmpty())
+    {
+        qCritical() << qError;
+        return std::make_tuple(qError, 0, 0, items);
+    }
+
+    const auto qDocument = QJsonDocument::fromJson(qBody);
+    if (qStatus != RaptorHttpStatus::OK)
+    {
+        qCritical() << qDocument.toJson();
+        return std::make_tuple(QString("%1: %2").arg(qDocument["code"].toString(), qDocument["message"].toString()), 0, 0, items);
+    }
+
+    const auto qMax = qDocument["result"]["maxDeviceCount"].toInt();
+    const auto itens = qDocument["result"]["devices"].toArray();
+    const auto qUsed = itens.size();
+    for (const auto &item: itens)
+    {
+        const auto iten = item.toObject();
+        auto iteo = RaptorDeviceItem();
+        iteo._Name = iten["deviceName"].toString();
+        iteo._City = iten["city"].toString();
+        iteo._Logined = iten["loginTime"].toString();
+        items << iteo;
+    }
+
+    return std::make_tuple(QString(), qMax, qUsed, items);
+}
+
 QPair<QString, RaptorSession> RaptorAuthenticationSuite::invokeSessionInit(const RaptorAuthenticationItem &item)
 {
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/users/v1/users/device/create_session";
+    qHttpPayload._Url = "https://api.alipan.com/users/v1/users/device/create_session";
     auto qDevice = item._Session._Device;
     auto qPrivateKey = item._Session._PrivateKey;
     auto qPublicKey = item._Session._PublicKey;
@@ -223,11 +263,11 @@ QPair<QString, RaptorSession> RaptorAuthenticationSuite::invokeSessionInit(const
         qSignature = qSession._Signature;
     }
 
-    USE_HEADER_X_CANARY(qHttpPayload)
-    USE_HEADER_CUSTOM_X_DEVICE_ID(qHttpPayload, qDevice)
-    USE_HEADER_CUSTOM_X_SIGNATURE(qHttpPayload, qSignature)
-    USE_HEADER_CUSTOM_AUTHORIZATION(qHttpPayload, item._AccessToken)
-    USE_HEADER_APPLICATION_JSON(qHttpPayload)
+    qUseHeaderXCanary(qHttpPayload)
+    qUseHeaderCustomXDeviceId(qHttpPayload, qDevice)
+    qUseHeaderCustomXSignature(qHttpPayload, qSignature)
+    qUseHeaderCustomAuthorization(qHttpPayload, item._AccessToken)
+    qUseHeaderApplicationJson(qHttpPayload)
     auto qRow = QJsonObject();
     qRow["pubKey"] = qPublicKey;
     qRow["deviceName"] = QStringLiteral("%1 %2.%3.%4").arg(APPLICATION_NAME, QString::number(MAJOR_VERSION), QString::number(MINOR_VERSION), QString::number(PATCH_VERSION));
@@ -270,7 +310,7 @@ QString RaptorAuthenticationSuite::invokeItemDetailFetch(RaptorAuthenticationIte
             item._Avatar = qFile.readAll();
             qFile.close();
         }
-    }else
+    } else
     {
         auto qHttpPayload = RaptorHttpPayload();
         qHttpPayload._Url = qUrl;
@@ -292,13 +332,13 @@ QString RaptorAuthenticationSuite::invokeItemDetailFetch(RaptorAuthenticationIte
 
 
     auto qHttpPayloae = RaptorHttpPayload();
-    qHttpPayloae._Url = "https://user.aliyundrive.com/v2/user/get";
-    USE_HEADER_X_CANARY(qHttpPayloae)
-    USE_HEADER_REFERER(qHttpPayloae)
-    USE_HEADER_CUSTOM_AUTHORIZATION(qHttpPayloae, item._AccessToken)
-    USE_HEADER_CUSTOM_X_DEVICE_ID(qHttpPayloae, item._Session._Device)
-    USE_HEADER_CUSTOM_X_SIGNATURE(qHttpPayloae, item._Session._Signature)
-    USE_HEADER_APPLICATION_JSON(qHttpPayloae)
+    qHttpPayloae._Url = "https://user.alipan.com/v2/user/get";
+    qUseHeaderXCanary(qHttpPayloae)
+    qUseHeaderReferer(qHttpPayloae)
+    qUseHeaderCustomAuthorization(qHttpPayloae, item._AccessToken)
+    qUseHeaderCustomXDeviceId(qHttpPayloae, item._Session._Device)
+    qUseHeaderCustomXSignature(qHttpPayloae, item._Session._Signature)
+    qUseHeaderApplicationJson(qHttpPayloae)
     const auto [qErros, qStatut, qBodz] = RaptorHttpSuite::invokePost(qHttpPayloae);
     if (!qErros.isEmpty())
     {
@@ -325,13 +365,13 @@ QString RaptorAuthenticationSuite::invokeItemDetailFetch(RaptorAuthenticationIte
 QString RaptorAuthenticationSuite::invokeItemCapacityFetch(RaptorAuthenticationItem &item)
 {
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/adrive/v1/user/driveCapacityDetails";
-    USE_HEADER_X_CANARY(qHttpPayload)
-    USE_HEADER_REFERER(qHttpPayload)
-    USE_HEADER_CUSTOM_AUTHORIZATION(qHttpPayload, item._AccessToken)
-    USE_HEADER_CUSTOM_X_DEVICE_ID(qHttpPayload, item._Session._Device)
-    USE_HEADER_CUSTOM_X_SIGNATURE(qHttpPayload, item._Session._Signature)
-    USE_HEADER_APPLICATION_JSON(qHttpPayload)
+    qHttpPayload._Url = "https://api.alipan.com/adrive/v1/user/driveCapacityDetails";
+    qUseHeaderXCanary(qHttpPayload)
+    qUseHeaderReferer(qHttpPayload)
+    qUseHeaderCustomAuthorization(qHttpPayload, item._AccessToken)
+    qUseHeaderCustomXDeviceId(qHttpPayload, item._Session._Device)
+    qUseHeaderCustomXSignature(qHttpPayload, item._Session._Signature)
+    qUseHeaderApplicationJson(qHttpPayload)
     const auto [qError, qStatus, qBody] = RaptorHttpSuite::invokePost(qHttpPayload);
     if (!qError.isEmpty())
     {
@@ -384,7 +424,7 @@ void RaptorAuthenticationSuite::onItemsLoading() const
         item._Space = qSQLQuery.value("Space").toString();
         item._Private = qSQLQuery.value("Private").toString();
         item._Public = qSQLQuery.value("Public").toString();
-        item._Nickname = qSQLQuery.value("Nickname").toString();
+        item._NickName = qSQLQuery.value("NickName").toString();
         item._Avatar = qSQLQuery.value("Avatar").toByteArray();
         item._AccessToken = qSQLQuery.value("AccessToken").toString();
         item._RefreshToken = qSQLQuery.value("RefreshToken").toString();
@@ -407,13 +447,13 @@ void RaptorAuthenticationSuite::onItemLogouting(const QVariant &qVariant) const
     const auto input = qVariant.value<RaptorInput>();
     const auto item = input._Variant.value<RaptorAuthenticationItem>();
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/users/v1/users/device_logout";
-    USE_HEADER_X_CANARY(qHttpPayload)
-    USE_HEADER_REFERER(qHttpPayload)
-    USE_HEADER_CUSTOM_AUTHORIZATION(qHttpPayload, item._AccessToken)
-    USE_HEADER_CUSTOM_X_DEVICE_ID(qHttpPayload, item._Session._Device)
-    USE_HEADER_CUSTOM_X_SIGNATURE(qHttpPayload, item._Session._Signature)
-    USE_HEADER_APPLICATION_JSON(qHttpPayload)
+    qHttpPayload._Url = "https://api.alipan.com/users/v1/users/device_logout";
+    qUseHeaderXCanary(qHttpPayload)
+    qUseHeaderReferer(qHttpPayload)
+    qUseHeaderCustomAuthorization(qHttpPayload, item._AccessToken)
+    qUseHeaderCustomXDeviceId(qHttpPayload, item._Session._Device)
+    qUseHeaderCustomXSignature(qHttpPayload, item._Session._Signature)
+    qUseHeaderApplicationJson(qHttpPayload)
     auto output = RaptorOutput();
     const auto [qError, qStatus, qBody] = RaptorHttpSuite::invokePost(qHttpPayload);
     if (!qError.isEmpty())
@@ -512,12 +552,12 @@ void RaptorAuthenticationSuite::onItemCapacityRefreshing() const
 void RaptorAuthenticationSuite::onItemQrCodeGenerating() const
 {
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://passport.aliyundrive.com/newlogin/qrcode/generate.do";
-    USE_HEADER_X_CANARY(qHttpPayload)
-    USE_HEADER_REFERER(qHttpPayload)
-    USE_HEADER_APPLICATION_JSON(qHttpPayload)
-    USE_QUERY_APPLICATION_NAME(qHttpPayload)
-    USE_QUERY_FROM_SITE(qHttpPayload)
+    qHttpPayload._Url = "https://passport.alipan.com/newlogin/qrcode/generate.do";
+    qUseHeaderXCanary(qHttpPayload)
+    qUseHeaderReferer(qHttpPayload)
+    qUseHeaderApplicationJson(qHttpPayload)
+    qUseQueryApplicationName(qHttpPayload)
+    qUseQueryFromSite(qHttpPayload)
     auto output = RaptorOutput();
     const auto [qError, qStatus, qBody] = RaptorHttpSuite::invokeGet(qHttpPayload);
     if (!qError.isEmpty())
@@ -554,14 +594,14 @@ void RaptorAuthenticationSuite::onItemQrCodeStatusFetching(const QVariant &qVari
     const auto input = qVariant.value<RaptorInput>();
     const auto [_Timestamp, _Code, _Cookie] = input._Variant.value<RaptorQrCode>();
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://passport.aliyundrive.com/newlogin/qrcode/query.do";
-    USE_HEADER_X_CANARY(qHttpPayload)
-    USE_HEADER_REFERER(qHttpPayload)
-    USE_HEADER_APPLICATION_URL_ENCODED(qHttpPayload)
-    USE_QUERY_APPLICATION_NAME(qHttpPayload)
-    USE_QUERY_FROM_SITE(qHttpPayload)
-    USE_QUERY_CUSTOM_TIMESTAMP(qHttpPayload, _Timestamp)
-    USE_QUERY_CUSTOM_COOKIE(qHttpPayload, _Cookie)
+    qHttpPayload._Url = "https://passport.alipan.com/newlogin/qrcode/query.do";
+    qUseHeaderXCanary(qHttpPayload)
+    qUseHeaderReferer(qHttpPayload)
+    qUseHeaderApplicationUrlEncoded(qHttpPayload)
+    qUseQueryApplicationName(qHttpPayload)
+    qUseQueryFromSite(qHttpPayload)
+    qUseQueryCustomTimestamp(qHttpPayload, _Timestamp)
+    qUseQueryCustomCookie(qHttpPayload, _Cookie)
     auto output = RaptorOutput();
     const auto [qError, qStatus, qBody] = RaptorHttpSuite::invokePost(qHttpPayload);
     if (!qError.isEmpty())
@@ -596,10 +636,8 @@ void RaptorAuthenticationSuite::onItemQrCodeStatusFetching(const QVariant &qVari
         Q_EMIT itemQrCodeStatusFetched(QVariant::fromValue<RaptorOutput>(output));
     } else if (qrCodeStatus == "CONFIRMED")
     {
-        const auto qBizExt = QJsonDocument::fromJson(
-            QString::fromLocal8Bit(QByteArray::fromBase64(qContent["data"]["bizExt"].toString().toUtf8())).toUtf8())[
-            "pds_login_result"];
-        if (qBizExt["status"].toString() != "enabled")
+        const auto qBizExt = QJsonDocument::fromJson(QString::fromLocal8Bit(QByteArray::fromBase64(qContent["data"]["bizExt"].toString().toUtf8())).toUtf8())["pds_login_result"];
+        if (!qBizExt["status"].isUndefined() && qBizExt["status"].toString() != "enabled")
         {
             const auto qErros = QStringLiteral("该用户已被禁用!");
             qCritical() << qErros;
@@ -613,35 +651,49 @@ void RaptorAuthenticationSuite::onItemQrCodeStatusFetching(const QVariant &qVari
         item._LeafId = qBizExt["userId"].toString();
         item._Private = qBizExt["defaultDriveId"].toString();
         item._Space = item._Private;
-        item._Nickname = qBizExt["nickName"].toString();
+        item._NickName = qBizExt["nickName"].toString();
         item._AccessToken = qBizExt["accessToken"].toString();
         item._RefreshToken = qBizExt["refreshToken"].toString();
-        if (const auto qErros = invokeItemCapacityFetch(item);
-            !qErros.isEmpty())
+        const auto [qErros, qMax, qUsed, items] = invokeItemDevicesFetch(RaptorStoreSuite::invokeUserGet()._AccessToken);
+        if (!qErros.isEmpty())
         {
-            qCritical() << qErros;
             output._State = false;
             output._Message = qErros;
             Q_EMIT itemAccessTokenRefreshed(QVariant::fromValue<RaptorOutput>(output));
             return;
         }
 
-        if (const auto qErrot = invokeItemDetailFetch(item, qBizExt["avatar"].toString());
+        if (qMax == qUsed)
+        {
+            output._State = false;
+            output._Message = QStringLiteral("登录设备超限!");
+            Q_EMIT itemAccessTokenRefreshed(QVariant::fromValue<RaptorOutput>(output));
+            return;
+        }
+
+        if (const auto qErrot = invokeItemCapacityFetch(item);
             !qErrot.isEmpty())
         {
-            qCritical() << qErrot;
             output._State = false;
             output._Message = qErrot;
             Q_EMIT itemAccessTokenRefreshed(QVariant::fromValue<RaptorOutput>(output));
             return;
         }
 
-        const auto [qError, qSession] = invokeSessionInit(item);
-        if (!qError.isEmpty())
+        if (const auto qErrou = invokeItemDetailFetch(item, qBizExt["avatar"].toString());
+            !qErrou.isEmpty())
         {
-            qCritical() << qError;
             output._State = false;
-            output._Message = qError;
+            output._Message = qErrou;
+            Q_EMIT itemAccessTokenRefreshed(QVariant::fromValue<RaptorOutput>(output));
+            return;
+        }
+
+        const auto [qErrov, qSession] = invokeSessionInit(item);
+        if (!qErrov.isEmpty())
+        {
+            output._State = false;
+            output._Message = qErrov;
             Q_EMIT itemAccessTokenRefreshed(QVariant::fromValue<RaptorOutput>(output));
             return;
         }
@@ -763,55 +815,20 @@ void RaptorAuthenticationSuite::onItemsAccessTokenRefreshing(const QVariant &qVa
 
 void RaptorAuthenticationSuite::onItemDevicesFetching() const
 {
+    const auto [qError, qMax, qUsed, items] = invokeItemDevicesFetch(RaptorStoreSuite::invokeUserGet()._AccessToken);
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://api.aliyundrive.com/users/v2/users/device_list";
-    USE_HEADER_DEFAULT(qHttpPayload)
-    qHttpPayload._Body = QJsonDocument(QJsonObject());
     auto output = RaptorOutput();
-    const auto [qError, qStatus, qBody] = RaptorHttpSuite::invokePost(qHttpPayload);
-    if (!qError.isEmpty())
-    {
-        qCritical() << qError;
-        output._State = false;
-        output._Message = qError;
-        Q_EMIT itemDevicesFetched(QVariant::fromValue<RaptorOutput>(output));
-        return;
-    }
-
-    const auto qDocument = QJsonDocument::fromJson(qBody);
-    if (qStatus != RaptorHttpStatus::OK)
-    {
-        qCritical() << qDocument.toJson();
-        output._State = false;
-        output._Message = QString("%1: %2").arg(qDocument["code"].toString(), qDocument["message"].toString());
-        Q_EMIT itemDevicesFetched(QVariant::fromValue<RaptorOutput>(output));
-        return;
-    }
-
-    const auto qMax = qDocument["result"]["maxDeviceCount"].toInt();
-    const auto items = qDocument["result"]["devices"].toArray();
-    const auto qUsed = items.size();
-    auto itens = QVector<RaptorDeviceItem>();
-    for (const auto &item: items)
-    {
-        const auto iten = item.toObject();
-        auto iteo = RaptorDeviceItem();
-        iteo._Name = iten["deviceName"].toString();
-        iteo._City = iten["city"].toString();
-        iteo._Logined = iten["loginTime"].toString();
-        itens << iteo;
-    }
-
-    output._State = true;
-    output._Data = QVariant::fromValue<std::tuple<quint8, quint8, QVector<RaptorDeviceItem> > >(std::make_tuple(qMax, qUsed, itens));
+    output._State = qError.isEmpty();
+    output._Message = qError;
+    output._Data = QVariant::fromValue<std::tuple<quint8, quint8, QVector<RaptorDeviceItem> > >(std::make_tuple(qMax, qUsed, items));
     Q_EMIT itemDevicesFetched(QVariant::fromValue<RaptorOutput>(output));
 }
 
 void RaptorAuthenticationSuite::onItemSignInInfoFetching() const
 {
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://member.aliyundrive.com/v2/activity/sign_in_info";
-    USE_HEADER_DEFAULT(qHttpPayload)
+    qHttpPayload._Url = "https://member.alipan.com/v2/activity/sign_in_info";
+    qUseHeaderDefault(qHttpPayload)
     qHttpPayload._Body = QJsonDocument(QJsonObject());
     auto output = RaptorOutput();
     const auto [qError, qStatus, qBody] = RaptorHttpSuite::invokePost(qHttpPayload);
@@ -852,8 +869,8 @@ void RaptorAuthenticationSuite::onItemSigningIn() const
     }
 
     auto qHttpPayload = RaptorHttpPayload();
-    qHttpPayload._Url = "https://member.aliyundrive.com/v1/activity/sign_in_list";
-    USE_HEADER_DEFAULT(qHttpPayload)
+    qHttpPayload._Url = "https://member.alipan.com/v1/activity/sign_in_list";
+    qUseHeaderDefault(qHttpPayload)
     qHttpPayload._Body = QJsonDocument(QJsonObject());
     const auto [qError, qStatus, qBody] = RaptorHttpSuite::invokePost(qHttpPayload);
     if (!qError.isEmpty())
@@ -877,8 +894,8 @@ void RaptorAuthenticationSuite::onItemSigningIn() const
 
     const auto qSignInCount = qDocument["result"]["signInCount"].toVariant().toUInt();
     auto qHttpPayloae = RaptorHttpPayload();
-    qHttpPayloae._Url = "https://member.aliyundrive.com/v1/activity/sign_in_reward";
-    USE_HEADER_DEFAULT(qHttpPayloae)
+    qHttpPayloae._Url = "https://member.alipan.com/v1/activity/sign_in_reward";
+    qUseHeaderDefault(qHttpPayloae)
     auto qRow = QJsonObject();
     qRow["signInDay"] = QString::number(qSignInCount);
     qHttpPayloae._Body = QJsonDocument(qRow);
@@ -904,7 +921,7 @@ void RaptorAuthenticationSuite::onItemSigningIn() const
 
     const auto qName = qDocumenu["result"]["name"].toString();
     output._State = true;
-    const auto qGoods = QStringLiteral("Hi %1。本月累计签到%2次。本次签到获得【%3】").arg(RaptorStoreSuite::invokeUserGet()._Nickname)
+    const auto qGoods = QStringLiteral("Hi %1。本月累计签到%2次。本次签到获得【%3】").arg(RaptorStoreSuite::invokeUserGet()._NickName)
             .arg(qSignInCount)
             .arg(qName);
     if (!RaptorStoreSuite::invokeUserGet()._SignIn.invokeItemSignInConfirm())
@@ -920,7 +937,7 @@ void RaptorAuthenticationSuite::onItemSigningIn() const
         !qDescription.isEmpty())
     {
         const auto qGoodt = QStringLiteral("Hi %1。本月累计签到%2次。本次签到获得【%3】 - %4")
-                .arg(RaptorStoreSuite::invokeUserGet()._Nickname)
+                .arg(RaptorStoreSuite::invokeUserGet()._NickName)
                 .arg(qSignInCount)
                 .arg(qName, qDescription);
         if (!RaptorStoreSuite::invokeUserGet()._SignIn.invokeItemSignInConfirm())

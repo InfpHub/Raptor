@@ -35,7 +35,7 @@ RaptorDevice::RaptorDevice(QWidget *qParent) : RaptorEject(qParent),
 
 RaptorDevice::~RaptorDevice()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 bool RaptorDevice::eventFilter(QObject *qObject, QEvent *qEvent)
@@ -67,7 +67,7 @@ bool RaptorDevice::eventFilter(QObject *qObject, QEvent *qEvent)
 
 void RaptorDevice::invokeEject(const QVariant &qVariant)
 {
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     RaptorEject::invokeEject(qVariant);
 }
 
@@ -79,7 +79,7 @@ void RaptorDevice::invokeInstanceInit()
     _ItemViewModel = new RaptorDeviceViewModel(this);
     auto qHeader = QVector<QString>();
     qHeader << QStringLiteral("设备") << QStringLiteral("城市") << QStringLiteral("登录时间");
-    _Loading = new RaptorLoading(_Ui->_ItemView);
+    _ItemViewLoading = new RaptorLoading(_Ui->_ItemView);
     _ItemViewModel->invokeHeaderSet(qHeader);
     _ItemViewModel->invokeColumnCountSet(4);
     _ItemViewDelegate = new RaptorTableViewDelegate(this);
@@ -118,7 +118,7 @@ void RaptorDevice::invokeSlotInit()
     RaptorEject::invokeSlotInit();
     invokeCloseCallbackSet([=]() -> void
     {
-        _Loading->invokeStateSet(RaptorLoading::State::Finished);
+        _ItemViewLoading->invokeStateSet(RaptorLoading::State::Finished);
         _ItemViewModel->invokeItemsClear();
     });
     connect(_Ui->_Close,
@@ -155,9 +155,9 @@ void RaptorDevice::onItemDevicesFetched(const QVariant &qVariant) const
         RaptorToast::invokeCriticalEject(_Message);
     }
 
-    _Loading->invokeStateSet(RaptorLoading::State::Finished);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Finished);
     const auto [qMax, qUsed, items] = _Data.value<std::tuple<quint8, quint8, QVector<RaptorDeviceItem> > >();
-    _Ui->_Title->setText(QString(CREATIVE_TEMPLATE).arg(QStringLiteral("设备 - 可用: %1，已用: %2").arg(qMax).arg(qUsed)));
+    _Ui->_Title->setText(QString(qCreativeTemplate).arg(QStringLiteral("设备 - 可用: %1，已用: %2").arg(qMax).arg(qUsed)));
     _ItemViewModel->invokeItemsAppend(items);
 }
 

@@ -24,7 +24,7 @@
 #include "RaptorFont.h"
 #include "ui_RaptorFont.h"
 
-RaptorFont::RaptorFont(QWidget* qParent) : RaptorEject(qParent),
+RaptorFont::RaptorFont(QWidget *qParent) : RaptorEject(qParent),
                                            _Ui(new Ui::RaptorFont)
 {
     _Ui->setupUi(this);
@@ -35,16 +35,16 @@ RaptorFont::RaptorFont(QWidget* qParent) : RaptorEject(qParent),
 
 RaptorFont::~RaptorFont()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
-bool RaptorFont::eventFilter(QObject* qObject, QEvent* qEvent)
+bool RaptorFont::eventFilter(QObject *qObject, QEvent *qEvent)
 {
     if (qObject == this)
     {
         if (qEvent->type() == QEvent::KeyPress)
         {
-            if (const auto qKeyEvent = static_cast<QKeyEvent*>(qEvent);
+            if (const auto qKeyEvent = static_cast<QKeyEvent *>(qEvent);
                 qKeyEvent->key() == Qt::Key_Escape)
             {
                 onCloseClicked();
@@ -59,18 +59,7 @@ bool RaptorFont::eventFilter(QObject* qObject, QEvent* qEvent)
 QString RaptorFont::invokeEject()
 {
     _ItemViewModel->removeRows(0, _ItemViewModel->rowCount());
-    _ItemViewModel->setStringList(QFontDatabase().families(QFontDatabase::SimplifiedChinese));
-    for (auto i = 0; i < _ItemViewModel->rowCount(); ++i)
-    {
-        const auto qIndex = _ItemViewModel->index(i);
-        if (qIndex.data().value<QString>() == RaptorSettingSuite::invokeItemFind(Setting::Section::Ui,
-                                                                                 Setting::Ui::Font).toString())
-        {
-            _Ui->_ItemView->setCurrentIndex(qIndex);
-            break;
-        }
-    }
-
+    _ItemViewModel->setStringList(QFontDatabase::families(QFontDatabase::SimplifiedChinese));
     RaptorEject::invokeEject();
     return _FontName;
 }
@@ -125,7 +114,7 @@ void RaptorFont::onCloseClicked()
     close();
 }
 
-void RaptorFont::onItemViewClicked(const QModelIndex& qIndex)
+void RaptorFont::onItemViewClicked(const QModelIndex &qIndex)
 {
     if (!qIndex.isValid())
     {
@@ -135,7 +124,7 @@ void RaptorFont::onItemViewClicked(const QModelIndex& qIndex)
     _FontName = qIndex.data().value<QString>();
 }
 
-void RaptorFont::onItemViewDoubleClicked(const QModelIndex& qIndex)
+void RaptorFont::onItemViewDoubleClicked(const QModelIndex &qIndex)
 {
     if (!qIndex.isValid())
     {

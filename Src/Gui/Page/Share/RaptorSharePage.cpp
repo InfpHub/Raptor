@@ -35,7 +35,7 @@ RaptorSharePage::RaptorSharePage(QWidget* qParent) : QWidget(qParent),
 
 RaptorSharePage::~RaptorSharePage()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 bool RaptorSharePage::eventFilter(QObject* qObject, QEvent* qEvent)
@@ -81,7 +81,7 @@ void RaptorSharePage::invokeNavigate()
         return;
     }
 
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     _Ui->_ItemView->invokeBackgroundPaintableSet(false);
     _ItemViewModel->invokeItemsClear();
     _Payload._Marker.clear();
@@ -111,7 +111,7 @@ void RaptorSharePage::invokeInstanceInit()
     _ItemViewModel->invokeColumnCountSet(3);
     _ItemViewDelegate = new RaptorTableViewDelegate(this);
 
-    _Loading = new RaptorLoading(_Ui->_ItemView);
+    _ItemViewLoading = new RaptorLoading(_Ui->_ItemView);
 }
 
 void RaptorSharePage::invokeUiInit()
@@ -142,6 +142,8 @@ void RaptorSharePage::invokeUiInit()
     _Ui->_ItemView->setHorizontalHeader(_ItemViewHeader);
     _Ui->_ItemView->setItemDelegate(_ItemViewDelegate);
     _Ui->_ItemView->setContextMenuPolicy(Qt::NoContextMenu);
+    _Ui->_ItemView->horizontalHeader()->setSortIndicatorShown(true);
+    _Ui->_ItemView->horizontalHeader()->setSectionsClickable(true);
     _Ui->_ItemView->horizontalHeader()->setFixedHeight(26);
     _Ui->_ItemView->horizontalHeader()->setMinimumSectionSize(30);
     _Ui->_ItemView->horizontalHeader()->setDefaultSectionSize(30);
@@ -153,6 +155,7 @@ void RaptorSharePage::invokeUiInit()
     _Ui->_ItemView->setColumnWidth(0, 30);
     _Ui->_ItemView->setColumnWidth(2, 80);
     _Ui->_ItemView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    _Ui->_ItemView->setSortingEnabled(true);
     _Ui->_ItemNameTip->setText(QStringLiteral("名称:"));
     _Ui->_ItemName->setContextMenuPolicy(Qt::NoContextMenu);
     _Ui->_ItemCreatedTip->setText(QStringLiteral("创建时间:"));
@@ -169,10 +172,10 @@ void RaptorSharePage::invokeUiInit()
 
 void RaptorSharePage::invokeSlotInit() const
 {
-    connect(_Loading,
+    connect(_ItemViewLoading,
             &RaptorLoading::stateChanged,
             this,
-            &RaptorSharePage::onLoadingStateChanged);
+            &RaptorSharePage::onItemViewLoadingStateChanged);
 
     connect(_Ui->_Export,
             &QPushButton::clicked,
@@ -361,7 +364,7 @@ void RaptorSharePage::onItemSwitching(const QVariant& qVariant) const
 
 void RaptorSharePage::onItemsFetched(const QVariant& qVariant)
 {
-    _Loading->invokeStateSet(RaptorLoading::State::Finished);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Finished);
     if (!RaptorStoreSuite::invokeUserIsValidConfirm())
     {
         _Ui->_ItemView->invokeServerCodeSet(RaptorTableView::Forbidden);
@@ -423,13 +426,13 @@ void RaptorSharePage::onItemsExported(const QVariant& qVariant)
             auto qFile = QFile(qName);
             if (!qFile.open(QIODevice::WriteOnly))
             {
-                RaptorToast::invokeCriticalEject(QStringLiteral("无法写入文件: %1").arg(QString(CRITICAL_TEMPLATE).arg(qName)));
+                RaptorToast::invokeCriticalEject(QStringLiteral("无法写入文件: %1").arg(QString(qCriticalTemplate).arg(qName)));
                 return;
             }
 
             qFile.write(qShare.toUtf8());
             qFile.close();
-            RaptorToast::invokeSuccessEject(QStringLiteral("所选分享已保存至 %1").arg(QString(CREATIVE_TEMPLATE).arg(qName)));
+            RaptorToast::invokeSuccessEject(QStringLiteral("所选分享已保存至 %1").arg(QString(qCreativeTemplate).arg(qName)));
             return;
         }
     }
@@ -451,7 +454,7 @@ void RaptorSharePage::onItemsCancelled(const QVariant& qVariant)
     onRefreshClicked();
 }
 
-void RaptorSharePage::onLoadingStateChanged(const RaptorLoading::State& state) const
+void RaptorSharePage::onItemViewLoadingStateChanged(const RaptorLoading::State& state) const
 {
     _Ui->_TabPrev->setEnabled(state == RaptorLoading::State::Finished);
     _Ui->_TabAll->setEnabled(state == RaptorLoading::State::Finished);
@@ -555,7 +558,7 @@ void RaptorSharePage::onTabAllToggled(const bool& qChecked)
         return;
     }
 
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     _ItemViewModel->invokeItemsClear();
     _Payload._Marker.clear();
     Q_EMIT itemsFetching(QVariant::fromValue<RaptorInput>(RaptorInput()));
@@ -573,7 +576,7 @@ void RaptorSharePage::onTabCanceledToggled(const bool& qChecked)
         return;
     }
 
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     _ItemViewModel->invokeItemsClear();
     _Payload._Marker.clear();
     auto input = RaptorInput();
@@ -595,7 +598,7 @@ void RaptorSharePage::onTabSharingToggled(const bool& qChecked)
         return;
     }
 
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     _ItemViewModel->invokeItemsClear();
     _Payload._Marker.clear();
     auto input = RaptorInput();
@@ -617,7 +620,7 @@ void RaptorSharePage::onTabExpiredToggled(const bool& qChecked)
         return;
     }
 
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     _ItemViewModel->invokeItemsClear();
     _Payload._Marker.clear();
     auto input = RaptorInput();
@@ -639,7 +642,7 @@ void RaptorSharePage::onTabNeverExpireToggled(const bool& qChecked)
         return;
     }
 
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     _ItemViewModel->invokeItemsClear();
     _Payload._Marker.clear();
     auto input = RaptorInput();
@@ -661,7 +664,7 @@ void RaptorSharePage::onTabRapidToggled(const bool& qChecked)
         return;
     }
 
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     _ItemViewModel->invokeItemsClear();
     _Payload._Marker.clear();
     Q_EMIT itemsRapidFetching();
@@ -702,7 +705,7 @@ void RaptorSharePage::onSearchClicked()
         return;
     }
 
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     _ItemViewModel->invokeItemsClear();
     _Payload._Marker.clear();
     const auto qKeyword = _Ui->_SearchEdit->text();
@@ -725,7 +728,7 @@ void RaptorSharePage::onRefreshClicked()
         return;
     }
 
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     _ItemViewModel->invokeItemsClear();
     _Payload._Marker.clear();
     auto input = RaptorInput();
@@ -809,7 +812,7 @@ void RaptorSharePage::onItemViewVerticalScrollValueChanged(const int& qValue) co
         return;
     }
 
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     auto input = RaptorInput();
     if (const auto qKeyword = _Ui->_SearchEdit->text();
         !qKeyword.isEmpty())

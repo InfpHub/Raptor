@@ -36,7 +36,7 @@ RaptorSpacePage::RaptorSpacePage(QWidget *qParent) : QWidget(qParent),
 
 RaptorSpacePage::~RaptorSpacePage()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 bool RaptorSpacePage::eventFilter(QObject *qObject, QEvent *qEvent)
@@ -216,7 +216,7 @@ void RaptorSpacePage::invokeNavigate()
         return;
     }
 
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     _Ui->_ItemView->invokeBackgroundPaintableSet(false);
     _ItemViewModel->invokeItemsClear();
     _Payload._Parent = "root";
@@ -254,7 +254,7 @@ void RaptorSpacePage::invokeInstanceInit()
     _Rename = new RaptorRename(RaptorStoreSuite::invokeWorldGet());
     _Share = new RaptorShare(RaptorStoreSuite::invokeWorldGet());
 
-    _Loading = new RaptorLoading(_Ui->_ItemView);
+    _ItemViewLoading = new RaptorLoading(_Ui->_ItemView);
 }
 
 void RaptorSpacePage::invokeUiInit()
@@ -291,6 +291,8 @@ void RaptorSpacePage::invokeUiInit()
     _Ui->_ItemView->setHorizontalHeader(_ItemViewHeader);
     _Ui->_ItemView->setItemDelegate(_ItemViewDelegate);
     _Ui->_ItemView->setContextMenuPolicy(Qt::CustomContextMenu);
+    _Ui->_ItemView->horizontalHeader()->setSortIndicatorShown(true);
+    _Ui->_ItemView->horizontalHeader()->setSectionsClickable(true);
     _Ui->_ItemView->horizontalHeader()->setFixedHeight(26);
     _Ui->_ItemView->horizontalHeader()->setMinimumSectionSize(30);
     _Ui->_ItemView->horizontalHeader()->setDefaultSectionSize(30);
@@ -304,6 +306,7 @@ void RaptorSpacePage::invokeUiInit()
     _Ui->_ItemView->setColumnWidth(3, 80);
     _Ui->_ItemView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     _Ui->_ItemView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    _Ui->_ItemView->setSortingEnabled(true);
 
     _Ui->_ItemNameTip->setText(QStringLiteral("名称 (双击以修改):"));
     _Ui->_ItemName->installEventFilter(this);
@@ -353,14 +356,18 @@ void RaptorSpacePage::invokeUiInit()
                                         RaptorUtil::invokeIconMatch("Trash", false, true),
                                         QKeySequence::Delete,
                                         std::bind(&RaptorSpacePage::onItemDeleteClicked, this));
+    _ItemViewContextMenu->invokeItemAdd("永久删除",
+                                        RaptorUtil::invokeIconMatch("Clean", false, true),
+                                        QKeySequence::Delete,
+                                        std::bind(&RaptorSpacePage::invokeItemsDelete, this));
 }
 
 void RaptorSpacePage::invokeSlotInit() const
 {
-    connect(_Loading,
+    connect(_ItemViewLoading,
             &RaptorLoading::stateChanged,
             this,
-            &RaptorSpacePage::onLoadingStateChanged);
+            &RaptorSpacePage::onItemViewLoadingStateChanged);
 
     connect(_Ui->_NewFolder,
             &QPushButton::clicked,
@@ -586,7 +593,7 @@ void RaptorSpacePage::invokeItemsPaste()
     }
 
     if (const auto qOperate = RaptorMessageBox::invokeInformationEject(QStringLiteral("%1文件").arg(qTitle),
-                                                                       QStringLiteral("即将%1文件到 %2，是否继续?").arg(qTitle, QString(CREATIVE_TEMPLATE).arg(qName)));
+                                                                       QStringLiteral("即将%1文件到 %2，是否继续?").arg(qTitle, QString(qCreativeTemplate).arg(qName)));
         qOperate == RaptorMessageBox::No)
     {
         return;
@@ -655,7 +662,7 @@ void RaptorSpacePage::invokeItemsPlay() const
         if (item._Url.isEmpty())
         {
             RaptorToast::invokeInformationEject(
-                QStringLiteral("请先刷新 % 的地址，再进行强制播放!").arg(QString(WARNING_TEMPLATE).arg(item._Name)));
+                QStringLiteral("请先刷新 % 的地址，再进行强制播放!").arg(QString(qWarningTemplate).arg(item._Name)));
             continue;
         }
 
@@ -677,6 +684,27 @@ void RaptorSpacePage::invokeItemsRename() const
     }
 
     _Rename->invokeEject(QVariant::fromValue<QPair<QModelIndexList, QString> >(qMakePair(qIndexList, _Payload._Parent)));
+}
+
+void RaptorSpacePage::invokeItemsDelete() const
+{
+    const auto qIndexList = _Ui->_ItemView->selectionModel()->selectedRows();
+    if (qIndexList.isEmpty())
+    {
+        RaptorToast::invokeWarningEject(QStringLiteral("尚未选择任何文件，无法继续!"));
+        return;
+    }
+
+    if (const auto qOperate = RaptorMessageBox::invokeCriticalEject(QStringLiteral("永久删除文件"),
+                                                                    QStringLiteral("即将永久删除所选文件，并且无法恢复。是否继续?"));
+        qOperate == RaptorMessageBox::No)
+    {
+        return;
+    }
+
+    auto input = RaptorInput();
+    input._Indexes = qIndexList;
+    Q_EMIT itemsDeleting(QVariant::fromValue<RaptorInput>(input));
 }
 
 QPair<QString, QString> RaptorSpacePage::invokeTypeWithCategoryFilter() const
@@ -755,7 +783,7 @@ QString RaptorSpacePage::invokeVideoSubFilter(const QString &qName) const
 
 void RaptorSpacePage::invokeGoToDir(const QString &qParent)
 {
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     _Payload._Parent = qParent;
     _Payload._Stack.clear();
     _Payload._Marker.clear();
@@ -811,7 +839,7 @@ void RaptorSpacePage::onItemAccessTokenRefreshed(const QVariant &qVariant)
         return;
     }
 
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     _Ui->_ItemView->invokeBackgroundPaintableSet(false);
     _ItemViewModel->invokeItemsClear();
     _Payload._Parent = "root";
@@ -867,7 +895,7 @@ void RaptorSpacePage::onItemSwitching(const QVariant &qVariant) const
 
 void RaptorSpacePage::onItemsFetched(const QVariant &qVariant)
 {
-    _Loading->invokeStateSet(RaptorLoading::State::Finished);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Finished);
     if (!RaptorStoreSuite::invokeUserIsValidConfirm())
     {
         _Ui->_ItemView->invokeServerCodeSet(RaptorTableView::Forbidden);
@@ -929,7 +957,7 @@ void RaptorSpacePage::onItemUrlFetched(const QVariant &qVariant) const
 
     _ItemViewModel->setData(qIndex, QVariant::fromValue<RaptorFileItem>(item));
     RaptorToast::invokeInformationEject(
-        QStringLiteral("%1 的链接已经刷新。").arg(QString(CREATIVE_TEMPLATE).arg(item._Name)));
+        QStringLiteral("%1 的链接已经刷新。").arg(QString(qCreativeTemplate).arg(item._Name)));
 }
 
 void RaptorSpacePage::onItemVideoPreviewPlayInfoFetched(const QVariant &qVariant) const
@@ -972,7 +1000,7 @@ void RaptorSpacePage::onItemCreated(const QVariant &qVariant)
 
     const auto [qCount, qParent] = _Data.value<QPair<quint8, QString> >();
     RaptorToast::invokeInformationEject(
-        QStringLiteral("%1 个文件夹已创建。").arg(QString(SUCCESS_TEMPLATE).arg(qCount)));
+        QStringLiteral("%1 个文件夹已创建。").arg(QString(qSuccessTemplate).arg(qCount)));
     if (qParent == _Payload._Parent)
     {
         onRefreshClicked();
@@ -1018,7 +1046,7 @@ void RaptorSpacePage::onItemsRenamed(const QVariant &qVariant) const
 
 
     _Ui->_ItemView->viewport()->update();
-    RaptorToast::invokeInformationEject(QString(SUCCESS_TEMPLATE).arg(QStringLiteral("已重命名 %1 个文件").arg(items.length())));
+    RaptorToast::invokeInformationEject(QString(qSuccessTemplate).arg(QStringLiteral("已重命名 %1 个文件").arg(items.length())));
 }
 
 void RaptorSpacePage::onItemsRapidCreated(const QVariant &qVariant) const
@@ -1059,6 +1087,36 @@ void RaptorSpacePage::onItemsStarred(const QVariant &qVariant) const
     {
         RaptorToast::invokeSuccessEject(QStringLiteral("所选文件已添加到收藏。"));
     }
+}
+
+void RaptorSpacePage::onItemsDeleted(const QVariant &qVariant) const
+{
+    const auto [_State, _Message, _Data] = qVariant.value<RaptorOutput>();
+    if (!_State)
+    {
+        RaptorToast::invokeCriticalEject(_Message);
+        return;
+    }
+
+    auto qIndexList = _Data.value<QModelIndexList>();
+    std::reverse(qIndexList.begin(), qIndexList.end());
+    for (auto &qIndex: qIndexList)
+    {
+        _ItemViewModel->removeRow(qIndex.row());
+    }
+
+    _Ui->_ItemView->selectionModel()->clearSelection();
+    _Ui->_ItemView->viewport()->update();
+    if (_ItemViewModel->rowCount() == 0)
+    {
+        _Ui->_ItemView->invokeServerCodeSet(RaptorTableView::NotFound);
+        _Ui->_ItemView->invokeTitleSet(QStringLiteral("404 资源不存在"));
+        _Ui->_ItemView->invokeSummarySet(QStringLiteral("生活总归带点荒谬"));
+        _Ui->_ItemView->invokeIndicatorSet(QStringLiteral("找点乐子吧"));
+        _Ui->_ItemView->invokeBackgroundPaintableSet(true);
+    }
+
+    RaptorToast::invokeSuccessEject(QStringLiteral("所选文件已被永久删除。"));
 }
 
 void RaptorSpacePage::onItemsTrashed(const QVariant &qVariant) const
@@ -1131,7 +1189,7 @@ void RaptorSpacePage::onItemsMoved(const QVariant &qVariant)
     _Clipboard._Working = false;
 }
 
-void RaptorSpacePage::onLoadingStateChanged(const RaptorLoading::State &state) const
+void RaptorSpacePage::onItemViewLoadingStateChanged(const RaptorLoading::State &state) const
 {
     _Ui->_NewFolder->setEnabled(state == RaptorLoading::State::Finished);
     _Ui->_Upload->setEnabled(state == RaptorLoading::State::Finished);
@@ -1296,7 +1354,7 @@ void RaptorSpacePage::onTabAllToggled(const bool &qChecked)
         return;
     }
 
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     _ItemViewModel->invokeItemsClear();
     _Payload._Stack.clear();
     _Payload._Marker.clear();
@@ -1317,7 +1375,7 @@ void RaptorSpacePage::onTabFolderToggled(const bool &qChecked)
         return;
     }
 
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     _ItemViewModel->invokeItemsClear();
     _Payload._Stack.clear();
     _Payload._Marker.clear();
@@ -1341,7 +1399,7 @@ void RaptorSpacePage::onTabAudioToggled(const bool &qChecked)
         return;
     }
 
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     _ItemViewModel->invokeItemsClear();
     _Payload._Stack.clear();
     _Payload._Marker.clear();
@@ -1365,7 +1423,7 @@ void RaptorSpacePage::onTabVideoToggled(const bool &qChecked)
         return;
     }
 
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     _ItemViewModel->invokeItemsClear();
     _Payload._Stack.clear();
     _Payload._Marker.clear();
@@ -1389,7 +1447,7 @@ void RaptorSpacePage::onTabImageToggled(const bool &qChecked)
         return;
     }
 
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     _ItemViewModel->invokeItemsClear();
     _Payload._Stack.clear();
     _Payload._Marker.clear();
@@ -1413,7 +1471,7 @@ void RaptorSpacePage::onTabDocumentToggled(const bool &qChecked)
         return;
     }
 
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     _ItemViewModel->invokeItemsClear();
     _Payload._Stack.clear();
     _Payload._Marker.clear();
@@ -1477,7 +1535,7 @@ void RaptorSpacePage::onSearchClicked()
         onRootClicked();
     } else
     {
-        _Loading->invokeStateSet(RaptorLoading::State::Loading);
+        _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
         input._Name = _Payload._Keyword;
         Q_EMIT itemsByConditionFetching(QVariant::fromValue<RaptorInput>(input));
     }
@@ -1490,7 +1548,7 @@ void RaptorSpacePage::onRootClicked()
         return;
     }
 
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     _Payload._Parent = "root";
     _Payload._Stack.clear();
     _Payload._Marker.clear();
@@ -1512,7 +1570,7 @@ void RaptorSpacePage::onBackClicked()
 
     if (!_Payload._Stack.isEmpty())
     {
-        _Loading->invokeStateSet(RaptorLoading::State::Loading);
+        _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
         const auto item = _Payload._Stack.pop();
         _Payload._Parent = item._Parent;
         _Payload._Marker.clear();
@@ -1537,7 +1595,7 @@ void RaptorSpacePage::onRefreshClicked()
         return;
     }
 
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     _ItemViewModel->invokeItemsClear();
     _Payload._Marker.clear();
     auto input = RaptorInput();
@@ -1573,7 +1631,7 @@ void RaptorSpacePage::onItemViewDoubleClicked(const QModelIndex &qIndex)
     if (const auto item = qIndex.data(Qt::UserRole).value<RaptorFileItem>();
         item._Type == "folder")
     {
-        _Loading->invokeStateSet(RaptorLoading::State::Loading);
+        _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
         _Ui->_Root->setEnabled(true);
         _Ui->_Back->setEnabled(true);
         _Ui->_ItemName->clear();
@@ -1788,7 +1846,7 @@ void RaptorSpacePage::onItemViewVerticalScrollValueChanged(const int &qValue) co
         return;
     }
 
-    _Loading->invokeStateSet(RaptorLoading::State::Loading);
+    _ItemViewLoading->invokeStateSet(RaptorLoading::State::Loading);
     auto input = RaptorInput();
     if (const auto qKeyword = _Ui->_SearchEdit->text();
         !qKeyword.isEmpty())

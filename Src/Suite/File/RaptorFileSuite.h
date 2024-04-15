@@ -28,6 +28,7 @@
 
 #include "../Http/RaptorHttpSuite.h"
 #include "../Store/RaptorStoreSuite.h"
+#include "../Trash/RaptorTrashSuite.h"
 #include "../../Common/RaptorDeclare.h"
 #include "../../Util/RaptorUtil.h"
 
@@ -43,7 +44,7 @@ public:
     static QVector<RaptorFileItem> invokeMapToItems(const QJsonArray &qArray);
 
     static QPair<QString, QString> invokeItemUrlFetch(const RaptorAuthenticationItem &item,
-                                           const QString &qId);
+                                                      const QString &qId);
 
 Q_SIGNALS:
     Q_SIGNAL void itemsFetched(const QVariant &qVariant) const;
@@ -60,7 +61,7 @@ Q_SIGNALS:
 
     Q_SIGNAL void itemsCopied(const QVariant &qVariant) const;
 
-    Q_SIGNAL void itemContentFetched(const QVariant &qVariant) const;
+    Q_SIGNAL void itemsDeleted(const QVariant &qVariant) const;
 
     Q_SIGNAL void itemVideoPreviewPlayInfoFetched(const QVariant &qVariant) const;
 
@@ -77,9 +78,11 @@ public Q_SLOTS:
 
     Q_SLOT void onItemUrlFetching(const QVariant &qVariant) const;
 
+    Q_SLOT void onItemsCopying(const QVariant &qVariant) const;
+
     Q_SLOT void onItemsMoving(const QVariant &qVariant) const;
 
-    Q_SLOT void onItemsCopying(const QVariant &qVariant) const;
+    Q_SLOT void onItemsDeleting(const QVariant &qVariant) const;
 
     Q_SLOT void onItemVideoPreviewPlayInfoFetching(const QVariant &qVariant) const;
 };

@@ -34,7 +34,7 @@ RaptorNotice::RaptorNotice(QWidget *qParent) : RaptorEject(qParent),
 
 RaptorNotice::~RaptorNotice()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 bool RaptorNotice::eventFilter(QObject *qObject, QEvent *qEvent)
@@ -85,7 +85,7 @@ void RaptorNotice::invokeEject(const QVariant &qVariant)
                 });
     }
 
-    _Ui->_Title->setText(QString(CREATIVE_TEMPLATE).arg(qTitle));
+    _Ui->_Title->setText(QString(qCreativeTemplate).arg(qTitle));
     _Ui->_Content->setText(qContent);
     invokeCloseCallbackSet([=]() -> void
     {

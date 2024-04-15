@@ -23,9 +23,14 @@
 
 #include "RaptorShareViewModel.h"
 
+RaptorShareViewModel::RaptorShareViewModel(QObject *qParent) : QAbstractTableModel(qParent)
+{
+    invokeInstanceInit();
+}
+
 QVariant RaptorShareViewModel::headerData(int qSection,
-    Qt::Orientation qOrientation,
-    int qRole) const
+                                          Qt::Orientation qOrientation,
+                                          int qRole) const
 {
     if (qOrientation != Qt::Horizontal)
     {
@@ -34,20 +39,20 @@ QVariant RaptorShareViewModel::headerData(int qSection,
 
     switch (qRole)
     {
-    case Qt::DisplayRole:
-        if (qSection > 0 && qSection <= _Headers.length())
-        {
-            return _Headers[qSection - 1];
-        }
-        return QVariant();
-    case Qt::TextAlignmentRole:
-        return QVariant(Qt::AlignLeft | Qt::AlignVCenter);
-    default:
-        return QVariant();
+        case Qt::DisplayRole:
+            if (qSection > 0 && qSection <= _Headers.length())
+            {
+                return _Headers[qSection - 1];
+            }
+            return QVariant();
+        case Qt::TextAlignmentRole:
+            return QVariant(Qt::AlignLeft | Qt::AlignVCenter);
+        default:
+            return QVariant();
     }
 }
 
-int RaptorShareViewModel::rowCount(const QModelIndex& qIndex) const
+int RaptorShareViewModel::rowCount(const QModelIndex &qIndex) const
 {
     if (qIndex.isValid())
     {
@@ -57,7 +62,7 @@ int RaptorShareViewModel::rowCount(const QModelIndex& qIndex) const
     return _Items.length();
 }
 
-int RaptorShareViewModel::columnCount(const QModelIndex& qIndex) const
+int RaptorShareViewModel::columnCount(const QModelIndex &qIndex) const
 {
     if (qIndex.isValid())
     {
@@ -67,7 +72,7 @@ int RaptorShareViewModel::columnCount(const QModelIndex& qIndex) const
     return _ColumnCount;
 }
 
-QVariant RaptorShareViewModel::data(const QModelIndex& qIndex, int qRole) const
+QVariant RaptorShareViewModel::data(const QModelIndex &qIndex, int qRole) const
 {
     if (!qIndex.isValid())
     {
@@ -77,28 +82,28 @@ QVariant RaptorShareViewModel::data(const QModelIndex& qIndex, int qRole) const
     const auto item = _Items[qIndex.row()];
     switch (qRole)
     {
-    case Qt::UserRole:
-        return QVariant::fromValue<RaptorShareItem>(item);
-    case Qt::DisplayRole:
+        case Qt::UserRole:
+            return QVariant::fromValue<RaptorShareItem>(item);
+        case Qt::DisplayRole:
         {
             switch (qIndex.column())
             {
-            case 1:
-                return item._Name;
-            case 2:
-                return item._Expired.split(' ')[0];
-            default:
-                return QVariant();
+                case 1:
+                    return item._Name;
+                case 2:
+                    return item._Expired.split(' ')[0];
+                default:
+                    return QVariant();
             }
         }
-    case Qt::TextAlignmentRole:
-        return QVariant(Qt::AlignLeft | Qt::AlignVCenter);
-    default:
-        return QVariant();
+        case Qt::TextAlignmentRole:
+            return QVariant(Qt::AlignLeft | Qt::AlignVCenter);
+        default:
+            return QVariant();
     }
 }
 
-bool RaptorShareViewModel::setData(const QModelIndex& qIndex, const QVariant& qVariant, int qRole)
+bool RaptorShareViewModel::setData(const QModelIndex &qIndex, const QVariant &qVariant, int qRole)
 {
     if (!qIndex.isValid())
     {
@@ -118,10 +123,10 @@ bool RaptorShareViewModel::setData(const QModelIndex& qIndex, const QVariant& qV
     const auto item = qVariant.value<RaptorShareItem>();
     _Items.replace(qIndex.row(), item);
     Q_EMIT dataChanged(qIndex, qIndex);
-        return QAbstractTableModel::setData(qIndex, qVariant, qRole);
+    return QAbstractTableModel::setData(qIndex, qVariant, qRole);
 }
 
-bool RaptorShareViewModel::removeRow(int qRow, const QModelIndex& qIndex)
+bool RaptorShareViewModel::removeRow(int qRow, const QModelIndex &qIndex)
 {
     if (qRow < 0 || qRow > _Items.length())
     {
@@ -134,24 +139,63 @@ bool RaptorShareViewModel::removeRow(int qRow, const QModelIndex& qIndex)
     return true;
 }
 
-void RaptorShareViewModel::invokeHeaderSet(const QVector<QString>& qHeader)
+void RaptorShareViewModel::sort(int qColumn, Qt::SortOrder qOrder)
+{
+    if (qColumn == 0)
+    {
+        return;
+    }
+
+    beginResetModel();
+    switch (qColumn)
+    {
+        case 1:
+        {
+            if (qOrder == Qt::AscendingOrder)
+            {
+                std::sort(_Items.begin(), _Items.end(), std::bind(invokeItemsByNameAscSort, this, std::placeholders::_1, std::placeholders::_2));
+            } else
+            {
+                std::sort(_Items.begin(), _Items.end(), std::bind(invokeItemsByNameDescSort, this, std::placeholders::_1, std::placeholders::_2));
+            }
+            break;
+        }
+        case 2:
+        {
+            if (qOrder == Qt::AscendingOrder)
+            {
+                std::sort(_Items.begin(), _Items.end(), std::bind(invokeItemsByExpiredAscSort, this, std::placeholders::_1, std::placeholders::_2));
+            } else
+            {
+                std::sort(_Items.begin(), _Items.end(), std::bind(invokeItemsByExpiredDescSort, this, std::placeholders::_1, std::placeholders::_2));
+            }
+            break;
+        }
+        default:
+            break;
+    }
+
+    endResetModel();
+}
+
+void RaptorShareViewModel::invokeHeaderSet(const QVector<QString> &qHeader)
 {
     _Headers = qHeader;
 }
 
-void RaptorShareViewModel::invokeColumnCountSet(const quint16& qCount)
+void RaptorShareViewModel::invokeColumnCountSet(const quint16 &qCount)
 {
     _ColumnCount = qCount;
 }
 
-void RaptorShareViewModel::invokeItemAppend(const RaptorShareItem& item)
+void RaptorShareViewModel::invokeItemAppend(const RaptorShareItem &item)
 {
     beginInsertRows(QModelIndex(), _Items.length(), _Items.length());
     _Items << item;
     endInsertRows();
 }
 
-void RaptorShareViewModel::invokeItemsAppend(const QVector<RaptorShareItem>& items)
+void RaptorShareViewModel::invokeItemsAppend(const QVector<RaptorShareItem> &items)
 {
     if (items.isEmpty())
     {
@@ -168,4 +212,31 @@ void RaptorShareViewModel::invokeItemsClear()
     beginResetModel();
     _Items.clear();
     endResetModel();
+}
+
+void RaptorShareViewModel::invokeInstanceInit()
+{
+    qCollator = QCollator(QLocale::Chinese);
+    qCollator.setNumericMode(false);
+    qCollator.setIgnorePunctuation(true);
+}
+
+bool RaptorShareViewModel::invokeItemsByNameAscSort(const RaptorShareItem &item, const RaptorShareItem &iten) const
+{
+    return qCollator.compare(item._Name, iten._Name) < 0;
+}
+
+bool RaptorShareViewModel::invokeItemsByNameDescSort(const RaptorShareItem &item, const RaptorShareItem &iten) const
+{
+    return qCollator.compare(item._Name, iten._Name) > 0;
+}
+
+bool RaptorShareViewModel::invokeItemsByExpiredAscSort(const RaptorShareItem &item, const RaptorShareItem &iten) const
+{
+    return qCollator.compare(item._Expired, iten._Expired) < 0;
+}
+
+bool RaptorShareViewModel::invokeItemsByExpiredDescSort(const RaptorShareItem &item, const RaptorShareItem &iten) const
+{
+    return qCollator.compare(item._Expired, iten._Expired) > 0;
 }

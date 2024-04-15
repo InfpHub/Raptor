@@ -27,8 +27,10 @@ CREATE TABLE IF NOT EXISTS Downloading
     Byte        TEXT,
     "Limit"     INTEGER,
     SHA1        TEXT,
+    Transferred        TEXT,
     UserId      TEXT    NOT NULL,
     State       INTEGER NOT NULL,
+    Embed       INTEGER NOT NULL,
     Parallel    INTEGER NOT NULL
 );
 
@@ -78,7 +80,7 @@ CREATE TABLE IF NOT EXISTS User
     LeafId       TEXT NOT NULL PRIMARY KEY,
     Space        TEXT,
     Device       TEXT,
-    NickName     TEXT,
+    Nickname     TEXT,
     Avatar       TEXT,
     AccessToken  TEXT,
     RefreshToken TEXT,
@@ -132,6 +134,10 @@ INSERT INTO CopyWriter (LeafId, Content)
 VALUES (20, '与其委屈自己，不如为难别人。');
 INSERT INTO CopyWriter (LeafId, Content)
 VALUES (21, '只要你肯吃苦，就有吃不完的苦。');
+INSERT INTO CopyWriter (LeafId, Content)
+VALUES (22, '莫行好事，但问钱程。');
+INSERT INTO CopyWriter (LeafId, Content)
+VALUES (23, '睡前原谅一切，醒后重计前嫌。');
 
 INSERT INTO Timeline (LeafId, Date, Summary, Active, Initial)
 VALUES (1, '2024-02-14', '无人问津', 0, 1);

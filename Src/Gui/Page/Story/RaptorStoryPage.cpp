@@ -35,7 +35,7 @@ RaptorStoryPage::RaptorStoryPage(QWidget* qParent) : QWidget(qParent),
 
 RaptorStoryPage::~RaptorStoryPage()
 {
-    FREE(_Ui)
+    qFree(_Ui)
 }
 
 RaptorAboutPage* RaptorStoryPage::invokeAboutPageGet() const
